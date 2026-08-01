@@ -1,25 +1,22 @@
 # Changelog
 
-## v0.3.0 – Decision Intelligence
+## v0.4.0 – Strategy Studio & Bilingual UI
 
 ### Added
-- Daily Briefing
-- Decision Lab
-- Why Engine
-- Score Radar
-- Alpha Timeline
-- Trigger Ladder
-- Portfolio Risk Scenario
-- Allocation Donuts
-- Scanner Sparklines
-- eigenes Alpha-OS-Symbol
+- Strategy Studio with live sliders
+- configurable score weights
+- configurable execution thresholds
+- configurable position sizing and diversification warnings
+- defensive, balanced and offensive presets
+- local browser persistence
+- complete German/English language toggle
+- live recalculation of ranking, OS, RAS, CRV, gates and sizing
+- post-trade sector and region exposure preview
 
-### Improved
-- weniger visuelle Kartenmonotonie
-- stärkere Executive-Hierarchie
-- bessere Erklärbarkeit von Scores und Entscheidungen
-- klarere mobile Informationsstruktur
+### Governance
+- Position size and concentration controls are warning preferences rather than rigid caps.
+- Whole-share affordability and cash reserve are explicitly included in sizing.
 
-### Corrected
-- ASML-Ausführungsgate zur Positionsgröße: eine volle Aktie ist finanzierbar; der aktuelle Blocker ist Preiszone und relative Marge
-- Länderexponierung ignoriert Cash; Rubrik-/Kapitalmix zeigt Cash weiterhin aktiv
+### Technical
+- JavaScript model layer separates base data from user strategy settings.
+- Historical score series remain the documented baseline; current ranking reflects the active profile.
