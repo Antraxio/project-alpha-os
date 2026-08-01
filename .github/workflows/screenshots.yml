@@ -1,0 +1,114 @@
+name: Project Alpha Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "screenshots/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: project-alpha-screenshots
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Playwright installieren
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Auf GitHub Pages warten
+        run: |
+          for i in {1..18}; do
+            if curl -fsS "https://antraxio.github.io/project-alpha-os/?cachebust=$(date +%s)" > /dev/null; then
+              echo "Website erreichbar."
+              exit 0
+            fi
+            echo "Website noch nicht bereit – neuer Versuch in 10 Sekunden."
+            sleep 10
+          done
+          exit 1
+
+      - name: Screenshots erstellen
+        run: |
+          mkdir -p screenshots
+
+          cat > capture.mjs <<'EOF'
+          import { chromium } from "playwright";
+
+          const browser = await chromium.launch();
+          const url =
+            "https://antraxio.github.io/project-alpha-os/?cachebust=" +
+            Date.now();
+
+          async function capture(name, width, height, view = "dashboard") {
+            const page = await browser.newPage({
+              viewport: { width, height },
+              deviceScaleFactor: 1
+            });
+
+            await page.goto(url, {
+              waitUntil: "networkidle",
+              timeout: 120000
+            });
+
+            if (view !== "dashboard") {
+              await page.locator(`button[data-view="${view}"]`).click();
+              await page.waitForTimeout(800);
+            }
+
+            await page.screenshot({
+              path: `screenshots/${name}`,
+              fullPage: true
+            });
+
+            await page.close();
+          }
+
+          await capture("latest-dashboard-desktop.png", 1440, 1000);
+          await capture("latest-dashboard-ipad.png", 1366, 1024);
+          await capture("latest-scanner-ipad.png", 1366, 1024, "scanner");
+          await capture("latest-dashboard-mobile.png", 430, 932);
+
+          await browser.close();
+          EOF
+
+          node capture.mjs
+
+      - name: Screenshots als Artefakt speichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-alpha-screenshots
+          path: screenshots/*.png
+          retention-days: 30
+
+      - name: Screenshots ins Repository schreiben
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add screenshots/*.png
+
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "chore: update website screenshots [skip ci]"
+            git push
+          fi
