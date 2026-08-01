@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.5.0 – Universe 50 & Candidate Navigation
+
+### Added
+- Global Liquid 50 universe
+- automatic/manual candidate mode
+- full-universe candidate selector
+- automatic-selection rationale
+- research-pending Decision Lab state
+- coverage, portfolio and tradability status
+- ranking diagnostics versus Balanced
+- cache-busting
+
+### Tests
+- exactly 50 universe rows
+- Universe-to-Decision-Lab navigation
+- research-pending notice
+- Universe and pending-candidate screenshots
+
+
 ## v0.4.2 – Dynamic Ranking
 
 ### Fixed

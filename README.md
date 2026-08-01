@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-## v0.4.2 – Strategy Studio & Bilingual UI
+## v0.5.0 – Strategy Studio & Bilingual UI
 
 ### Neue Kernfunktionen
 
@@ -81,3 +81,17 @@ Das Scanner-Ranking verwendet jetzt zwei getrennte Ebenen:
 Der Scanner wird nach dem Strategy Score sortiert. Dadurch verändern auch Positions- und Diversifikationseinstellungen tatsächlich die Reihenfolge.
 
 Der Screenshot-Workflow enthält nun einen funktionalen Regressionstest: Das defensive und das ausgewogene Profil müssen unterschiedliche Top-5-Rankings erzeugen.
+
+
+## v0.5.0 – Universe 50 & Candidate Navigation
+
+- 50 sichtbar dokumentierte Titel
+- 10 vollständig bewertete Kandidaten
+- 40 Research-Kandidaten ohne erfundene Scores
+- automatische oder manuelle Kandidatenauswahl
+- transparente Begründung der automatischen Auswahl
+- Research-Pending-Ansicht im Decision Lab
+- Universe-Filter nach Region, Sektor und Abdeckung
+- Ranking-Diagnostik gegenüber dem ausgewogenen Standardprofil
+- Cache-Busting für CSS, JavaScript und Daten
+- Tests für exakt 50 Titel und Universe-to-Decision-Lab-Navigation

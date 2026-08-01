@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080c16">
   <title>Project Alpha OS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=0.5.0">
 </head>
 <body>
 <div class="shell">
@@ -25,6 +25,7 @@
       <button class="nav active" data-view="dashboard">◫ <span data-i18n="navExecutive">Executive</span></button>
       <button class="nav" data-view="decision">✦ <span data-i18n="navDecision">Decision Lab</span></button>
       <button class="nav" data-view="scanner">⌁ <span data-i18n="navScanner">Scanner</span></button>
+      <button class="nav" data-view="universe">◉ <span data-i18n="navUniverse">Universe 50</span></button>
       <button class="nav" data-view="timeline">↗ <span data-i18n="navTimeline">Alpha Timeline</span></button>
       <button class="nav" data-view="portfolio">◈ <span data-i18n="navPortfolio">Portfolio</span></button>
       <button class="nav" data-view="competition">⇄ <span data-i18n="navCompetition">Competition</span></button>
@@ -40,7 +41,7 @@
         <p><span data-i18n="osThreshold">OS-Schwelle</span><strong id="sideThreshold">85</strong></p>
         <p><span data-i18n="cashMargin">Cash-Marge</span><strong id="sideCashMargin">+5</strong></p>
       </div>
-      <div class="version">v0.4.2 · Dynamic Ranking</div>
+      <div class="version">v0.5.0 · Universe 50</div>
     </div>
   </aside>
 
@@ -140,6 +141,21 @@
     </section>
 
     <section class="view" id="decision">
+      <div class="candidate-selector-bar">
+        <div class="selector-copy">
+          <small data-i18n="candidateSelection">KANDIDATENAUSWAHL</small>
+          <h2 data-i18n="candidateSelectionHeadline">Automatische Empfehlung oder manuelle Analyse</h2>
+          <p id="candidateSelectionReason">–</p>
+        </div>
+        <div class="selector-controls">
+          <div class="mode-toggle">
+            <button data-decision-mode="auto" data-i18n="automatic">Automatisch</button>
+            <button data-decision-mode="manual" data-i18n="manual">Manuell</button>
+          </div>
+          <select id="decisionCandidateSelect" aria-label="Decision candidate"></select>
+        </div>
+      </div>
+      <div id="decisionCoverageNotice" class="coverage-notice"></div>
       <div class="decision-lab-grid">
         <article class="panel score-story">
           <div class="panel-head">
@@ -194,6 +210,38 @@
       </div>
       <article class="scanner-list" id="scannerList"></article>
       <article class="panel candidate-detail" id="candidateDetail"></article>
+    </section>
+
+    <section class="view" id="universe">
+      <div class="universe-hero">
+        <div>
+          <small>GLOBAL LIQUID 50</small>
+          <h2 data-i18n="universeHeadline">Das vollständige Beobachtungsuniversum</h2>
+          <p id="universeMethodology">–</p>
+        </div>
+        <div class="universe-stats" id="universeStats"></div>
+      </div>
+
+      <div class="universe-toolbar">
+        <input id="universeSearch" type="search" data-i18n-placeholder="universeSearchPlaceholder" placeholder="Unternehmen oder Ticker">
+        <select id="universeCoverage">
+          <option value="all" data-i18n="allCoverage">Alle Abdeckungen</option>
+          <option value="scored" data-i18n="scored">Bewertet</option>
+          <option value="research_pending" data-i18n="researchPending">Research ausstehend</option>
+        </select>
+        <select id="universeRegion"><option value="all" data-i18n="allRegions">Alle Regionen</option></select>
+        <select id="universeSector"><option value="all" data-i18n="allSectors">Alle Sektoren</option></select>
+      </div>
+
+      <div class="universe-columns">
+        <span data-i18n="universeRank">Auswahl</span>
+        <span data-i18n="security">Unternehmen</span>
+        <span data-i18n="coverage">Abdeckung</span>
+        <span data-i18n="strategyScore">Strategy Score</span>
+        <span data-i18n="portfolioStatus">Depot</span>
+        <span data-i18n="tradeability">Handelbarkeit</span>
+      </div>
+      <article class="universe-list" id="universeList"></article>
     </section>
 
     <section class="view" id="timeline">
@@ -288,6 +336,6 @@
   </main>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script src="app.js"></script>
+<script src="app.js?v=0.5.0"></script>
 </body>
 </html>

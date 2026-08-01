@@ -146,6 +146,57 @@ jobs:
             await page.close();
           }
 
+
+          async function assertUniverseAndCandidateNavigation() {
+            const { page, errors } = await openPage(1366, 1024);
+            await setLanguage(page, "de");
+            await switchView(page, "universe");
+
+            const universeRows = await page
+              .locator("[data-universe-ticker]")
+              .count();
+
+            if (universeRows !== 50) {
+              throw new Error(
+                `Universe regression: expected 50 rows, received ${universeRows}.`
+              );
+            }
+
+            await page.locator('[data-universe-ticker="AAPL"]').click();
+            await page.waitForSelector("#decision.active");
+
+            const candidateText = await page
+              .locator("#decisionCandidate")
+              .innerText();
+
+            if (!candidateText.includes("Apple")) {
+              throw new Error(
+                `Candidate navigation regression: ${candidateText}`
+              );
+            }
+
+            if (
+              await page.locator("#decisionCoverageNotice.show").count() !== 1
+            ) {
+              throw new Error(
+                "Research-pending coverage notice is missing."
+              );
+            }
+
+            await page.screenshot({
+              path: "screenshots/latest-decision-apple-pending-ipad-de.png",
+              fullPage: true
+            });
+
+            if (errors.length) {
+              throw new Error(
+                `Browser errors in universe test: ${errors.join(" | ")}`
+              );
+            }
+
+            await page.close();
+          }
+
           async function capture(name, width, height, options = {}) {
             const { page, errors } = await openPage(width, height);
 
@@ -237,6 +288,15 @@ jobs:
           );
 
           await assertDynamicRanking();
+
+          await capture(
+            "latest-universe-50-ipad-de.png",
+            1366,
+            1024,
+            { language: "de", view: "universe" }
+          );
+
+          await assertUniverseAndCandidateNavigation();
 
           await browser.close();
           EOF
