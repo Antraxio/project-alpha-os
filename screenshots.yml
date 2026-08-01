@@ -1,0 +1,218 @@
+name: Project Alpha Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "screenshots/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: project-alpha-screenshots
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          package-manager-cache: false
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install --with-deps chromium
+
+      - name: Wait for GitHub Pages
+        run: |
+          for i in {1..24}; do
+            if curl -fsS "https://antraxio.github.io/project-alpha-os/?cachebust=$(date +%s)" > /dev/null; then
+              echo "Website is reachable."
+              exit 0
+            fi
+            echo "Website not ready yet. Retrying in 10 seconds."
+            sleep 10
+          done
+          exit 1
+
+      - name: Capture screenshots and validate browser console
+        run: |
+          mkdir -p screenshots
+
+          cat > capture.mjs <<'EOF'
+          import { chromium } from "playwright";
+
+          const browser = await chromium.launch();
+          const baseUrl =
+            "https://antraxio.github.io/project-alpha-os/?cachebust=" +
+            Date.now();
+
+          async function openPage(width, height) {
+            const page = await browser.newPage({
+              viewport: { width, height },
+              deviceScaleFactor: 1
+            });
+
+            const errors = [];
+
+            page.on("console", message => {
+              if (message.type() === "error") {
+                errors.push(message.text());
+              }
+            });
+
+            page.on("pageerror", error => {
+              errors.push(error.message);
+            });
+
+            await page.goto(baseUrl, {
+              waitUntil: "networkidle",
+              timeout: 120000
+            });
+
+            await page.waitForSelector("#dashboard.active", {
+              timeout: 30000
+            });
+
+            return { page, errors };
+          }
+
+          async function switchView(page, view) {
+            await page.locator(`button[data-view="${view}"]`).click();
+            await page.waitForSelector(`#${view}.active`);
+            await page.waitForTimeout(500);
+          }
+
+          async function setLanguage(page, language) {
+            await page.locator(`[data-lang="${language}"]`).click();
+            await page.waitForTimeout(400);
+          }
+
+          async function capture(name, width, height, options = {}) {
+            const { page, errors } = await openPage(width, height);
+
+            if (options.language) {
+              await setLanguage(page, options.language);
+            }
+
+            if (options.view && options.view !== "dashboard") {
+              await switchView(page, options.view);
+            }
+
+            if (options.preset) {
+              await page.locator(`[data-preset="${options.preset}"]`).click();
+              await page.waitForTimeout(400);
+            }
+
+            await page.screenshot({
+              path: `screenshots/${name}`,
+              fullPage: true
+            });
+
+            if (errors.length) {
+              throw new Error(
+                `Browser errors in ${name}: ${errors.join(" | ")}`
+              );
+            }
+
+            await page.close();
+          }
+
+          await capture(
+            "latest-dashboard-desktop-de.png",
+            1440,
+            1000,
+            { language: "de" }
+          );
+
+          await capture(
+            "latest-dashboard-ipad-de.png",
+            1366,
+            1024,
+            { language: "de" }
+          );
+
+          await capture(
+            "latest-dashboard-mobile-de.png",
+            430,
+            932,
+            { language: "de" }
+          );
+
+          await capture(
+            "latest-scanner-ipad-de.png",
+            1366,
+            1024,
+            { language: "de", view: "scanner" }
+          );
+
+          await capture(
+            "latest-dashboard-desktop-en.png",
+            1440,
+            1000,
+            { language: "en" }
+          );
+
+          await capture(
+            "latest-strategy-studio-ipad-de.png",
+            1366,
+            1024,
+            { language: "de", view: "settings" }
+          );
+
+          await capture(
+            "latest-strategy-studio-ipad-en.png",
+            1366,
+            1024,
+            { language: "en", view: "settings" }
+          );
+
+          await capture(
+            "latest-strategy-studio-offensive-de.png",
+            1366,
+            1024,
+            {
+              language: "de",
+              view: "settings",
+              preset: "offensive"
+            }
+          );
+
+          await browser.close();
+          EOF
+
+          node capture.mjs
+
+      - name: Upload screenshot artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: project-alpha-screenshots
+          path: screenshots/*.png
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Commit screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add screenshots/*.png
+
+          if git diff --cached --quiet; then
+            echo "No screenshot changes."
+          else
+            git commit -m "chore: update website screenshots [skip ci]"
+            git push
+          fi

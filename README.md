@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-## v0.4.0 – Strategy Studio & Bilingual UI
+## v0.4.1 – Strategy Studio & Bilingual UI
 
 ### Neue Kernfunktionen
 
@@ -42,3 +42,19 @@ Positions- und Diversifikationsregler sind Präferenzen und Warnschwellen, keine
 ### Datenstatus
 
 Das Tool arbeitet weiterhin mit einem manuellen Modell-Snapshot und nicht mit Live-Marktdaten.
+
+
+## v0.4.1 QA-Korrekturen
+
+- mobile Trennlinien in der Entscheidungskarte korrigiert
+- Ticker in Rankings optisch vom Unternehmensnamen getrennt
+- deutsche Stückzahl exakt:
+  - 1 ganze Akte
+  - 2 ganze Aktien
+- englische Stückzahl:
+  - 1 whole share
+  - 2 whole shares
+- Radar-Beschriftungen verkürzt und gegen Abschneiden geschützt
+- dynamisch berechnete Scores als „Berechneter OS“ beziehungsweise „Calculated OS“ gekennzeichnet
+- Screenshot-Workflow um Deutsch, Englisch, Strategy Studio und Offensiv-Preset erweitert
+- Screenshot-Workflow prüft Browser-Konsole und JavaScript-Laufzeitfehler

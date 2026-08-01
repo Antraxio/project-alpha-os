@@ -221,3 +221,114 @@ input[type="range"]{width:100%;min-width:0;padding:0;border:0;background:transpa
 @media(max-width:470px){
   .language-switch{position:absolute;right:0;top:13px}.topbar{padding-top:48px}.settings-actions{flex-direction:column}.preview-grid{grid-template-columns:1fr}
 }
+
+
+/* v0.4.1 QA fixes */
+
+/* Separate company name and ticker visually */
+.focus-rank > div:nth-child(2){
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:baseline;
+  gap:9px;
+  min-width:0;
+}
+.focus-rank > div:nth-child(2) b{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.focus-rank > div:nth-child(2) span{
+  display:inline-block;
+  margin:0;
+  padding:2px 6px;
+  border-radius:999px;
+  background:rgba(124,92,255,.11);
+  color:#c8bfff;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.4px;
+}
+
+/* Give radar labels enough room and prevent clipping */
+.radar-wrap,
+.candidate-radar,
+.radar-svg{
+  overflow:visible;
+}
+.candidate-radar .radar-svg{
+  max-width:285px;
+}
+.radar-label,
+.radar-value{
+  font-size:9px;
+}
+
+/* Clarify that current OS values are recalculated */
+.calculated-score-label{
+  display:block;
+  margin-top:5px;
+  font-size:8px;
+  line-height:1.2;
+  color:var(--muted);
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  font-weight:700;
+}
+
+/* Remove desktop divider remnants from stacked mobile metrics */
+@media(max-width:780px){
+  .decision-columns{
+    border-left:0;
+    border-right:0;
+  }
+  .decision-columns > div{
+    border-right:0!important;
+    border-left:0!important;
+    border-bottom:1px solid var(--line);
+  }
+  .decision-columns > div:last-child{
+    border-bottom:0;
+  }
+  .focus-rank{
+    grid-template-columns:32px minmax(0,1fr) 45px 46px;
+  }
+  .focus-rank > div:nth-child(2){
+    grid-template-columns:1fr;
+    gap:4px;
+  }
+  .focus-rank > div:nth-child(2) span{
+    justify-self:start;
+  }
+  .candidate-radar{
+    padding:10px 22px;
+  }
+  .candidate-radar .radar-svg{
+    max-width:260px;
+  }
+}
+
+@media(max-width:470px){
+  .decision-columns{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .decision-columns > div{
+    border-right:0!important;
+    border-left:0!important;
+    border-bottom:1px solid var(--line);
+  }
+  .decision-columns > div:last-child{
+    border-bottom:0;
+  }
+  .candidate-radar{
+    padding:12px 30px;
+  }
+  .candidate-radar .radar-svg{
+    max-width:245px;
+  }
+  .radar-label,
+  .radar-value{
+    font-size:8px;
+  }
+}

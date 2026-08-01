@@ -88,6 +88,13 @@ const I18N={
 };
 const t=k=>I18N[state.language][k]??k;
 
+const wholeShareLabel=count=>{
+  if(state.language==='de'){
+    return count===1?'1 ganze Akte':`${count} ganze Aktien`;
+  }
+  return count===1?'1 whole share':`${count} whole shares`;
+};
+
 const sectorMap={
   Technology:{de:'Technologie',en:'Technology'},Semiconductors:{de:'Halbleiter',en:'Semiconductors'},Consumer:{de:'Konsum',en:'Consumer'},
   Healthcare:{de:'Gesundheit',en:'Healthcare'},Utilities:{de:'Versorger',en:'Utilities'},Insurance:{de:'Versicherung',en:'Insurance'},
@@ -160,7 +167,7 @@ function computeModel(){
     {key:'switchGate',pass:heldGap>=state.settings.switchMargin,detail:`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`},
     {key:'priceGate',pass:inZone,detail:`${euro(candidate.entryLow)}–${euro(candidate.entryHigh)}`},
     {key:'crvGate',pass:candidate.crv>=state.settings.minCrv,detail:`${num(candidate.crv,2)} / ${num(state.settings.minCrv,1)}`},
-    {key:'sizingGate',pass:sizing.shares>=1,detail:sizing.shares>=1?`${sizing.shares} ${t('wholeShares')}`:`0 ${t('wholeShares')}`}
+    {key:'sizingGate',pass:sizing.shares>=1,detail:wholeShareLabel(sizing.shares)}
   ];
   const allPassed=gates.every(g=>g.pass);
   return{opportunities,candidate,second,heldBest,sizing,ras,gates,allPassed,cashAdv,heldGap,inZone};
@@ -185,11 +192,18 @@ function showToast(message){
   $('toast').textContent=message;$('toast').classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>$('toast').classList.remove('show'),2200);
 }
 function radarSvg(x,compact=false){
-  const keys=['fundamental','technical','catalyst','risk','macro','diversification'],cx=130,cy=130,r=compact?78:88;
+  const keys=['fundamental','technical','catalyst','risk','macro','diversification'],cx=130,cy=130,r=compact?70:82;
+  const radarLabel=k=>{
+    const short={
+      de:{fundamental:'Fundament',technical:'Technik',catalyst:'Katalys.',risk:'Risiko',macro:'Makro',diversification:'Divers.'},
+      en:{fundamental:'Fund.',technical:'Technical',catalyst:'Catalyst',risk:'Risk',macro:'Macro',diversification:'Divers.'}
+    };
+    return short[state.language][k];
+  };
   const point=(i,ratio=1)=>{const a=(-90+i*60)*Math.PI/180;return[cx+Math.cos(a)*r*ratio,cy+Math.sin(a)*r*ratio]};
   const poly=ratio=>keys.map((_,i)=>point(i,ratio).join(',')).join(' '),values=keys.map((k,i)=>point(i,x.components[k]/100));
   const lp=i=>{const a=(-90+i*60)*Math.PI/180,rr=r+28;return[cx+Math.cos(a)*rr,cy+Math.sin(a)*rr]};
-  return`<svg class="radar-svg" viewBox="0 0 260 260">${[.25,.5,.75,1].map(v=>`<polygon class="radar-grid" points="${poly(v)}"/>`).join('')}${keys.map((_,i)=>{const[p,q]=point(i);return`<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${p}" y2="${q}"/>`}).join('')}<polygon class="radar-area" points="${values.map(p=>p.join(',')).join(' ')}"/>${values.map(p=>`<circle class="radar-dot" cx="${p[0]}" cy="${p[1]}" r="3.5"/>`).join('')}${keys.map((k,i)=>{const[xp,yp]=lp(i),a=xp<cx-10?'end':xp>cx+10?'start':'middle';return`<text class="radar-label" x="${xp}" y="${yp}" text-anchor="${a}">${t(k)}</text><text class="radar-value" x="${xp}" y="${yp+12}" text-anchor="${a}">${x.components[k]}</text>`}).join('')}</svg>`;
+  return`<svg class="radar-svg" viewBox="0 0 260 260">${[.25,.5,.75,1].map(v=>`<polygon class="radar-grid" points="${poly(v)}"/>`).join('')}${keys.map((_,i)=>{const[p,q]=point(i);return`<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${p}" y2="${q}"/>`}).join('')}<polygon class="radar-area" points="${values.map(p=>p.join(',')).join(' ')}"/>${values.map(p=>`<circle class="radar-dot" cx="${p[0]}" cy="${p[1]}" r="3.5"/>`).join('')}${keys.map((k,i)=>{const[xp,yp]=lp(i),a=xp<cx-10?'end':xp>cx+10?'start':'middle';return`<text class="radar-label" x="${xp}" y="${yp}" text-anchor="${a}">${radarLabel(k)}</text><text class="radar-value" x="${xp}" y="${yp+12}" text-anchor="${a}">${x.components[k]}</text>`}).join('')}</svg>`;
 }
 function sparkline(values){
   const w=60,h=22,min=Math.min(...values)-1,max=Math.max(...values)+1,pts=values.map((v,i)=>`${i*w/(values.length-1)},${h-(v-min)/(max-min)*h}`).join(' ');
@@ -207,7 +221,7 @@ function renderExecutive(){
   const points=[
     state.language==='de'?`Aktives Profil: ${profileLabel(profileName())}.`:`Active profile: ${profileLabel(profileName())}.`,
     state.language==='de'?`Cash-Vorsprung des Kandidaten: ${m.cashAdv>=0?'+':''}${m.cashAdv} Punkte.`:`Candidate advantage over cash: ${m.cashAdv>=0?'+':''}${m.cashAdv} points.`,
-    state.language==='de'?`Vorgeschlagene Größe: ${m.sizing.shares} volle Aktie(n), ${num(m.sizing.allocationPct,1)} % des Depotwerts.`:`Suggested size: ${m.sizing.shares} whole share(s), ${num(m.sizing.allocationPct,1)}% of portfolio value.`
+    state.language==='de'?`Vorgeschlagene Größe: ${wholeShareLabel(m.sizing.shares)}, ${num(m.sizing.allocationPct,1)} % des Depotwerts.`:`Suggested size: ${wholeShareLabel(m.sizing.shares)}, ${num(m.sizing.allocationPct,1)}% of portfolio value.`
   ];
   $('briefingPoints').innerHTML=points.map(x=>`<div class="briefing-point">${x}</div>`).join('');
   $('briefingTrigger').textContent=state.language==='de'
@@ -219,7 +233,7 @@ function renderExecutive(){
     [t('openProfit'),`+${euro(open)}`,'Microsoft'],
     [t('gapClaude'),`${gap>=0?'+':''}${euro(gap)}`,gap>=0?`ChatGPT ${t('leads')}`:`Claude ${t('leads')}`]
   ].map((x,i)=>`<div class="metric-line"><span>${x[0]}</span><b class="${i===2?'positive':i===3?(gap>=0?'positive':'negative'):''}">${x[1]}</b><small>${x[2]}</small></div>`).join('');
-  $('execCandidate').textContent=`${m.candidate.name} · ${m.candidate.customScore}`;
+  $('execCandidate').innerHTML=`${m.candidate.name} · ${m.candidate.customScore}<span class="calculated-score-label">${state.language==='de'?'Berechneter OS':'Calculated OS'}</span>`;
   $('execVerdict').textContent=m.allPassed?t('reviewBuy'):t('wait');$('execOS').textContent=m.candidate.customScore;$('execRAS').textContent=m.ras;$('execGates').textContent=`${passed}/${m.gates.length}`;
   $('triggerZone').textContent=`${t('entryZone')} ${euro(m.candidate.entryLow)}–${euro(m.candidate.entryHigh)}`;
   const zoneLabel=m.inZone?t('insideZone'):m.candidate.price>m.candidate.entryHigh?`${num(dist,2)} % ${t('aboveZone')}`:`${num(Math.abs(dist),2)} % ${t('belowZone')}`;
@@ -234,7 +248,7 @@ function renderExecutive(){
 }
 function renderDecision(){
   const d=state.data,m=computeModel(),x=m.candidate,w=normalisedWeights();
-  $('decisionCandidate').textContent=`${x.name} (${x.ticker})`;$('decisionMeta').textContent=`${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)} · ${t('conviction')} ${x.conviction}`;$('decisionScore').textContent=x.customScore;$('decisionRas').textContent=m.ras;$('decisionRadar').innerHTML=radarSvg(x);
+  $('decisionCandidate').innerHTML=`${x.name} (${x.ticker})<span class="calculated-score-label">${state.language==='de'?'Berechneter OS':'Calculated OS'}</span>`;$('decisionMeta').textContent=`${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)} · ${t('conviction')} ${x.conviction}`;$('decisionScore').textContent=x.customScore;$('decisionRas').textContent=m.ras;$('decisionRadar').innerHTML=radarSvg(x);
   $('scoreBreakdown').innerHTML=Object.entries(x.components).map(([k,v])=>`<div class="score-row"><span>${t(k)}</span><div class="score-meter"><i style="width:${v}%"></i></div><b>${v}</b><small>${num(v*w[k],1)} P.</small></div>`).join('');
   $('decisionGates').innerHTML=m.gates.map(g=>`<div class="gate"><div class="gate-icon ${g.pass?'pass':'fail'}">${g.pass?'✓':'×'}</div><div><b>${t(g.key)}</b><span>${g.detail}</span></div><small>${g.pass?t('passed'):t('open')}</small></div>`).join('');
   $('decisionVerdict').textContent=m.allPassed
@@ -256,7 +270,7 @@ function renderScanner(){
 }
 function renderCandidateDetail(){
   const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0],sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.customScore}</h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${sizing.shares}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate.ticker&&m.allPassed?t('executeReview'):t('observe')}</p></div></div></div>`;
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.customScore}<span class="calculated-score-label">${state.language==='de'?'Berechneter OS':'Calculated OS'}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate.ticker&&m.allPassed?t('executeReview'):t('observe')}</p></div></div></div>`;
 }
 function renderTimeline(){
   const d=state.data,m=computeModel(),top=m.opportunities.slice(0,5),dates=d.timeline.dates,colors=['#21d4a7','#7c5cff','#f7b955','#ff6b7a','#61a5ff'];
@@ -270,7 +284,7 @@ function donutGradient(parts){let acc=0;return`conic-gradient(${parts.map(p=>{co
 function renderPortfolio(){
   const p=state.data.portfolios.chatgpt,x=p.positions[0],value=valueOf(p),open=(x.current-x.entry)*x.shares,real=realisedOf(p),ifStop=(x.stop-x.entry)*x.shares,giveback=(x.current-x.stop)*x.shares,targetDist=(x.target1/x.current-1)*100;
   $('portfolioMetrics').innerHTML=[[t('portfolioValue'),euro(value),pct((value/p.startCapital-1)*100)],[t('cash'),euro(p.cash),`${num(p.cash/value*100,1)} %`],[t('unrealised'),`+${euro(open)}`,`Microsoft ${pct((x.current/x.entry-1)*100)}`],[t('realisedLabel'),euro(real),'Meta + TSMC']].map((a,i)=>`<div class="portfolio-metric"><span>${a[0]}</span><b class="${i===2?'positive':i===3?'negative':''}">${a[1]}</b><small>${a[2]}</small></div>`).join('');
-  $('positionIntelligence').innerHTML=`<div class="position-head"><div><small>${t('activePosition')}</small><h2>${x.name}</h2><p>${x.ticker} · ${x.isin} · ${sectorName(x.sector)} · ${x.country}</p></div><div class="position-value"><b>${euro(x.current*x.shares)}</b><span class="positive">${pct((x.current/x.entry-1)*100)}</span></div></div><div class="position-strategy"><div class="strategy-levels"><div class="strategy-level"><span>${t('entry').toUpperCase()}</span><b>${euro(x.entry)}</b><small>${x.shares} ${t('wholeShares')}</small></div><div class="strategy-level"><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b><small>${state.language==='de'?'über Einstand':'above entry'}</small></div><div class="strategy-level"><span>${t('target').toUpperCase()} 1</span><b>${euro(x.target1)}</b><small>${num(targetDist,2)} %</small></div><div class="strategy-level"><span>TRAILING</span><b>${x.trailingStopPct} %</b><small>${state.language==='de'?'Restposition':'remaining position'}</small></div></div><div class="strategy-copy"><h3>${t('currentStrategy')}</h3><p>${loc(x.strategy)}</p><h3>${t('investmentThesis')}</h3><p>${loc(x.thesis)}</p></div></div>`;
+  $('positionIntelligence').innerHTML=`<div class="position-head"><div><small>${t('activePosition')}</small><h2>${x.name}</h2><p>${x.ticker} · ${x.isin} · ${sectorName(x.sector)} · ${x.country}</p></div><div class="position-value"><b>${euro(x.current*x.shares)}</b><span class="positive">${pct((x.current/x.entry-1)*100)}</span></div></div><div class="position-strategy"><div class="strategy-levels"><div class="strategy-level"><span>${t('entry').toUpperCase()}</span><b>${euro(x.entry)}</b><small>${wholeShareLabel(x.shares)}</small></div><div class="strategy-level"><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b><small>${state.language==='de'?'über Einstand':'above entry'}</small></div><div class="strategy-level"><span>${t('target').toUpperCase()} 1</span><b>${euro(x.target1)}</b><small>${num(targetDist,2)} %</small></div><div class="strategy-level"><span>TRAILING</span><b>${x.trailingStopPct} %</b><small>${state.language==='de'?'Restposition':'remaining position'}</small></div></div><div class="strategy-copy"><h3>${t('currentStrategy')}</h3><p>${loc(x.strategy)}</p><h3>${t('investmentThesis')}</h3><p>${loc(x.thesis)}</p></div></div>`;
   const cashPct=p.cash/value*100,invPct=100-cashPct;
   $('allocationVisuals').innerHTML=`<div class="donut-row"><div class="donut" style="background:${donutGradient([{value:cashPct,color:'var(--violet)'},{value:invPct,color:'var(--green)'}])}"><div class="donut-center"><b>${num(cashPct,0)}%</b><span>CASH</span></div></div><div class="legend-list"><div class="allocation-legend"><i style="background:var(--violet)"></i><span>${t('cash')}</span><b>${num(cashPct,1)} %</b></div><div class="allocation-legend"><i style="background:var(--green)"></i><span>Microsoft</span><b>${num(invPct,1)} %</b></div></div></div><div class="donut-row"><div class="donut" style="background:conic-gradient(var(--blue) 0 100%)"><div class="donut-center"><b>100%</b><span>USA</span></div></div><div class="legend-list"><div class="allocation-legend"><i style="background:var(--blue)"></i><span>${state.language==='de'?'Land, nur investiert':'Country, invested only'}</span><b>USA 100 %</b></div><div class="allocation-legend"><i style="background:var(--cyan)"></i><span>${state.language==='de'?'Sektor, nur investiert':'Sector, invested only'}</span><b>${sectorName('Technology')} 100 %</b></div></div></div>`;
   const marker=clamp((x.stop-x.entry)/(x.current-x.entry)*100,0,100);
