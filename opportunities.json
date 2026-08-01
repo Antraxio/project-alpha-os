@@ -1,0 +1,16 @@
+{
+  "updatedAt": "2026-08-01T13:20:00+02:00",
+  "marketRegime": {"label":"Risk-on mit erhöhter Volatilität","score":68,"trend":"Positiv","volatility":"Erhöht"},
+  "budget": 2500,
+  "portfolio": [
+    {"ticker":"MSFT","name":"Microsoft","shares":2,"entry":421.30,"current":428.60,"stop":379.17,"target":475.00},
+    {"ticker":"TSM","name":"TSMC","shares":2,"entry":179.80,"current":176.40,"stop":161.82,"target":205.00}
+  ],
+  "opportunities": [
+    {"ticker":"MSFT","name":"Microsoft","sector":"Technology","price":428.60,"change":1.8,"score":91,"signal":"Strong Buy","catalyst":"Cloud- und AI-Wachstum","risk":"Medium","horizon":"4–8 Wochen"},
+    {"ticker":"TSM","name":"TSMC","sector":"Semiconductors","price":176.40,"change":-0.7,"score":87,"signal":"Buy","catalyst":"AI-Chip-Nachfrage","risk":"Medium","horizon":"3–6 Wochen"},
+    {"ticker":"NOVO-B","name":"Novo Nordisk","sector":"Healthcare","price":468.20,"change":2.2,"score":82,"signal":"Watch","catalyst":"Adipositas-Pipeline","risk":"Medium","horizon":"6–12 Wochen"},
+    {"ticker":"ENEL","name":"Enel","sector":"Utilities","price":7.18,"change":0.4,"score":76,"signal":"Watch","catalyst":"Zins- und Dividendenprofil","risk":"Low","horizon":"8–16 Wochen"},
+    {"ticker":"HNR1","name":"Hannover Rück","sector":"Insurance","price":259.40,"change":-0.2,"score":73,"signal":"Hold","catalyst":"Prämienzyklus","risk":"Low","horizon":"8–12 Wochen"}
+  ]
+}

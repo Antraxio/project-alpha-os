@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#090d18">
+  <title>Project Alpha OS</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brandmark">A</div><div><b>Project Alpha</b><span>Operating System</span></div></div>
+    <nav>
+      <button class="nav active" data-view="dashboard">◫ <span>Dashboard</span></button>
+      <button class="nav" data-view="scanner">⌁ <span>Alpha Scanner</span></button>
+      <button class="nav" data-view="portfolio">◈ <span>Portfolio</span></button>
+      <button class="nav" data-view="journal">≡ <span>Trading Journal</span></button>
+      <button class="nav" data-view="research">◎ <span>Research</span></button>
+    </nav>
+    <div class="side-bottom">
+      <div class="competition"><small>ALPHA COMPETITION</small><b>ChatGPT Portfolio</b><p><span>Budget</span><strong>2.500 €</strong></p><p><span>Regel</span><strong>Volle Aktien</strong></p></div>
+      <div class="version">v0.1.0 Foundation</div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <button id="menu" class="menu">☰</button>
+      <div class="title"><small id="eyebrow">INVESTMENT COMMAND CENTER</small><h1 id="title">Dashboard</h1></div>
+      <div class="system"><i></i> System online</div>
+      <button class="avatar">AV</button>
+    </header>
+
+    <section class="view active" id="dashboard">
+      <div class="hero">
+        <article class="panel regime">
+          <div class="panel-head"><div><small>MARKET REGIME</small><h2 id="regimeLabel">Wird geladen …</h2></div><div class="ring" id="regimeRing"><span id="regimeScore">–</span></div></div>
+          <div class="regime-meta"><div><span>Trend</span><b id="regimeTrend">–</b></div><div><span>Volatilität</span><b id="regimeVolatility">–</b></div><div><span>Positionierung</span><b>Selektiv offensiv</b></div></div>
+        </article>
+        <article class="panel value">
+          <small>PORTFOLIO VALUE</small><div class="big" id="portfolioValue">–</div><div id="portfolioPerformance" class="positive">–</div>
+          <svg class="chart" viewBox="0 0 330 95" preserveAspectRatio="none"><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#21d4a7" stop-opacity=".35"/><stop offset="1" stop-color="#21d4a7" stop-opacity="0"/></linearGradient></defs><path fill="url(#area)" d="M0 75C35 69 45 44 78 55s41-20 78-13 41-24 77-13 43-16 97-14v80H0Z"/><path fill="none" stroke="#21d4a7" stroke-width="3" d="M0 75C35 69 45 44 78 55s41-20 78-13 41-24 77-13 43-16 97-14"/></svg>
+        </article>
+      </div>
+
+      <div class="kpis">
+        <article><span>Investiert</span><b id="invested">–</b><small>Aktuelles Kapital</small></article>
+        <article><span>Cash</span><b id="cash">–</b><small>Verfügbares Budget</small></article>
+        <article><span>Offene Positionen</span><b id="positions">–</b><small>Maximal 5 geplant</small></article>
+        <article><span>Portfolio-Risiko</span><b class="warning">Moderat</b><small>Stops aktiv überwachen</small></article>
+      </div>
+
+      <div class="grid-two">
+        <article class="panel pad">
+          <div class="panel-head"><div><small>TOP OPPORTUNITIES</small><h2>Höchste Alpha Scores</h2></div><button class="link" data-jump="scanner">Alle anzeigen →</button></div>
+          <div id="topOpportunities"></div>
+        </article>
+        <article class="panel pad">
+          <div class="panel-head"><div><small>TODAY'S ACTION</small><h2>Handlungsrahmen</h2></div><span class="pill neutral">Beobachten</span></div>
+          <div class="action"><div class="action-icon">↗</div><div><b>Keine überhasteten Käufe</b><p>Bestehende Positionen gegen definierte Stop- und Zielmarken prüfen. Neue Käufe nur bei bestätigtem Signal.</p></div></div>
+          <div class="rules"><p><span>Max. Einzelposition</span><b>35 %</b></p><p><span>Standard Stop-Loss</span><b>8–10 %</b></p><p><span>Chance/Risiko Minimum</span><b>2,0</b></p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="view" id="scanner">
+      <div class="section-head"><div><small>OPPORTUNITY ENGINE</small><h2>Alpha Scanner</h2></div><div class="filters"><input id="search" placeholder="Unternehmen oder Ticker"><select id="sector"><option value="all">Alle Sektoren</option></select><select id="signal"><option value="all">Alle Signale</option><option>Strong Buy</option><option>Buy</option><option>Watch</option><option>Hold</option></select></div></div>
+      <div class="scanner-grid" id="scannerGrid"></div>
+    </section>
+
+    <section class="view" id="portfolio">
+      <div class="section-head"><div><small>CAPITAL ALLOCATION</small><h2>Portfolio</h2></div><span class="pill positive">Regelbasiert</span></div>
+      <article class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Position</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th><th>Performance</th><th>Stop</th><th>Ziel</th><th>Status</th></tr></thead><tbody id="portfolioTable"></tbody></table></div></article>
+    </section>
+
+    <section class="view" id="journal">
+      <div class="section-head"><div><small>DECISION QUALITY</small><h2>Trading Journal</h2></div><button class="primary" id="addEntry">+ Eintrag</button></div>
+      <div class="journal-grid">
+        <article class="panel pad"><small>DISZIPLIN-SCORE</small><div class="discipline">84<span>/100</span></div><p class="muted">Gute Regelbefolgung. Größter Hebel: Einstiegskriterien vor jedem Kauf schriftlich festhalten.</p></article>
+        <article class="panel pad" id="journalFeed">
+          <div class="entry"><div>17. JUL</div><p><b>TSMC Stop-Loss überprüft</b><span>Stop bei −10 % beibehalten. Kein impulsives Aufheben vor Ergebnisreaktion.</span></p><i class="pill neutral">Review</i></div>
+          <div class="entry"><div>15. JUL</div><p><b>Microsoft gekauft</b><span>2 volle Aktien. These: Cloud- und AI-Momentum bei kontrolliertem Positionsrisiko.</span></p><i class="pill positive">Kauf</i></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="view" id="research">
+      <div class="section-head"><div><small>RESEARCH PIPELINE</small><h2>Watchlist & Katalysatoren</h2></div></div>
+      <div class="research-grid" id="researchGrid"></div>
+    </section>
+  </main>
+</div>
+<div id="toast" class="toast"></div>
+<script src="js/app.js"></script>
+</body>
+</html>
