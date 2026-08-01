@@ -1,28 +1,31 @@
 # Project Alpha OS
 
-**Version v0.1.0 – Foundation**
+**Version v0.1.1 – Snapshot Mode**
 
-Statisches, responsives Investment-Dashboard für das regelbasierte Alpha-Competition-Portfolio.
+Öffentliches, responsives Investment-Dashboard für das regelbasierte Alpha-Competition-Portfolio.
 
-## Enthalten
+## Änderungen gegenüber v0.1.0
 
-- Dashboard mit Marktregime, Depotwert und Risikokennzahlen
-- Alpha Scanner mit Suche und Filtern
-- Portfolio mit Stop-Loss- und Take-Profit-Marken
-- Trading Journal
-- Research-Watchlist
-- Keine externen Abhängigkeiten oder Build-Schritte
+- doppelte Alpha-Scanner-Überschrift entfernt
+- Datenstand sichtbar gemacht
+- Cash, Cashquote und absolute Performance automatisch berechnet
+- Depot-Snapshot klar als manuell gepflegt gekennzeichnet
+- Scanner-Ansicht auf dem iPad kompakter gestaltet
+- Journal-Daten aus der JSON-Datei geladen
+- flache Dateistruktur für einfachen Upload per iPad
 
-## Start
+## Dateien
 
-`index.html` im Browser öffnen. Für zuverlässiges Laden der JSON-Daten alternativ im Projektordner ausführen:
+- `index.html`
+- `style.css`
+- `app.js`
+- `opportunities.json`
+- `favicon.svg`
 
-```bash
-python3 -m http.server 8000
-```
+## Veröffentlichung
 
-Dann `http://localhost:8000` öffnen.
+Alle fünf Dateien in das Hauptverzeichnis von `Antraxio/project-alpha-os` hochladen und vorhandene Dateien ersetzen.
 
-## GitHub Pages
+Live-Seite:
 
-Den Inhalt in `Antraxio/project-alpha-os` hochladen und unter **Settings → Pages → Deploy from a branch → main / root** aktivieren.
+`https://antraxio.github.io/project-alpha-os/`
