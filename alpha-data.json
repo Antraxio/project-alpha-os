@@ -1,23 +1,38 @@
 {
-  "version": "0.2.0",
-  "snapshotDate": "2026-08-01T15:20:00+02:00",
-  "dataMode": "Manueller Portfolio-Snapshot · Alpha-Scores als Modellstand",
+  "version": "0.3.0",
+  "snapshotDate": "2026-08-01T15:45:00+02:00",
+  "dataMode": "Manueller Portfolio-Snapshot · Alpha-Scores als dokumentierter Modellstand",
+  "dailyBriefing": {
+    "salutation": "Alex, heute zählt Disziplin – nicht Aktivität.",
+    "headline": "Keine neue Position eröffnen.",
+    "summary": "ASML ist die beste neue Chance, erfüllt aber nur zwei von fünf Ausführungsgates. Microsoft bleibt der stärkste absolute Kandidat und steht unmittelbar vor Ziel 1.",
+    "keyPoints": [
+      "Microsoft liegt nur 0,50 % unter dem ersten Teilgewinnziel.",
+      "ASML notiert 0,92 % oberhalb der definierten Einstiegszone.",
+      "Der ASML-Vorsprung gegenüber Cash beträgt nur 3 statt geforderter 5 Punkte."
+    ],
+    "nextTrigger": "ASML ≤ 805 € und RAS ≥ 65 – oder Microsoft erreicht 404,60 €.",
+    "priority": "Microsoft-Teilgewinn vorbereiten; ASML nur beobachten."
+  },
   "marketRegime": {
     "label": "Selektives Risk-on",
     "score": 66,
     "trend": "Positiv, aber schmal",
     "volatility": "Erhöht",
-    "liquidity": "Neutral",
-    "stance": "Qualität vor Aktivität"
+    "breadth": "Begrenzt",
+    "stance": "Qualität vor Aktivität",
+    "explanation": "Das Regime unterstützt Qualitätsaktien, rechtfertigt aber keine aggressiven Neueinstiege oberhalb definierter Preiszonen."
   },
   "rules": {
     "crvMinimum": 2.0,
     "opportunityThreshold": 85,
     "cashHurdle": 82,
+    "cashSafetyMargin": 5,
     "switchMargin": 5,
-    "positionCaps": "Keine starren Caps; Konzentration aktiv begründen",
-    "stopPolicy": "Thesen- und volatilitätsbasiert",
-    "sharePolicy": "Nur volle Stücke"
+    "positionCaps": "Keine starren Caps; Konzentration muss explizit begründet werden.",
+    "stopPolicy": "Thesen-, Struktur- und volatilitätsbasiert.",
+    "sharePolicy": "Nur volle Aktien.",
+    "defaultAction": "Im Regelfall null oder eine neue Position."
   },
   "scoreWeights": {
     "fundamental": 30,
@@ -42,8 +57,9 @@
           "current": 402.58,
           "stop": 370.0,
           "target1": 404.6,
-          "strategy": "Bei 404,60 € eine Aktie verkaufen; Restposition mit 5 % Trailing-Stop laufen lassen.",
-          "thesis": "Cloud- und AI-Wachstum; Trend intakt",
+          "trailingStopPct": 5,
+          "strategy": "Bei 404,60 € eine Aktie verkaufen; die Restposition anschließend mit 5 % Trailing-Stop laufen lassen.",
+          "thesis": "Azure-, Cloud- und AI-Wachstum; Trend intakt, Teilgewinnziel fast erreicht.",
           "sector": "Technology",
           "country": "USA",
           "currency": "USD"
@@ -135,13 +151,14 @@
       "sector": "Technology",
       "assetClass": "Aktie",
       "price": 402.58,
-      "entryLow": 395.0,
-      "entryHigh": 401.0,
+      "entryLow": 392.0,
+      "entryHigh": 399.0,
       "stop": 370.0,
       "target": 465.0,
       "signal": "Hold",
       "conviction": "A",
       "score": 86,
+      "ras": 69,
       "components": {
         "fundamental": 92,
         "technical": 88,
@@ -150,9 +167,26 @@
         "macro": 78,
         "diversification": 55
       },
+      "componentReasons": {
+        "fundamental": "Azure und Cloud bleiben strukturelle Wachstumstreiber; hohe Cashflow-Qualität.",
+        "technical": "Aufwärtstrend intakt; Kurs steht knapp vor Ziel 1.",
+        "catalyst": "AI-Monetarisierung und Cloud-Wachstum stützen die These.",
+        "risk": "Stop liegt oberhalb des Einstands; Bewertungsrisiko bleibt.",
+        "macro": "Qualitätswachstum wird bevorzugt, aber Zins- und Bewertungsrisiken bleiben.",
+        "diversification": "Bestehende Tech-Konzentration begrenzt den Zusatznutzen."
+      },
       "catalystText": "AI- und Azure-Wachstum; bereits im Depot",
       "riskText": "Technologie-Konzentration und Bewertungsrisiko",
-      "horizon": "4–8 Wochen"
+      "horizon": "4–8 Wochen",
+      "scoreHistory": [
+        82,
+        83,
+        84,
+        84,
+        85,
+        86,
+        86
+      ]
     },
     {
       "rank": 2,
@@ -171,6 +205,7 @@
       "signal": "Watch",
       "conviction": "A",
       "score": 85,
+      "ras": 58,
       "components": {
         "fundamental": 90,
         "technical": 84,
@@ -179,9 +214,26 @@
         "macro": 76,
         "diversification": 70
       },
+      "componentReasons": {
+        "fundamental": "Quasi-monopolistische EUV-Position und hohe strukturelle Nachfrage.",
+        "technical": "Momentum verbessert sich; der Kurs liegt jedoch oberhalb der Einstiegszone.",
+        "catalyst": "Halbleiter-Capex und EUV-Nachfrage liefern klare mittelfristige Treiber.",
+        "risk": "Exportregeln und hoher Stückpreis erhöhen Ausführungs- und Ereignisrisiko.",
+        "macro": "Halbleiter profitieren vom Investitionszyklus, reagieren aber empfindlich auf Risikoabbau.",
+        "diversification": "Europa und Halbleiter verbreitern das Depot, bleiben jedoch technologiebezogen."
+      },
       "catalystText": "Halbleiter-Capex und EUV-Nachfrage",
       "riskText": "Hoher Stückpreis; geopolitische Exportregeln",
-      "horizon": "6–10 Wochen"
+      "horizon": "6–10 Wochen",
+      "scoreHistory": [
+        78,
+        79,
+        80,
+        82,
+        83,
+        84,
+        85
+      ]
     },
     {
       "rank": 3,
@@ -200,6 +252,7 @@
       "signal": "Watch",
       "conviction": "B",
       "score": 83,
+      "ras": 55,
       "components": {
         "fundamental": 88,
         "technical": 82,
@@ -208,9 +261,26 @@
         "macro": 75,
         "diversification": 78
       },
+      "componentReasons": {
+        "fundamental": "Starke Cashflows und hohe Kapitalrenditen.",
+        "technical": "Trend positiv, kurzfristig aber ohne frischen Ausbruch.",
+        "catalyst": "Reisenachfrage und Rückkäufe stützen.",
+        "risk": "Der Stückpreis verhindert eine angemessene Positionsgröße.",
+        "macro": "Konsum- und Reisesensitivität bleiben.",
+        "diversification": "Konsum würde die aktuelle Tech-Last reduzieren."
+      },
       "catalystText": "Reisenachfrage und starke Cashflows",
       "riskText": "Sehr hoher Stückpreis verhindert sinnvolle Positionsgröße",
-      "horizon": "6–12 Wochen"
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        85,
+        85,
+        84,
+        84,
+        84,
+        83,
+        83
+      ]
     },
     {
       "rank": 4,
@@ -229,6 +299,7 @@
       "signal": "Watch",
       "conviction": "B",
       "score": 80,
+      "ras": 53,
       "components": {
         "fundamental": 86,
         "technical": 72,
@@ -237,9 +308,26 @@
         "macro": 74,
         "diversification": 85
       },
+      "componentReasons": {
+        "fundamental": "Starke Marktposition und Wachstum, aber hohe Erwartungen.",
+        "technical": "Momentum hat nachgelassen.",
+        "catalyst": "Adipositas-Pipeline und Kapazitätsausbau.",
+        "risk": "Wettbewerb und Erwartungsprämie.",
+        "macro": "Healthcare ist relativ defensiv.",
+        "diversification": "Sehr guter Ausgleich zur Tech-Konzentration."
+      },
       "catalystText": "Adipositas-Pipeline und Kapazitätsausbau",
       "riskText": "Wettbewerb und Erwartungsprämie",
-      "horizon": "6–12 Wochen"
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        82,
+        82,
+        81,
+        81,
+        81,
+        80,
+        80
+      ]
     },
     {
       "rank": 5,
@@ -258,6 +346,7 @@
       "signal": "Watch",
       "conviction": "B",
       "score": 79,
+      "ras": 49,
       "components": {
         "fundamental": 91,
         "technical": 68,
@@ -266,9 +355,26 @@
         "macro": 72,
         "diversification": 58
       },
+      "componentReasons": {
+        "fundamental": "Foundry-Führerschaft und AI-Nachfrage.",
+        "technical": "Momentum erholt sich, aber noch kein belastbarer Wiedereinstieg.",
+        "catalyst": "AI-Chip-Nachfrage.",
+        "risk": "Taiwan-, USD- und Ereignisrisiko.",
+        "macro": "Zyklische Halbleiterabhängigkeit.",
+        "diversification": "Asien diversifiziert regional, erhöht aber Tech-Korrelation."
+      },
       "catalystText": "AI-Chip-Nachfrage und Foundry-Führerschaft",
       "riskText": "Taiwan-Risiko, USD und Halbleiter-Konzentration",
-      "horizon": "4–8 Wochen"
+      "horizon": "4–8 Wochen",
+      "scoreHistory": [
+        75,
+        76,
+        76,
+        77,
+        78,
+        79,
+        79
+      ]
     },
     {
       "rank": 6,
@@ -287,6 +393,7 @@
       "signal": "Watch",
       "conviction": "B",
       "score": 78,
+      "ras": 52,
       "components": {
         "fundamental": 76,
         "technical": 70,
@@ -295,9 +402,26 @@
         "macro": 82,
         "diversification": 90
       },
+      "componentReasons": {
+        "fundamental": "Stabile Netze und Dividendenprofil.",
+        "technical": "Neutraler Trend.",
+        "catalyst": "Zinsprofil und Entschuldung.",
+        "risk": "Relativ defensives Risikoprofil.",
+        "macro": "Sinkende Renditen würden unterstützen.",
+        "diversification": "Sehr hoher Ausgleich zur Tech-Position."
+      },
       "catalystText": "Zinsprofil, Dividende und Netzgeschäft",
       "riskText": "Regulatorik und hoher Kapitalbedarf",
-      "horizon": "8–16 Wochen"
+      "horizon": "8–16 Wochen",
+      "scoreHistory": [
+        80,
+        80,
+        79,
+        79,
+        79,
+        78,
+        78
+      ]
     },
     {
       "rank": 7,
@@ -316,6 +440,7 @@
       "signal": "Hold",
       "conviction": "B",
       "score": 77,
+      "ras": 51,
       "components": {
         "fundamental": 84,
         "technical": 72,
@@ -324,9 +449,26 @@
         "macro": 72,
         "diversification": 82
       },
+      "componentReasons": {
+        "fundamental": "Solide Prämien- und Ertragsqualität.",
+        "technical": "Stabil, aber ohne starkes Momentum.",
+        "catalyst": "Prämienzyklus und Kapitalrückführung.",
+        "risk": "Großschadenrisiko bleibt.",
+        "macro": "Moderate Makroabhängigkeit.",
+        "diversification": "Versicherung ergänzt Tech gut."
+      },
       "catalystText": "Prämienzyklus und Kapitalrückführung",
       "riskText": "Großschäden und Rückversicherungszyklus",
-      "horizon": "8–12 Wochen"
+      "horizon": "8–12 Wochen",
+      "scoreHistory": [
+        79,
+        79,
+        78,
+        78,
+        78,
+        77,
+        77
+      ]
     },
     {
       "rank": 8,
@@ -345,6 +487,7 @@
       "signal": "Hold",
       "conviction": "B",
       "score": 76,
+      "ras": 49,
       "components": {
         "fundamental": 88,
         "technical": 74,
@@ -353,9 +496,26 @@
         "macro": 65,
         "diversification": 76
       },
+      "componentReasons": {
+        "fundamental": "Robuste Bilanz und Kreditqualität.",
+        "technical": "Positiver, aber reifer Trend.",
+        "catalyst": "Kapitalrückführung.",
+        "risk": "Zinskurve und Kreditzyklus.",
+        "macro": "Banken bleiben konjunktursensitiv.",
+        "diversification": "Finanzsektor ergänzt Tech."
+      },
       "catalystText": "Kapitalrückführung und robuste Kreditqualität",
       "riskText": "Zinskurve und Kreditzyklus",
-      "horizon": "6–12 Wochen"
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        74,
+        74,
+        75,
+        75,
+        75,
+        76,
+        76
+      ]
     },
     {
       "rank": 9,
@@ -374,6 +534,7 @@
       "signal": "Hold",
       "conviction": "B",
       "score": 75,
+      "ras": 48,
       "components": {
         "fundamental": 80,
         "technical": 69,
@@ -382,9 +543,26 @@
         "macro": 72,
         "diversification": 74
       },
+      "componentReasons": {
+        "fundamental": "Defensiver Cashflow und T-Mobile-US-Wert.",
+        "technical": "Seitwärts bis leicht positiv.",
+        "catalyst": "Cashflow und Rückkäufe.",
+        "risk": "Defensives Profil.",
+        "macro": "Zinssensitivität bleibt.",
+        "diversification": "Telekom reduziert Konjunktur- und Tech-Risiko."
+      },
       "catalystText": "T-Mobile-US-Wert und defensiver Cashflow",
       "riskText": "Zinsen und Regulierung",
-      "horizon": "8–16 Wochen"
+      "horizon": "8–16 Wochen",
+      "scoreHistory": [
+        77,
+        77,
+        76,
+        76,
+        76,
+        75,
+        75
+      ]
     },
     {
       "rank": 10,
@@ -403,6 +581,7 @@
       "signal": "Watch",
       "conviction": "C",
       "score": 72,
+      "ras": 46,
       "components": {
         "fundamental": 78,
         "technical": 66,
@@ -411,26 +590,109 @@
         "macro": 70,
         "diversification": 84
       },
+      "componentReasons": {
+        "fundamental": "Hoher Cashflow, aber Rohstoffabhängigkeit.",
+        "technical": "Kein starkes Einstiegssignal.",
+        "catalyst": "Rückkäufe und LNG.",
+        "risk": "Ölpreis und Politik.",
+        "macro": "Zyklische Abhängigkeit.",
+        "diversification": "Energie ergänzt Tech deutlich."
+      },
       "catalystText": "Cashflow, Rückkäufe und LNG",
       "riskText": "Ölpreis und politische Risiken",
-      "horizon": "6–12 Wochen"
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        69,
+        69,
+        70,
+        70,
+        71,
+        71,
+        72
+      ]
     }
   ],
   "decision": {
-    "headline": "Heute keine neue Position",
-    "candidate": "ASML",
+    "headline": "Heute keine neue Position eröffnen.",
     "candidateTicker": "ASML",
     "opportunityScore": 85,
     "ras": 58,
     "cashHurdle": 82,
-    "secondBest": 86,
-    "weakestPositionScore": 86,
-    "verdict": "Warten",
-    "reasons": [
-      "ASML überschreitet die absolute Opportunity-Schwelle von 85.",
-      "Der relative Abstand zu Cash beträgt nur 3 Punkte.",
-      "Microsoft bleibt absolut besser bewertet und ist bereits im Depot.",
-      "Der Stückpreis verhindert derzeit eine saubere Gewichtung mit vollen Aktien."
+    "gates": [
+      {
+        "name": "Absolute Qualität",
+        "detail": "Opportunity Score 85 ≥ Schwelle 85",
+        "pass": true
+      },
+      {
+        "name": "Cash-Sicherheitsmarge",
+        "detail": "Vorsprung 3 < geforderte 5 Punkte",
+        "pass": false
+      },
+      {
+        "name": "Relative Führungsposition",
+        "detail": "ASML 85 liegt unter Microsoft 86 + Wechselmarge",
+        "pass": false
+      },
+      {
+        "name": "Preiszone",
+        "detail": "812,40 € liegt über 790–805 €",
+        "pass": false
+      },
+      {
+        "name": "Portfolio-Fit",
+        "detail": "Europa diversifiziert; Technologiebezug bleibt",
+        "pass": true
+      }
+    ],
+    "whyNotBuy": [
+      "Der Kandidat ist absolut gut, aber relativ nicht dominant.",
+      "Der Preis liegt oberhalb der vorab definierten Einstiegszone.",
+      "Cash bietet weiterhin Optionalität und Schutz vor Ereignisrisiken.",
+      "Microsoft benötigt heute mehr Aufmerksamkeit als eine neue Position."
+    ]
+  },
+  "timeline": {
+    "dates": [
+      "26.07.",
+      "27.07.",
+      "28.07.",
+      "29.07.",
+      "30.07.",
+      "31.07.",
+      "01.08."
+    ],
+    "events": [
+      {
+        "date": "01.08.",
+        "ticker": "ASML",
+        "type": "Aufsteiger",
+        "text": "Score 84 → 85; absolute Schwelle erreicht."
+      },
+      {
+        "date": "01.08.",
+        "ticker": "MSFT",
+        "type": "Zielnähe",
+        "text": "Nur noch 0,50 % bis zum Teilgewinnziel."
+      },
+      {
+        "date": "31.07.",
+        "ticker": "TSM",
+        "type": "Erholung",
+        "text": "Score 78 → 79; technisches Bild verbessert."
+      },
+      {
+        "date": "29.07.",
+        "ticker": "META / TSM",
+        "type": "Risikoregel",
+        "text": "Beide Stops ausgeführt; Verluste realisiert und dokumentiert."
+      },
+      {
+        "date": "27.07.",
+        "ticker": "BKNG",
+        "type": "Absteiger",
+        "text": "Relative Attraktivität sinkt wegen fehlender Positionsgröße."
+      }
     ]
   }
 }

@@ -12,14 +12,20 @@
 <div class="shell">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brandmark">A</div>
-      <div><b>Project Alpha</b><span>Operating System</span></div>
+      <div class="brandmark" aria-hidden="true">
+        <svg viewBox="0 0 48 48">
+          <path d="M11 36 22 11h5l10 25h-6l-2.6-7H19.7L17 36Zm10.6-12h5l-2.5-6.8Z"/>
+          <path class="alpha-tail" d="M32 12c5 2 7 7 5 12-2 6-7 10-13 10"/>
+        </svg>
+      </div>
+      <div><b>Project Alpha</b><span>Decision Intelligence</span></div>
     </div>
 
     <nav>
       <button class="nav active" data-view="dashboard">◫ <span>Executive</span></button>
-      <button class="nav" data-view="engine">✦ <span>Alpha Engine</span></button>
+      <button class="nav" data-view="decision">✦ <span>Decision Lab</span></button>
       <button class="nav" data-view="scanner">⌁ <span>Scanner</span></button>
+      <button class="nav" data-view="timeline">↗ <span>Alpha Timeline</span></button>
       <button class="nav" data-view="portfolio">◈ <span>Portfolio</span></button>
       <button class="nav" data-view="competition">⇄ <span>Competition</span></button>
       <button class="nav" data-view="journal">≡ <span>Journal</span></button>
@@ -27,13 +33,13 @@
     </nav>
 
     <div class="side-bottom">
-      <div class="competition-mini">
+      <div class="governance-mini">
         <small>ALPHA 2.0</small>
-        <b>Kapitalerhalt vor Aktivität</b>
+        <b>Cash ist eine aktive Position</b>
         <p><span>OS-Schwelle</span><strong>85</strong></p>
-        <p><span>Cash-Hürde</span><strong>82</strong></p>
+        <p><span>Cash-Marge</span><strong>+5</strong></p>
       </div>
-      <div class="version">v0.2.0 · Alpha Engine</div>
+      <div class="version">v0.3.0 · Decision Intelligence</div>
     </div>
   </aside>
 
@@ -45,120 +51,135 @@
         <h1 id="title">Project Alpha</h1>
         <div class="freshness" id="freshness">Datenstand wird geladen …</div>
       </div>
-      <div class="system"><i></i><span id="systemLabel">Snapshot wird geladen</span></div>
+      <div class="system"><i></i><span id="systemLabel">Modell wird geladen</span></div>
       <button class="avatar" aria-label="Profil">AV</button>
     </header>
 
     <div class="mode-banner">
-      <span>MANUELLER SNAPSHOT</span>
-      <p>Portfolio und Scores sind der dokumentierte Modellstand – keine Live-Kursversorgung.</p>
+      <span>MODELL-SNAPSHOT</span>
+      <p>Keine Live-Kursversorgung. Jede Entscheidung ist aus den eingebetteten Daten und Alpha-2.0-Regeln abgeleitet.</p>
     </div>
 
     <!-- EXECUTIVE -->
     <section class="view active" id="dashboard">
+      <article class="briefing">
+        <div class="briefing-copy">
+          <small>DAILY INTELLIGENCE</small>
+          <h2 id="briefingSalutation">–</h2>
+          <p id="briefingSummary">–</p>
+          <div class="briefing-points" id="briefingPoints"></div>
+        </div>
+        <div class="briefing-decision">
+          <span class="decision-kicker">HEUTIGE ENTSCHEIDUNG</span>
+          <strong id="briefingHeadline">–</strong>
+          <div class="trigger-line">
+            <span>Nächster Trigger</span>
+            <b id="briefingTrigger">–</b>
+          </div>
+        </div>
+      </article>
+
+      <div class="executive-metrics" id="executiveMetrics"></div>
+
       <div class="executive-grid">
-        <article class="panel decision-hero">
+        <article class="panel decision-panel">
           <div class="panel-head">
-            <div>
-              <small>HEUTIGE ENTSCHEIDUNG</small>
-              <h2 id="decisionHeadline">–</h2>
-            </div>
-            <span class="status-pill warning" id="decisionVerdict">–</span>
+            <div><small>BESTE NEUE CHANCE</small><h2 id="execCandidate">–</h2></div>
+            <span class="status-pill warning">Warten</span>
           </div>
-          <div class="decision-body">
-            <div class="decision-icon">⏸</div>
-            <div>
-              <h3 id="decisionCandidate">–</h3>
-              <p id="decisionSummary">–</p>
+          <div class="trigger-progress">
+            <div class="trigger-track"><i id="priceZoneProgress"></i></div>
+            <div class="trigger-labels">
+              <span id="triggerZone">–</span>
+              <b id="triggerDistance">–</b>
             </div>
           </div>
-          <div class="decision-metrics">
-            <div><span>Opportunity Score</span><b id="decisionOS">–</b></div>
-            <div><span>Relative Advantage</span><b id="decisionRAS">–</b></div>
-            <div><span>Cash-Hürde</span><b id="decisionCash">–</b></div>
+          <div class="decision-columns">
+            <div>
+              <span>OS</span><b id="execOS">–</b><small>absolute Qualität</small>
+            </div>
+            <div>
+              <span>RAS</span><b id="execRAS">–</b><small>relative Verwendung</small>
+            </div>
+            <div>
+              <span>Gates</span><b id="execGates">–</b><small>Ausführung erfüllt</small>
+            </div>
           </div>
+          <div class="why-list" id="execWhy"></div>
         </article>
 
-        <article class="panel regime-card">
+        <article class="panel regime-panel">
           <div class="panel-head">
             <div><small>MARKTREGIME</small><h2 id="regimeLabel">–</h2></div>
             <div class="ring" id="regimeRing"><span id="regimeScore">–</span></div>
           </div>
-          <div class="regime-meta">
+          <p class="regime-explanation" id="regimeExplanation">–</p>
+          <div class="regime-lines">
             <div><span>Trend</span><b id="regimeTrend">–</b></div>
-            <div><span>Volatilität</span><b id="regimeVolatility">–</b></div>
+            <div><span>Breite</span><b id="regimeBreadth">–</b></div>
             <div><span>Haltung</span><b id="regimeStance">–</b></div>
           </div>
         </article>
       </div>
 
-      <div class="kpis" id="executiveKpis"></div>
+      <div class="section-divider"><span>Was heute Aufmerksamkeit verdient</span></div>
 
-      <div class="grid-two">
-        <article class="panel pad">
-          <div class="panel-head">
-            <div><small>WATCHLIST-MOMENTUM</small><h2>Ranking-Bewegungen</h2></div>
-            <button class="link" data-jump="scanner">Top 10 →</button>
+      <div class="focus-grid">
+        <article class="focus-module">
+          <div class="module-head">
+            <div><small>MICROSOFT</small><h2>Teilgewinn fast erreicht</h2></div>
+            <button class="link" data-jump="portfolio">Strategie →</button>
           </div>
-          <div id="rankingPreview"></div>
+          <div id="microsoftFocus"></div>
         </article>
 
-        <article class="panel pad">
-          <div class="panel-head">
-            <div><small>PORTFOLIO-AKTION</small><h2>Microsoft-Strategie</h2></div>
-            <span class="status-pill positive">Aktiv</span>
+        <article class="focus-module">
+          <div class="module-head">
+            <div><small>WATCHLIST</small><h2>Größte Veränderungen</h2></div>
+            <button class="link" data-jump="timeline">Timeline →</button>
           </div>
-          <div id="strategyCard"></div>
+          <div id="rankingFocus"></div>
         </article>
       </div>
     </section>
 
-    <!-- ALPHA ENGINE -->
-    <section class="view" id="engine">
-      <div class="engine-layout">
-        <article class="panel engine-primary">
+    <!-- DECISION LAB -->
+    <section class="view" id="decision">
+      <div class="decision-lab-grid">
+        <article class="panel score-story">
           <div class="panel-head">
-            <div>
-              <small>BESTE NEUE CHANCE</small>
-              <h2 id="engineCandidate">–</h2>
-              <p class="subline" id="engineMeta">–</p>
-            </div>
-            <div class="score-orbit">
-              <span id="engineScore">–</span>
-              <small>OS</small>
-            </div>
+            <div><small>ERKLÄRBARER SCORE</small><h2 id="decisionCandidate">–</h2><p class="subline" id="decisionMeta">–</p></div>
+            <div class="score-badge"><span id="decisionScore">–</span><small>/100</small></div>
           </div>
-
-          <div class="component-grid" id="componentGrid"></div>
-
-          <div class="engine-thesis">
-            <div>
-              <small>KATALYSATOR</small>
-              <p id="engineCatalyst">–</p>
-            </div>
-            <div>
-              <small>HAUPTRISIKO</small>
-              <p id="engineRisk">–</p>
-            </div>
+          <div class="score-visual-grid">
+            <div class="radar-wrap" id="decisionRadar"></div>
+            <div class="score-breakdown" id="scoreBreakdown"></div>
           </div>
         </article>
 
-        <article class="panel ras-panel">
+        <article class="panel gates-panel">
           <div class="panel-head">
-            <div><small>RELATIVE ADVANTAGE</small><h2>Kapitalallokations-Gates</h2></div>
-            <div class="ras-score" id="rasScore">–</div>
+            <div><small>DECISION ENGINE</small><h2>Warum heute nicht kaufen?</h2></div>
+            <div class="ras-badge"><span id="decisionRas">–</span><small>RAS</small></div>
           </div>
-          <div id="rasGates" class="gate-list"></div>
-          <div class="ras-verdict" id="rasVerdict">–</div>
+          <div class="gate-list" id="decisionGates"></div>
+          <div class="decision-verdict" id="decisionVerdict">–</div>
         </article>
       </div>
 
-      <article class="panel action-plan">
+      <article class="panel action-ladder">
         <div class="panel-head">
-          <div><small>HANDLUNGSPLAN</small><h2>Nur handeln, wenn beide Hürden erfüllt sind</h2></div>
-          <span class="status-pill warning">Warten</span>
+          <div><small>TRIGGER-LOGIK</small><h2>Von Beobachten zu Ausführen</h2></div>
+          <span class="status-pill neutral">Regelbasiert</span>
         </div>
-        <div class="action-plan-grid" id="actionPlan"></div>
+        <div class="ladder" id="actionLadder"></div>
+      </article>
+
+      <article class="panel evidence-panel">
+        <div class="panel-head">
+          <div><small>WHY ENGINE</small><h2>Begründung nach Score-Komponente</h2></div>
+        </div>
+        <div id="evidenceGrid" class="evidence-grid"></div>
       </article>
     </section>
 
@@ -177,37 +198,69 @@
         <div class="result-count" id="resultCount">–</div>
       </div>
 
-      <article class="panel scanner-table-panel">
-        <div class="table-wrap">
-          <table class="scanner-table">
-            <thead>
-              <tr>
-                <th>Rang</th><th>Kandidat</th><th>Region</th><th>Sektor</th>
-                <th>OS</th><th>Conviction</th><th>Bewegung</th><th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="scannerTable"></tbody>
-          </table>
+      <article class="scanner-list" id="scannerList"></article>
+      <article class="panel candidate-detail" id="candidateDetail"></article>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="view" id="timeline">
+      <div class="timeline-hero">
+        <div>
+          <small>ALPHA TIMELINE</small>
+          <h2>Scores verändern sich – Entscheidungen folgen erst danach.</h2>
+          <p>Die Timeline macht sichtbar, welche Kandidaten an Qualität gewinnen und welche nur kurzfristig Aufmerksamkeit erzeugen.</p>
         </div>
+        <div class="timeline-stat">
+          <span>Stärkster 7-Tage-Aufsteiger</span>
+          <b>ASML +7</b>
+          <small>78 → 85 Punkte</small>
+        </div>
+      </div>
+
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div><small>SCORE-ENTWICKLUNG</small><h2>Top 5 im Zeitverlauf</h2></div>
+          <div id="timelineLegend" class="chart-legend"></div>
+        </div>
+        <div id="timelineChart" class="timeline-chart"></div>
       </article>
 
-      <div id="candidateDetail" class="candidate-detail panel"></div>
+      <div class="timeline-grid">
+        <article class="panel pad">
+          <div class="panel-head"><div><small>BEWEGUNGEN</small><h2>Was hat sich geändert?</h2></div></div>
+          <div id="timelineEvents"></div>
+        </article>
+        <article class="panel pad">
+          <div class="panel-head"><div><small>RANKING-DELTA</small><h2>Auf- und Absteiger</h2></div></div>
+          <div id="timelineMovers"></div>
+        </article>
+      </div>
     </section>
 
     <!-- PORTFOLIO -->
     <section class="view" id="portfolio">
       <div class="section-head">
-        <div><small>CHATGPT PORTFOLIO</small><h2>Positionen & Ausstiegslogik</h2></div>
+        <div><small>PORTFOLIO INTELLIGENCE</small><h2>Risiko, Exponierung und Ausstiegslogik</h2></div>
         <span class="status-pill neutral">Manuell bestätigt</span>
       </div>
 
-      <div id="portfolioSummary" class="portfolio-summary"></div>
-      <div id="positionCards" class="position-cards"></div>
+      <div id="portfolioMetrics" class="portfolio-metrics"></div>
+
+      <div class="portfolio-grid">
+        <article class="panel position-intelligence" id="positionIntelligence"></article>
+        <article class="panel allocation-panel">
+          <div class="panel-head"><div><small>ALLOKATION</small><h2>Wo liegt das Kapital?</h2></div></div>
+          <div id="allocationVisuals" class="allocation-visuals"></div>
+        </article>
+      </div>
+
+      <article class="panel risk-panel">
+        <div class="panel-head"><div><small>RISIKOBILD</small><h2>Was passiert bei Auslösen des Stops?</h2></div></div>
+        <div id="riskScenario" class="risk-scenario"></div>
+      </article>
 
       <article class="panel closed-trades">
-        <div class="panel-head">
-          <div><small>TRADING JOURNAL</small><h2>Realisierte Gewinne/Verluste</h2></div>
-        </div>
+        <div class="panel-head"><div><small>REALISIERT</small><h2>Gewinne und Verluste</h2></div></div>
         <div id="closedTrades"></div>
       </article>
     </section>
@@ -219,9 +272,7 @@
       </div>
       <div id="competitionCards" class="competition-cards"></div>
       <article class="panel comparison-panel">
-        <div class="panel-head">
-          <div><small>RELATIVE PERFORMANCE</small><h2>Wettbewerbsstand</h2></div>
-        </div>
+        <div class="panel-head"><div><small>RELATIVE PERFORMANCE</small><h2>Wettbewerbsstand</h2></div></div>
         <div id="comparisonBars"></div>
       </article>
     </section>
@@ -232,10 +283,10 @@
         <div><small>DECISION QUALITY</small><h2>Entscheidungsjournal</h2></div>
       </div>
       <div class="journal-grid">
-        <article class="panel pad">
-          <small>AKTUELLER FOKUS</small>
-          <div class="discipline">84<span>/100</span></div>
-          <p class="muted">Qualität vor Aktivität. Der nächste Lernhebel ist die dokumentierte Trennung zwischen absolut guter Chance und relativ bester Kapitalverwendung.</p>
+        <article class="journal-score">
+          <small>DISZIPLIN-SCORE</small>
+          <div class="discipline">86<span>/100</span></div>
+          <p>Die Trennung zwischen „gute Aktie“ und „beste Kapitalverwendung“ ist jetzt fest in der Methodik verankert.</p>
         </article>
         <article class="panel pad" id="journalFeed"></article>
       </div>
@@ -247,32 +298,26 @@
         <article class="panel pad">
           <small>OPPORTUNITY SCORE</small>
           <h2>Feste Gewichtung</h2>
-          <p class="muted">Die Gewichte werden vor der Bewertung festgelegt und nicht nachträglich angepasst.</p>
+          <p class="muted">Die Gewichte stehen vor der Bewertung fest. Ein hoher Score darf nicht nachträglich „erklärt“ werden.</p>
           <div id="weightList" class="weight-list"></div>
         </article>
-
         <article class="panel pad">
-          <small>RELATIVE ADVANTAGE SCORE</small>
-          <h2>Nur marginale Information</h2>
-          <p class="muted">RAS prüft nicht erneut Fundamentaldaten, sondern den Vorsprung gegenüber Cash, dem zweitbesten Kandidaten und einer bestehenden Position.</p>
-          <div class="formula-box">
-            <span>Startwert 50</span>
-            <span>+ Vorsprung gegenüber Cash</span>
-            <span>+ Abstand zum zweitbesten Kandidaten</span>
-            <span>± Portfolio- und Wechselwirkung</span>
+          <small>RELATIVE ADVANTAGE</small>
+          <h2>Cash ist ein Wettbewerber</h2>
+          <p class="muted">Eine neue Position muss Cash, den zweitbesten Kandidaten und eine bestehende Alternative mit Sicherheitsmarge schlagen.</p>
+          <div class="formula-list">
+            <span>OS ≥ 85</span><span>Cash-Vorsprung ≥ 5</span><span>Wechselschwelle ≥ 5</span><span>Preiszone bestätigt</span>
           </div>
         </article>
-
         <article class="panel pad full-width">
-          <small>ALPHA 2.0 REGELWERK</small>
-          <h2>Keine starren Caps – aber volle Begründungspflicht</h2>
+          <small>ALPHA 2.0</small>
+          <h2>Governance statt starre Caps</h2>
           <div id="ruleGrid" class="rule-grid"></div>
         </article>
       </div>
     </section>
   </main>
 </div>
-
 <div id="toast" class="toast" role="status"></div>
 <script src="app.js"></script>
 </body>

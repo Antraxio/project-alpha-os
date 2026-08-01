@@ -1,17 +1,25 @@
 # Changelog
 
-## v0.2.0 – Alpha Engine
+## v0.3.0 – Decision Intelligence
 
 ### Added
-- Executive Entscheidungskarte
-- Opportunity-Score-Komponenten
-- Relative-Advantage-Gates
-- Ranking-Dynamik
-- interaktive Scanner-Detailansicht
-- Competition-Benchmark
-- Methodikseite
+- Daily Briefing
+- Decision Lab
+- Why Engine
+- Score Radar
+- Alpha Timeline
+- Trigger Ladder
+- Portfolio Risk Scenario
+- Allocation Donuts
+- Scanner Sparklines
+- eigenes Alpha-OS-Symbol
+
+### Improved
+- weniger visuelle Kartenmonotonie
+- stärkere Executive-Hierarchie
+- bessere Erklärbarkeit von Scores und Entscheidungen
+- klarere mobile Informationsstruktur
 
 ### Corrected
-- ChatGPT-Portfolio auf den zuletzt bestätigten Stand mit nur Microsoft aktualisiert
-- starre Caps aus dem alten Prototyp entfernt
-- Cash als aktive Anlagealternative integriert
+- ASML-Ausführungsgate zur Positionsgröße: eine volle Aktie ist finanzierbar; der aktuelle Blocker ist Preiszone und relative Marge
+- Länderexponierung ignoriert Cash; Rubrik-/Kapitalmix zeigt Cash weiterhin aktiv

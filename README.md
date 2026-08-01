@@ -1,31 +1,30 @@
 # Project Alpha OS
 
-## Version 0.2.0 – Alpha Engine
+## v0.3.0 – Decision Intelligence
 
-Die erste Version mit echter Entscheidungslogik statt reinem Depot-Dashboard.
+Diese Version setzt die UI-/UX-Erkenntnisse aus den automatisierten Desktop-, iPad- und Mobile-Screenshots um und ergänzt die nächste funktionale Ausbaustufe.
 
 ### Neu
 
-- Executive Summary mit heutiger Entscheidung
-- transparenter Opportunity Score mit festen Gewichten
-- Relative Advantage Score mit Cash-Hürde und Sicherheitsmarge
-- Top-10-Ranking mit Auf- und Absteigern
-- interaktiver Kandidatenvergleich
-- aktuelle Microsoft-Ausstiegsstrategie
-- ChatGPT-Depot als Hauptportfolio, Claude als Benchmark
-- aktualisiertes Alpha-2.0-Regelwerk ohne starre Positions- oder Verlustcaps
+- Daily Intelligence mit persönlichem Briefing
+- erklärbare Tagesentscheidung mit Triggern und Ausführungsgates
+- Radar-Visualisierung des Opportunity Scores
+- gewichtete Score-Beiträge und textliche Begründung je Komponente
+- Alpha Timeline mit 7-Tage-Scoreentwicklung
+- Scanner mit Sparklines und vertiefter Kandidatenansicht
+- Portfolio Intelligence:
+  - Ergebnis bei Stop-Auslösung
+  - Gewinnrückgabe bis Stop
+  - Depotwert im Stop-Szenario
+  - Cash-/Positionsallokation
+  - Länder- und Sektorexponierung
+- eigenständiges Alpha-OS-Symbol
+- weniger verschachtelte Karten, mehr Typografie, Linien und Freiraum
 
 ### Datenstatus
 
-Portfolioangaben basieren auf dem zuletzt ausdrücklich bestätigten Projektstand.  
-Kurse und Alpha-Scores sind ein manueller Modell-Snapshot und keine Live-Daten.
+Alle Werte sind ein manueller Modell-Snapshot. Es besteht noch keine Live-Kursversorgung.
 
-### Dateien
+### Upload
 
-- `index.html`
-- `style.css`
-- `app.js`
-- `alpha-data.json`
-- `favicon.svg`
-- `README.md`
-- `CHANGELOG.md`
+Alle Dateien ins Hauptverzeichnis von `Antraxio/project-alpha-os` hochladen und vorhandene Dateien ersetzen.
