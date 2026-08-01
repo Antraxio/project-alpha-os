@@ -332,3 +332,133 @@ input[type="range"]{width:100%;min-width:0;padding:0;border:0;background:transpa
     font-size:8px;
   }
 }
+
+
+/* v0.4.2 dynamic strategy ranking */
+.ranking-method{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:20px;
+  padding:10px 8px 15px;
+  border-bottom:1px solid var(--line);
+}
+.ranking-method span,
+.ranking-method b{
+  display:block;
+}
+.ranking-method span{
+  font-size:8px;
+  letter-spacing:1.2px;
+  color:var(--green);
+  font-weight:900;
+}
+.ranking-method b{
+  margin-top:4px;
+  font-size:11px;
+}
+.ranking-method p{
+  max-width:640px;
+  margin:0;
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.5;
+  text-align:right;
+}
+.scanner-row{
+  grid-template-columns:52px 1.18fr .62fr .62fr 68px 68px 58px;
+}
+.strategy-score{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  line-height:1;
+}
+.strategy-score b{
+  font-size:17px;
+}
+.strategy-score small{
+  margin-top:4px;
+  font-size:7px;
+  letter-spacing:.7px;
+  color:var(--muted);
+}
+.strategy-score em{
+  margin-top:4px;
+  font-size:8px;
+  font-style:normal;
+  color:var(--faint);
+}
+.fit-positive{color:var(--green)!important}
+.fit-negative{color:var(--red)!important}
+.fit-neutral{color:var(--muted)!important}
+.rank-change-flash{
+  animation:rankPulse .45s ease;
+}
+@keyframes rankPulse{
+  0%{background:rgba(33,212,167,.15)}
+  100%{background:transparent}
+}
+.strategy-fit-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  margin-top:15px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--line);
+}
+.strategy-fit-summary div{
+  padding:11px;
+  background:var(--panel);
+}
+.strategy-fit-summary span,
+.strategy-fit-summary b{
+  display:block;
+}
+.strategy-fit-summary span{
+  font-size:8px;
+  color:var(--muted);
+}
+.strategy-fit-summary b{
+  margin-top:5px;
+  font-size:13px;
+}
+.fit-reasons{
+  display:grid;
+  gap:6px;
+  margin-top:12px;
+}
+.fit-reason{
+  display:grid;
+  grid-template-columns:38px 1fr;
+  gap:8px;
+  font-size:9px;
+  line-height:1.4;
+  color:var(--muted);
+}
+.fit-reason b{
+  text-align:right;
+}
+@media(max-width:780px){
+  .ranking-method{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:8px;
+  }
+  .ranking-method p{
+    text-align:left;
+  }
+  .scanner-row{
+    grid-template-columns:42px 1fr 62px 50px;
+  }
+  .strategy-fit-summary{
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media(max-width:470px){
+  .strategy-fit-summary{
+    grid-template-columns:1fr;
+  }
+}

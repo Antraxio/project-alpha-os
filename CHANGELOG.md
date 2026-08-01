@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.4.2 – Dynamic Ranking
+
+### Fixed
+- Scanner ranking now reacts to Strategy Studio settings.
+- Position size, cash reserve and diversification settings now affect ranking rather than warnings only.
+- Score-weight changes recalculate both Opportunity Score and Strategy Score.
+
+### Added
+- separate intrinsic Opportunity Score and portfolio-aware Strategy Score
+- live fit adjustment and explanation
+- affordability, position-size, CRV, price-zone, sector and region contributions
+- ranking recalculation feedback
+- automated visual and functional regression test for profile-dependent rankings
+
+
 ## v0.4.1 – QA Fixes
 
 ### Fixed

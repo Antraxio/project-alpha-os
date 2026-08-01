@@ -1,5 +1,5 @@
 
-const state={data:null,language:localStorage.getItem('alphaLanguage')||'de',settings:null,view:'dashboard',selectedTicker:'ASML',profile:'balanced'};
+const state={data:null,language:localStorage.getItem('alphaLanguage')||'de',settings:null,view:'dashboard',selectedTicker:'ASML',profile:'balanced',lastRanking:null};
 const $=id=>document.getElementById(id);
 const clone=x=>JSON.parse(JSON.stringify(x));
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
@@ -45,6 +45,9 @@ const I18N={
     profileDefensive:'DEFENSIV',profileBalanced:'AUSGEWOGEN',profileOffensive:'OFFENSIV',profileCustom:'INDIVIDUELL',
     wholeShareAboveTarget:'Eine volle Aktie liegt über der Zielgröße, ist aber finanzierbar.',notFinanceable:'Eine volle Aktie ist nach Cashreserve nicht finanzierbar.',concentrationWarning:'Die geplante Position überschreitet die Konzentrationswarnung.',fitWarning:'Die geplante Position überschreitet eine Diversifikationswarnung.',
     scoreHistoryNote:'Historische Scores bleiben der dokumentierte Basisverlauf; das Ranking zeigt das aktive Profil.',
+    rankingBasis:'RANKING-BASIS',rankingFormula:'Strategy Score = Opportunity Score + Portfolio-Fit',rankingExplanation:'Gewichtung, CRV, Preiszone, Finanzierbarkeit, Zielpositionsgröße, Cashreserve sowie Sektor- und Regionenfit beeinflussen die Reihenfolge live.',
+    strategyScore:'Strategy Score',portfolioFit:'Portfolio-Fit',fitAdjustment:'Fit-Anpassung',intrinsicOS:'Opportunity Score',affordability:'Finanzierbarkeit',positionFit:'Positionsgrößen-Fit',priceFit:'Preis-Fit',crvFit:'CRV-Fit',diversificationFit:'Diversifikations-Fit',
+    rankChanged:'Ranking wurde neu berechnet.',rankingUnchanged:'Die Werte wurden neu berechnet; bei diesen Einstellungen bleibt die Reihenfolge gleich.',
     formulaOS:'OS ≥ Schwelle',formulaCash:'Cash-Vorsprung ≥ Marge',formulaSwitch:'Wechselschwelle erfüllt',formulaPrice:'Preiszone bestätigt',
     noRigidCaps:'Keine starren Positionscaps',stopLogic:'Stop-Logik',crvHurdle:'CRV-Hürde',wholeSharesOnly:'Volle Stücke',cashHurdleLabel:'Cash-Hürde',activityStandard:'Aktivitätsstandard',
     riskProfile:'Risikoprofil',buy:'Kauf',sale:'Verkauf',review:'Review',method:'Methodik'
@@ -81,6 +84,9 @@ const I18N={
     profileDefensive:'DEFENSIVE',profileBalanced:'BALANCED',profileOffensive:'OFFENSIVE',profileCustom:'CUSTOM',
     wholeShareAboveTarget:'One whole share exceeds the target size but remains affordable.',notFinanceable:'One whole share is not affordable after the cash reserve.',concentrationWarning:'The planned position exceeds the concentration warning.',fitWarning:'The planned position exceeds a diversification warning.',
     scoreHistoryNote:'Historical scores remain the documented baseline; the ranking reflects the active profile.',
+    rankingBasis:'RANKING BASIS',rankingFormula:'Strategy Score = Opportunity Score + portfolio fit',rankingExplanation:'Weights, risk/reward, price zone, affordability, target position size, cash reserve, sector fit and regional fit update the order live.',
+    strategyScore:'Strategy Score',portfolioFit:'Portfolio fit',fitAdjustment:'Fit adjustment',intrinsicOS:'Opportunity Score',affordability:'Affordability',positionFit:'Position-size fit',priceFit:'Price fit',crvFit:'Risk/reward fit',diversificationFit:'Diversification fit',
+    rankChanged:'Ranking recalculated.',rankingUnchanged:'Values were recalculated; this setting combination leaves the order unchanged.',
     formulaOS:'OS ≥ threshold',formulaCash:'Cash advantage ≥ margin',formulaSwitch:'Switch threshold passed',formulaPrice:'Price zone confirmed',
     noRigidCaps:'No rigid position caps',stopLogic:'Stop logic',crvHurdle:'Risk/reward hurdle',wholeSharesOnly:'Whole shares',cashHurdleLabel:'Cash hurdle',activityStandard:'Activity standard',
     riskProfile:'Risk profile',buy:'Buy',sale:'Sale',review:'Review',method:'Methodology'
@@ -144,35 +150,181 @@ function computeSizing(candidate){
     regionWarning:regionPct>state.settings.maxRegionExposurePct
   };
 }
-function computeModel(){
-  const weights=normalisedWeights(),held=new Set(state.data.portfolios.chatgpt.positions.map(x=>x.ticker));
-  let opportunities=state.data.opportunities.map(o=>{
-    const customScore=Math.round(Object.entries(o.components).reduce((s,[k,v])=>s+v*(weights[k]||0),0));
-    const entryMid=(o.entryLow+o.entryHigh)/2;
-    const crv=(o.target-entryMid)/Math.max(.01,entryMid-o.stop);
-    return{...o,customScore,crv};
-  }).sort((a,b)=>b.customScore-a.customScore||b.ras-a.ras).map((o,i)=>({...o,customRank:i+1}));
-  const newCandidates=opportunities.filter(o=>!held.has(o.ticker));
-  const candidate=newCandidates[0],second=newCandidates[1];
-  const heldBest=opportunities.filter(o=>held.has(o.ticker)).sort((a,b)=>b.customScore-a.customScore)[0];
-  const sizing=computeSizing(candidate);
-  const cashAdv=candidate.customScore-state.settings.cashHurdle;
-  const secondGap=candidate.customScore-(second?.customScore??candidate.customScore);
-  const heldGap=candidate.customScore-(heldBest?.customScore??candidate.customScore);
-  const inZone=candidate.price>=candidate.entryLow&&candidate.price<=candidate.entryHigh;
-  const ras=clamp(Math.round(50+cashAdv*3+secondGap*2+heldGap+(inZone?4:-5)-(sizing.concentrationWarning?4:0)-(sizing.sectorWarning?3:0)-(sizing.regionWarning?3:0)),0,100);
-  const gates=[
-    {key:'scoreGate',pass:candidate.customScore>=state.settings.opportunityThreshold,detail:`${candidate.customScore} ≥ ${state.settings.opportunityThreshold}`},
-    {key:'cashGate',pass:cashAdv>=state.settings.cashSafetyMargin,detail:`${cashAdv>=0?'+':''}${cashAdv} / +${state.settings.cashSafetyMargin}`},
-    {key:'switchGate',pass:heldGap>=state.settings.switchMargin,detail:`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`},
-    {key:'priceGate',pass:inZone,detail:`${euro(candidate.entryLow)}–${euro(candidate.entryHigh)}`},
-    {key:'crvGate',pass:candidate.crv>=state.settings.minCrv,detail:`${num(candidate.crv,2)} / ${num(state.settings.minCrv,1)}`},
-    {key:'sizingGate',pass:sizing.shares>=1,detail:wholeShareLabel(sizing.shares)}
-  ];
-  const allPassed=gates.every(g=>g.pass);
-  return{opportunities,candidate,second,heldBest,sizing,ras,gates,allPassed,cashAdv,heldGap,inZone};
-}
+function strategyFitFor(o,customScore,held){
+  const p=state.data.portfolios.chatgpt;
+  const portfolioValue=valueOf(p);
+  const isHeld=held.has(o.ticker);
+  const entryMid=(o.entryLow+o.entryHigh)/2;
+  const entryCrv=(o.target-entryMid)/Math.max(.01,entryMid-o.stop);
+  const inZone=o.price>=o.entryLow&&o.price<=o.entryHigh;
+  let sizing=computeSizing(o);
+  let allocationPct=sizing.allocationPct;
+  let sectorPct=sizing.sectorPct;
+  let regionPct=sizing.regionPct;
+  let affordable=sizing.shares>=1;
 
+  if(isHeld){
+    const position=p.positions.find(x=>x.ticker===o.ticker);
+    const positionValue=position.current*position.shares;
+    const investedValue=p.positions.reduce((s,x)=>s+x.current*x.shares,0);
+    allocationPct=positionValue/portfolioValue*100;
+    sectorPct=investedValue
+      ?p.positions.filter(x=>x.sector===position.sector).reduce((s,x)=>s+x.current*x.shares,0)/investedValue*100
+      :0;
+    regionPct=investedValue
+      ?p.positions.filter(x=>x.country===position.country).reduce((s,x)=>s+x.current*x.shares,0)/investedValue*100
+      :0;
+    affordable=true;
+    sizing={...sizing,shares:position.shares,amount:positionValue,allocationPct,sectorPct,regionPct};
+  }
+
+  const affordabilityAdj=affordable?0:-12;
+  const positionAdj=affordable
+    ?-Math.min(5,Math.abs(allocationPct-state.settings.targetPositionPct)*0.15)
+    :0;
+  const crvAdj=clamp((entryCrv-state.settings.minCrv)*2,-5,4);
+  const zoneDistancePct=o.price>o.entryHigh
+    ?(o.price/o.entryHigh-1)*100
+    :o.price<o.entryLow
+      ?(o.entryLow/o.price-1)*100
+      :0;
+  const priceAdj=isHeld?0:(inZone?2:-Math.min(3,zoneDistancePct));
+  const concentrationAdj=-Math.min(
+    4,
+    Math.max(0,allocationPct-state.settings.concentrationWarningPct)*0.2
+  );
+  const sectorAdj=-Math.min(
+    4,
+    Math.max(0,sectorPct-state.settings.maxSectorExposurePct)*0.15
+  );
+  const regionAdj=-Math.min(
+    4,
+    Math.max(0,regionPct-state.settings.maxRegionExposurePct)*0.15
+  );
+  const adjustment=
+    affordabilityAdj+positionAdj+crvAdj+priceAdj+
+    concentrationAdj+sectorAdj+regionAdj;
+  const strategyScore=clamp(Math.round(customScore+adjustment),0,100);
+
+  const reasons=[
+    {key:'affordability',value:affordabilityAdj},
+    {key:'positionFit',value:positionAdj},
+    {key:'crvFit',value:crvAdj},
+    {key:'priceFit',value:priceAdj},
+    {key:'diversificationFit',value:concentrationAdj+sectorAdj+regionAdj}
+  ];
+
+  return{
+    strategyScore,
+    fitAdjustment:adjustment,
+    fitReasons:reasons,
+    entryCrv,
+    inZone,
+    sizing,
+    allocationPct,
+    sectorPct,
+    regionPct,
+    isHeld
+  };
+}
+function computeModel(){
+  const weights=normalisedWeights();
+  const held=new Set(
+    state.data.portfolios.chatgpt.positions.map(x=>x.ticker)
+  );
+
+  let opportunities=state.data.opportunities.map(o=>{
+    const customScore=Math.round(
+      Object.entries(o.components).reduce(
+        (sum,[key,value])=>sum+value*(weights[key]||0),
+        0
+      )
+    );
+    const fit=strategyFitFor(o,customScore,held);
+    return{...o,customScore,...fit};
+  }).sort((a,b)=>
+    b.strategyScore-a.strategyScore ||
+    b.customScore-a.customScore ||
+    b.ras-a.ras
+  ).map((o,index)=>({...o,customRank:index+1}));
+
+  const newCandidates=opportunities.filter(o=>!held.has(o.ticker));
+  const candidate=newCandidates[0];
+  const second=newCandidates[1];
+  const heldBest=opportunities
+    .filter(o=>held.has(o.ticker))
+    .sort((a,b)=>b.strategyScore-a.strategyScore)[0];
+
+  const sizing=candidate.sizing;
+  const cashAdv=candidate.customScore-state.settings.cashHurdle;
+  const secondGap=
+    candidate.strategyScore-(second?.strategyScore??candidate.strategyScore);
+  const heldGap=
+    candidate.strategyScore-(heldBest?.strategyScore??candidate.strategyScore);
+  const inZone=candidate.inZone;
+
+  const ras=clamp(
+    Math.round(
+      50+
+      cashAdv*3+
+      secondGap*2+
+      heldGap+
+      (inZone?4:-5)-
+      (sizing.concentrationWarning?4:0)-
+      (sizing.sectorWarning?3:0)-
+      (sizing.regionWarning?3:0)
+    ),
+    0,
+    100
+  );
+
+  const gates=[
+    {
+      key:'scoreGate',
+      pass:candidate.customScore>=state.settings.opportunityThreshold,
+      detail:`${candidate.customScore} ≥ ${state.settings.opportunityThreshold}`
+    },
+    {
+      key:'cashGate',
+      pass:cashAdv>=state.settings.cashSafetyMargin,
+      detail:`${cashAdv>=0?'+':''}${cashAdv} / +${state.settings.cashSafetyMargin}`
+    },
+    {
+      key:'switchGate',
+      pass:heldGap>=state.settings.switchMargin,
+      detail:`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`
+    },
+    {
+      key:'priceGate',
+      pass:inZone,
+      detail:`${euro(candidate.entryLow)}–${euro(candidate.entryHigh)}`
+    },
+    {
+      key:'crvGate',
+      pass:candidate.entryCrv>=state.settings.minCrv,
+      detail:`${num(candidate.entryCrv,2)} / ${num(state.settings.minCrv,1)}`
+    },
+    {
+      key:'sizingGate',
+      pass:sizing.shares>=1,
+      detail:wholeShareLabel(sizing.shares)
+    }
+  ];
+
+  return{
+    opportunities,
+    candidate,
+    second,
+    heldBest,
+    sizing,
+    ras,
+    gates,
+    allPassed:gates.every(g=>g.pass),
+    cashAdv,
+    heldGap,
+    inZone
+  };
+}
 function applyStaticTranslations(){
   document.documentElement.lang=state.language;
   document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
@@ -244,7 +396,7 @@ function renderExecutive(){
   $('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
   const progress=clamp((msft.current-msft.entry)/(msft.target1-msft.entry)*100,0,100);
   $('microsoftFocus').innerHTML=`<div class="msft-progress"><div class="msft-line"><strong>${euro(msft.current)}</strong><span>${num(targetDist,2)} % ${state.language==='de'?'bis Ziel 1':'to target 1'}</span></div><div class="distance-bar"><i style="width:${progress}%"></i></div><div class="msft-labels"><span>${t('entry')} ${euro(msft.entry)}</span><span>${t('target')} 1 ${euro(msft.target1)}</span></div></div>`;
-  $('rankingFocus').innerHTML=m.opportunities.slice(0,4).map(o=>{const mv=movement(o,o.customRank);return`<div class="focus-rank"><b>#${o.customRank}</b><div><b>${o.name}</b><span>${o.ticker}</span></div><div class="score">${o.customScore}</div><div class="${mv.cls}">${mv.label}</div></div>`}).join('');
+  $('rankingFocus').innerHTML=m.opportunities.slice(0,4).map(o=>{const mv=movement(o,o.customRank);return`<div class="focus-rank"><b>#${o.customRank}</b><div><b>${o.name}</b><span>${o.ticker}</span></div><div class="score">${o.strategyScore}<small class="calculated-score-label">OS ${o.customScore}</small></div><div class="${mv.cls}">${mv.label}</div></div>`}).join('');
 }
 function renderDecision(){
   const d=state.data,m=computeModel(),x=m.candidate,w=normalisedWeights();
@@ -265,18 +417,18 @@ function renderScanner(){
   const m=computeModel(),q=$('search').value.trim().toLowerCase(),r=$('region').value,s=$('sector').value,c=$('conviction').value;
   const items=m.opportunities.filter(x=>(!q||[x.name,x.ticker,x.isin].some(v=>v.toLowerCase().includes(q)))&&(r==='all'||x.region===r)&&(s==='all'||x.sector===s)&&(c==='all'||x.conviction===c));
   $('resultCount').textContent=`${items.length} ${t('candidates')}`;
-  $('scannerList').innerHTML=items.map(x=>{const mv=movement(x,x.customRank);return`<div class="scanner-row ${x.ticker===state.selectedTicker?'selected':''}" data-ticker="${x.ticker}"><div class="rank">#${x.customRank}</div><div class="scanner-company"><b>${x.name}</b><span>${x.ticker} · ${x.isin}</span></div><span>${regionName(x.region)}</span><span>${sectorName(x.sector)}</span><div class="os ${scoreClass(x.customScore)}">${x.customScore}</div>${sparkline(x.scoreHistory)}<span class="${mv.cls}">${mv.label}</span></div>`}).join('');
+  $('scannerList').innerHTML=items.map(x=>{const mv=movement(x,x.customRank);return`<div class="scanner-row ${x.ticker===state.selectedTicker?'selected':''}" data-ticker="${x.ticker}"><div class="rank">#${x.customRank}</div><div class="scanner-company"><b>${x.name}</b><span>${x.ticker} · ${x.isin}</span></div><span>${regionName(x.region)}</span><span>${sectorName(x.sector)}</span><div class="strategy-score ${scoreClass(x.strategyScore)}"><b>${x.strategyScore}</b><small>${t('strategyScore')}</small><em>OS ${x.customScore}</em></div>${sparkline(x.scoreHistory)}<span class="${mv.cls}">${mv.label}</span></div>`}).join('');
   document.querySelectorAll('.scanner-row').forEach(row=>row.onclick=()=>{state.selectedTicker=row.dataset.ticker;renderScanner()});renderCandidateDetail();
 }
 function renderCandidateDetail(){
   const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0],sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.customScore}<span class="calculated-score-label">${state.language==='de'?'Berechneter OS':'Calculated OS'}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate.ticker&&m.allPassed?t('executeReview'):t('observe')}</p></div></div></div>`;
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${x.fitAdjustment>=0?'+':''}${num(x.fitAdjustment,1)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${x.fitReasons.map(r=>`<div class="fit-reason"><b class="${r.value>0?'fit-positive':r.value<0?'fit-negative':'fit-neutral'}">${r.value>=0?'+':''}${num(r.value,1)}</b><span>${t(r.key)}</span></div>`).join('')}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate.ticker&&m.allPassed?t('executeReview'):t('observe')}</p></div></div></div>`;
 }
 function renderTimeline(){
   const d=state.data,m=computeModel(),top=m.opportunities.slice(0,5),dates=d.timeline.dates,colors=['#21d4a7','#7c5cff','#f7b955','#ff6b7a','#61a5ff'];
   $('timelineLegend').innerHTML=top.map((x,i)=>`<div class="legend-item"><i class="legend-dot" style="background:${colors[i]}"></i>${x.ticker}</div>`).join('');
   const W=760,H=300,left=48,right=20,topPad=24,bottom=42,minY=70,maxY=90,xp=i=>left+i*(W-left-right)/(dates.length-1),yp=v=>topPad+(maxY-v)/(maxY-minY)*(H-topPad-bottom),grid=[70,75,80,85,90];
-  $('timelineChart').innerHTML=`<svg class="timeline-svg" viewBox="0 0 ${W} ${H}">${grid.map(v=>`<line class="chart-grid-line" x1="${left}" x2="${W-right}" y1="${yp(v)}" y2="${yp(v)}"/><text class="chart-axis-label" x="8" y="${yp(v)+4}">${v}</text>`).join('')}${dates.map((v,i)=>`<text class="chart-axis-label" x="${xp(i)}" y="${H-12}" text-anchor="middle">${v}</text>`).join('')}${top.map((series,si)=>{const vals=[...series.scoreHistory.slice(0,-1),series.customScore],pts=vals.map((v,i)=>`${xp(i)},${yp(v)}`).join(' ');return`<polyline class="chart-path" points="${pts}" stroke="${colors[si]}"/>${vals.map((v,i)=>`<circle class="chart-point" cx="${xp(i)}" cy="${yp(v)}" r="4" fill="${colors[si]}"/>`).join('')}`}).join('')}</svg><p class="settings-help">${t('scoreHistoryNote')}</p>`;
+  $('timelineChart').innerHTML=`<svg class="timeline-svg" viewBox="0 0 ${W} ${H}">${grid.map(v=>`<line class="chart-grid-line" x1="${left}" x2="${W-right}" y1="${yp(v)}" y2="${yp(v)}"/><text class="chart-axis-label" x="8" y="${yp(v)+4}">${v}</text>`).join('')}${dates.map((v,i)=>`<text class="chart-axis-label" x="${xp(i)}" y="${H-12}" text-anchor="middle">${v}</text>`).join('')}${top.map((series,si)=>{const vals=[...series.scoreHistory.slice(0,-1),series.strategyScore],pts=vals.map((v,i)=>`${xp(i)},${yp(v)}`).join(' ');return`<polyline class="chart-path" points="${pts}" stroke="${colors[si]}"/>${vals.map((v,i)=>`<circle class="chart-point" cx="${xp(i)}" cy="${yp(v)}" r="4" fill="${colors[si]}"/>`).join('')}`}).join('')}</svg><p class="settings-help">${t('scoreHistoryNote')}</p>`;
   $('timelineEvents').innerHTML=d.timeline.events.map(e=>`<div class="timeline-event"><time>${e.date}</time><b>${e.ticker}</b><p>${loc(e.text)}</p></div>`).join('');
   $('timelineMovers').innerHTML=m.opportunities.filter(x=>movement(x,x.customRank).delta!==0).map(x=>{const mv=movement(x,x.customRank);return`<div class="mover-row"><b>${x.name}</b><span>${x.customScore}</span><span class="${mv.cls}">${mv.label}</span></div>`}).join('');
 }
@@ -360,7 +512,13 @@ function renderSettings(){
     localStorage.setItem('alphaStrategySettings',JSON.stringify(state.settings));
     const unit=key==='minCrv'?':1':key.includes('Pct')?'%':'';
     $(`value-${key}`).textContent=`${num(value,key==='minCrv'?1:0)}${unit}`;
+    const previousOrder=state.lastRanking;
     renderModelViews();renderSettingsPreview();updateProfileUI();
+    const newOrder=computeModel().opportunities.map(o=>o.ticker).join('|');
+    if(previousOrder!==null){
+      showToast(previousOrder===newOrder?t('rankingUnchanged'):t('rankChanged'));
+    }
+    state.lastRanking=newOrder;
   }));
   renderSettingsPreview();updateProfileUI();
 }
@@ -372,7 +530,7 @@ function renderSettingsPreview(){
   if(m.sizing.sectorWarning||m.sizing.regionWarning)warnings.push(t('fitWarning'));
   $('customBadge').textContent=profileLabel(p);$('customBadge').classList.toggle('custom-indicator',p==='custom');
   $('weightTotal').textContent='100%';
-  $('settingsPreview').innerHTML=`<div class="preview-decision"><span>${t('settingsCandidate')}</span><strong>${m.candidate.name} · ${m.candidate.customScore}</strong><small>${m.allPassed?t('buyReview'):t('noNewPosition')}</small></div><div class="preview-grid"><div><span>RAS</span><b>${m.ras}</b><small>${m.cashAdv>=0?'+':''}${m.cashAdv} vs. Cash</small></div><div><span>${t('crv')}</span><b>${num(m.candidate.crv,2)}</b><small>Min. ${num(state.settings.minCrv,1)}</small></div><div><span>${t('suggestedShares')}</span><b>${m.sizing.shares}</b><small>${num(m.sizing.allocationPct,1)} %</small></div><div><span>${t('sectorExposure')}</span><b>${num(m.sizing.sectorPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('regionExposure')}</span><b>${num(m.sizing.regionPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('gates')}</span><b>${m.gates.filter(g=>g.pass).length}/${m.gates.length}</b><small>${m.allPassed?t('passed'):t('open')}</small></div></div>${warnings.map(w=>`<div class="preview-warning">${w}</div>`).join('')}<div class="settings-ranking">${m.opportunities.slice(0,5).map(o=>`<div class="settings-rank-row"><b>#${o.customRank}</b><span>${o.name}</span><strong>${o.customScore}</strong></div>`).join('')}</div>`;
+  $('settingsPreview').innerHTML=`<div class="preview-decision"><span>${t('settingsCandidate')}</span><strong>${m.candidate.name} · ${m.candidate.strategyScore}</strong><small>${t('strategyScore')} · OS ${m.candidate.customScore} · ${m.allPassed?t('buyReview'):t('noNewPosition')}</small></div><div class="preview-grid"><div><span>RAS</span><b>${m.ras}</b><small>${m.cashAdv>=0?'+':''}${m.cashAdv} vs. Cash</small></div><div><span>${t('crv')}</span><b>${num(m.candidate.crv,2)}</b><small>Min. ${num(state.settings.minCrv,1)}</small></div><div><span>${t('suggestedShares')}</span><b>${m.sizing.shares}</b><small>${num(m.sizing.allocationPct,1)} %</small></div><div><span>${t('sectorExposure')}</span><b>${num(m.sizing.sectorPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('regionExposure')}</span><b>${num(m.sizing.regionPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('gates')}</span><b>${m.gates.filter(g=>g.pass).length}/${m.gates.length}</b><small>${m.allPassed?t('passed'):t('open')}</small></div></div>${warnings.map(w=>`<div class="preview-warning">${w}</div>`).join('')}<div class="settings-ranking">${m.opportunities.slice(0,5).map(o=>`<div class="settings-rank-row"><b>#${o.customRank}</b><span>${o.name}<small class="calculated-score-label">OS ${o.customScore}</small></span><strong>${o.strategyScore}</strong></div>`).join('')}</div>`;
 }
 function updateProfileUI(){
   const p=profileName();$('profileBadge').textContent=profileLabel(p);$('sideThreshold').textContent=state.settings.opportunityThreshold;$('sideCashMargin').textContent=`+${state.settings.cashSafetyMargin}`;
@@ -397,6 +555,7 @@ function populateFilters(){
 function renderAll(){
   applyStaticTranslations();populateFilters();renderModelViews();renderSettings();updateProfileUI();
   $('freshness').textContent=`${t('dataStand')}: ${dateFmt(state.data.snapshotDate)} · ${loc(state.data.dataMode)}`;$('systemLabel').textContent=t('modelLoaded');
+  state.lastRanking=computeModel().opportunities.map(o=>o.ticker).join('|');
 }
 function bind(){
   document.querySelectorAll('.nav').forEach(n=>n.onclick=()=>switchView(n.dataset.view));document.querySelectorAll('[data-jump]').forEach(b=>b.onclick=()=>switchView(b.dataset.jump));

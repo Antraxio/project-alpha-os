@@ -100,6 +100,52 @@ jobs:
             await page.waitForTimeout(400);
           }
 
+
+          async function assertDynamicRanking() {
+            const { page, errors } = await openPage(1366, 1024);
+
+            await setLanguage(page, "de");
+            await switchView(page, "settings");
+            await page.locator('[data-preset="balanced"]').click();
+            await page.waitForTimeout(400);
+            await switchView(page, "scanner");
+
+            const balancedOrder = await page
+              .locator(".scanner-company b")
+              .allTextContents();
+
+            await switchView(page, "settings");
+            await page.locator('[data-preset="defensive"]').click();
+            await page.waitForTimeout(400);
+            await switchView(page, "scanner");
+
+            const defensiveOrder = await page
+              .locator(".scanner-company b")
+              .allTextContents();
+
+            if (
+              balancedOrder.slice(0, 5).join("|") ===
+              defensiveOrder.slice(0, 5).join("|")
+            ) {
+              throw new Error(
+                "Dynamic ranking regression: balanced and defensive top five are identical."
+              );
+            }
+
+            await page.screenshot({
+              path: "screenshots/latest-scanner-defensive-ipad-de.png",
+              fullPage: true
+            });
+
+            if (errors.length) {
+              throw new Error(
+                `Browser errors in ranking test: ${errors.join(" | ")}`
+              );
+            }
+
+            await page.close();
+          }
+
           async function capture(name, width, height, options = {}) {
             const { page, errors } = await openPage(width, height);
 
@@ -189,6 +235,8 @@ jobs:
               preset: "offensive"
             }
           );
+
+          await assertDynamicRanking();
 
           await browser.close();
           EOF

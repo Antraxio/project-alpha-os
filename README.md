@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-## v0.4.1 – Strategy Studio & Bilingual UI
+## v0.4.2 – Strategy Studio & Bilingual UI
 
 ### Neue Kernfunktionen
 
@@ -58,3 +58,26 @@ Das Tool arbeitet weiterhin mit einem manuellen Modell-Snapshot und nicht mit Li
 - dynamisch berechnete Scores als „Berechneter OS“ beziehungsweise „Calculated OS“ gekennzeichnet
 - Screenshot-Workflow um Deutsch, Englisch, Strategy Studio und Offensiv-Preset erweitert
 - Screenshot-Workflow prüft Browser-Konsole und JavaScript-Laufzeitfehler
+
+
+## v0.4.2 – Dynamic Ranking
+
+Das Scanner-Ranking verwendet jetzt zwei getrennte Ebenen:
+
+1. **Opportunity Score (OS)**  
+   Bewertet die intrinsische Chance aus Fundamental, Technik, Katalysator, Risiko, Makro und Diversifikation.
+
+2. **Strategy Score**  
+   Verwendet den OS als Ausgangspunkt und berücksichtigt zusätzlich:
+   - Finanzierbarkeit mit ganzen Aktien
+   - gewünschte Zielpositionsgröße
+   - Cashreserve
+   - Mindest-CRV
+   - Einstiegszone
+   - Konzentrationswarnung
+   - Sektorgrenze
+   - Regionsgrenze
+
+Der Scanner wird nach dem Strategy Score sortiert. Dadurch verändern auch Positions- und Diversifikationseinstellungen tatsächlich die Reihenfolge.
+
+Der Screenshot-Workflow enthält nun einen funktionalen Regressionstest: Das defensive und das ausgewogene Profil müssen unterschiedliche Top-5-Rankings erzeugen.

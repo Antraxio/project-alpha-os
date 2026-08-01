@@ -40,7 +40,7 @@
         <p><span data-i18n="osThreshold">OS-Schwelle</span><strong id="sideThreshold">85</strong></p>
         <p><span data-i18n="cashMargin">Cash-Marge</span><strong id="sideCashMargin">+5</strong></p>
       </div>
-      <div class="version">v0.4.1 · QA Fixes</div>
+      <div class="version">v0.4.2 · Dynamic Ranking</div>
     </div>
   </aside>
 
@@ -184,6 +184,13 @@
           <select id="conviction"><option value="all" data-i18n="allConvictions">Alle Convictions</option><option>A+</option><option>A</option><option>B</option><option>C</option></select>
         </div>
         <div class="result-count" id="resultCount">–</div>
+      </div>
+      <div class="ranking-method">
+        <div>
+          <span data-i18n="rankingBasis">RANKING-BASIS</span>
+          <b data-i18n="rankingFormula">Strategy Score = Opportunity Score + Portfolio-Fit</b>
+        </div>
+        <p data-i18n="rankingExplanation">Gewichtung, CRV, Preiszone, Finanzierbarkeit, Zielpositionsgröße, Cashreserve sowie Sektor- und Regionenfit beeinflussen die Reihenfolge live.</p>
       </div>
       <article class="scanner-list" id="scannerList"></article>
       <article class="panel candidate-detail" id="candidateDetail"></article>
