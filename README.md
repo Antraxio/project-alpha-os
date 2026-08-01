@@ -1,31 +1,31 @@
 # Project Alpha OS
 
-**Version v0.1.1 – Snapshot Mode**
+## Version 0.2.0 – Alpha Engine
 
-Öffentliches, responsives Investment-Dashboard für das regelbasierte Alpha-Competition-Portfolio.
+Die erste Version mit echter Entscheidungslogik statt reinem Depot-Dashboard.
 
-## Änderungen gegenüber v0.1.0
+### Neu
 
-- doppelte Alpha-Scanner-Überschrift entfernt
-- Datenstand sichtbar gemacht
-- Cash, Cashquote und absolute Performance automatisch berechnet
-- Depot-Snapshot klar als manuell gepflegt gekennzeichnet
-- Scanner-Ansicht auf dem iPad kompakter gestaltet
-- Journal-Daten aus der JSON-Datei geladen
-- flache Dateistruktur für einfachen Upload per iPad
+- Executive Summary mit heutiger Entscheidung
+- transparenter Opportunity Score mit festen Gewichten
+- Relative Advantage Score mit Cash-Hürde und Sicherheitsmarge
+- Top-10-Ranking mit Auf- und Absteigern
+- interaktiver Kandidatenvergleich
+- aktuelle Microsoft-Ausstiegsstrategie
+- ChatGPT-Depot als Hauptportfolio, Claude als Benchmark
+- aktualisiertes Alpha-2.0-Regelwerk ohne starre Positions- oder Verlustcaps
 
-## Dateien
+### Datenstatus
+
+Portfolioangaben basieren auf dem zuletzt ausdrücklich bestätigten Projektstand.  
+Kurse und Alpha-Scores sind ein manueller Modell-Snapshot und keine Live-Daten.
+
+### Dateien
 
 - `index.html`
 - `style.css`
 - `app.js`
-- `opportunities.json`
+- `alpha-data.json`
 - `favicon.svg`
-
-## Veröffentlichung
-
-Alle fünf Dateien in das Hauptverzeichnis von `Antraxio/project-alpha-os` hochladen und vorhandene Dateien ersetzen.
-
-Live-Seite:
-
-`https://antraxio.github.io/project-alpha-os/`
+- `README.md`
+- `CHANGELOG.md`

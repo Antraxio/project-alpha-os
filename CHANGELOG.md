@@ -1,19 +1,17 @@
 # Changelog
 
-## v0.1.1 – 2026-08-01
-
-### Fixed
-- doppelte Überschrift im Alpha Scanner
-- relative Dateipfade für flache GitHub-Pages-Struktur
+## v0.2.0 – Alpha Engine
 
 ### Added
-- sichtbarer Datenstand
-- absolute Performance
-- Cashquote
-- Trefferanzahl im Scanner
-- JSON-basiertes Journal
-- Snapshot-Kennzeichnung
+- Executive Entscheidungskarte
+- Opportunity-Score-Komponenten
+- Relative-Advantage-Gates
+- Ranking-Dynamik
+- interaktive Scanner-Detailansicht
+- Competition-Benchmark
+- Methodikseite
 
-### Changed
-- kompakteres iPad-Layout
-- Depotkennzahlen werden vollständig aus den JSON-Daten berechnet
+### Corrected
+- ChatGPT-Portfolio auf den zuletzt bestätigten Stand mit nur Microsoft aktualisiert
+- starre Caps aus dem alten Prototyp entfernt
+- Cash als aktive Anlagealternative integriert

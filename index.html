@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090d18">
+  <meta name="theme-color" content="#080c16">
   <title>Project Alpha OS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
@@ -17,21 +17,23 @@
     </div>
 
     <nav>
-      <button class="nav active" data-view="dashboard">◫ <span>Dashboard</span></button>
-      <button class="nav" data-view="scanner">⌁ <span>Alpha Scanner</span></button>
+      <button class="nav active" data-view="dashboard">◫ <span>Executive</span></button>
+      <button class="nav" data-view="engine">✦ <span>Alpha Engine</span></button>
+      <button class="nav" data-view="scanner">⌁ <span>Scanner</span></button>
       <button class="nav" data-view="portfolio">◈ <span>Portfolio</span></button>
-      <button class="nav" data-view="journal">≡ <span>Trading Journal</span></button>
-      <button class="nav" data-view="research">◎ <span>Research</span></button>
+      <button class="nav" data-view="competition">⇄ <span>Competition</span></button>
+      <button class="nav" data-view="journal">≡ <span>Journal</span></button>
+      <button class="nav" data-view="methodology">◎ <span>Methodik</span></button>
     </nav>
 
     <div class="side-bottom">
-      <div class="competition">
-        <small>ALPHA COMPETITION</small>
-        <b>ChatGPT Portfolio</b>
-        <p><span>Budget</span><strong>2.500 €</strong></p>
-        <p><span>Regel</span><strong>Volle Aktien</strong></p>
+      <div class="competition-mini">
+        <small>ALPHA 2.0</small>
+        <b>Kapitalerhalt vor Aktivität</b>
+        <p><span>OS-Schwelle</span><strong>85</strong></p>
+        <p><span>Cash-Hürde</span><strong>82</strong></p>
       </div>
-      <div class="version">v0.1.1 · Snapshot Mode</div>
+      <div class="version">v0.2.0 · Alpha Engine</div>
     </div>
   </aside>
 
@@ -39,136 +41,234 @@
     <header class="topbar">
       <button id="menu" class="menu" aria-label="Navigation öffnen">☰</button>
       <div class="title">
-        <small id="eyebrow">INVESTMENT COMMAND CENTER</small>
-        <h1 id="title">Dashboard</h1>
+        <small id="eyebrow">EXECUTIVE SUMMARY</small>
+        <h1 id="title">Project Alpha</h1>
         <div class="freshness" id="freshness">Datenstand wird geladen …</div>
       </div>
-      <div class="system"><i></i><span id="systemLabel">Daten geladen</span></div>
+      <div class="system"><i></i><span id="systemLabel">Snapshot wird geladen</span></div>
       <button class="avatar" aria-label="Profil">AV</button>
     </header>
 
+    <div class="mode-banner">
+      <span>MANUELLER SNAPSHOT</span>
+      <p>Portfolio und Scores sind der dokumentierte Modellstand – keine Live-Kursversorgung.</p>
+    </div>
+
+    <!-- EXECUTIVE -->
     <section class="view active" id="dashboard">
-      <div class="hero">
-        <article class="panel regime">
+      <div class="executive-grid">
+        <article class="panel decision-hero">
           <div class="panel-head">
-            <div><small>MARKET REGIME</small><h2 id="regimeLabel">Wird geladen …</h2></div>
+            <div>
+              <small>HEUTIGE ENTSCHEIDUNG</small>
+              <h2 id="decisionHeadline">–</h2>
+            </div>
+            <span class="status-pill warning" id="decisionVerdict">–</span>
+          </div>
+          <div class="decision-body">
+            <div class="decision-icon">⏸</div>
+            <div>
+              <h3 id="decisionCandidate">–</h3>
+              <p id="decisionSummary">–</p>
+            </div>
+          </div>
+          <div class="decision-metrics">
+            <div><span>Opportunity Score</span><b id="decisionOS">–</b></div>
+            <div><span>Relative Advantage</span><b id="decisionRAS">–</b></div>
+            <div><span>Cash-Hürde</span><b id="decisionCash">–</b></div>
+          </div>
+        </article>
+
+        <article class="panel regime-card">
+          <div class="panel-head">
+            <div><small>MARKTREGIME</small><h2 id="regimeLabel">–</h2></div>
             <div class="ring" id="regimeRing"><span id="regimeScore">–</span></div>
           </div>
           <div class="regime-meta">
             <div><span>Trend</span><b id="regimeTrend">–</b></div>
             <div><span>Volatilität</span><b id="regimeVolatility">–</b></div>
-            <div><span>Positionierung</span><b id="regimePositioning">–</b></div>
+            <div><span>Haltung</span><b id="regimeStance">–</b></div>
           </div>
         </article>
-
-        <article class="panel value">
-          <small>PORTFOLIO VALUE</small>
-          <div class="big" id="portfolioValue">–</div>
-          <div id="portfolioPerformance">–</div>
-          <div class="submetric" id="absolutePnL">–</div>
-          <svg class="chart" viewBox="0 0 330 95" preserveAspectRatio="none" aria-hidden="true">
-            <defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#21d4a7" stop-opacity=".35"/><stop offset="1" stop-color="#21d4a7" stop-opacity="0"/></linearGradient></defs>
-            <path fill="url(#area)" d="M0 75C35 69 45 44 78 55s41-20 78-13 41-24 77-13 43-16 97-14v80H0Z"/>
-            <path fill="none" stroke="#21d4a7" stroke-width="3" d="M0 75C35 69 45 44 78 55s41-20 78-13 41-24 77-13 43-16 97-14"/>
-          </svg>
-        </article>
       </div>
 
-      <div class="kpis">
-        <article><span>Investiert</span><b id="invested">–</b><small>Einstandswert</small></article>
-        <article><span>Cash</span><b id="cash">–</b><small>Verfügbares Budget</small></article>
-        <article><span>Offene Positionen</span><b id="positions">–</b><small>Maximal 5 geplant</small></article>
-        <article><span>Cashquote</span><b id="cashRatio">–</b><small>Flexibilität für neue Chancen</small></article>
-      </div>
+      <div class="kpis" id="executiveKpis"></div>
 
       <div class="grid-two">
         <article class="panel pad">
           <div class="panel-head">
-            <div><small>TOP OPPORTUNITIES</small><h2>Höchste Alpha Scores</h2></div>
-            <button class="link" data-jump="scanner">Alle anzeigen →</button>
+            <div><small>WATCHLIST-MOMENTUM</small><h2>Ranking-Bewegungen</h2></div>
+            <button class="link" data-jump="scanner">Top 10 →</button>
           </div>
-          <div id="topOpportunities"></div>
+          <div id="rankingPreview"></div>
         </article>
 
         <article class="panel pad">
           <div class="panel-head">
-            <div><small>TODAY'S ACTION</small><h2>Handlungsrahmen</h2></div>
-            <span class="pill neutral">Beobachten</span>
+            <div><small>PORTFOLIO-AKTION</small><h2>Microsoft-Strategie</h2></div>
+            <span class="status-pill positive">Aktiv</span>
           </div>
-          <div class="action">
-            <div class="action-icon">↗</div>
-            <div>
-              <b>Keine überhasteten Käufe</b>
-              <p>Bestehende Positionen gegen definierte Stop- und Zielmarken prüfen. Neue Käufe nur bei bestätigtem Signal.</p>
-            </div>
-          </div>
-          <div class="rules">
-            <p><span>Max. Einzelposition</span><b>35 %</b></p>
-            <p><span>Standard Stop-Loss</span><b>8–10 %</b></p>
-            <p><span>Chance/Risiko Minimum</span><b>2,0</b></p>
-          </div>
+          <div id="strategyCard"></div>
         </article>
       </div>
     </section>
 
+    <!-- ALPHA ENGINE -->
+    <section class="view" id="engine">
+      <div class="engine-layout">
+        <article class="panel engine-primary">
+          <div class="panel-head">
+            <div>
+              <small>BESTE NEUE CHANCE</small>
+              <h2 id="engineCandidate">–</h2>
+              <p class="subline" id="engineMeta">–</p>
+            </div>
+            <div class="score-orbit">
+              <span id="engineScore">–</span>
+              <small>OS</small>
+            </div>
+          </div>
+
+          <div class="component-grid" id="componentGrid"></div>
+
+          <div class="engine-thesis">
+            <div>
+              <small>KATALYSATOR</small>
+              <p id="engineCatalyst">–</p>
+            </div>
+            <div>
+              <small>HAUPTRISIKO</small>
+              <p id="engineRisk">–</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel ras-panel">
+          <div class="panel-head">
+            <div><small>RELATIVE ADVANTAGE</small><h2>Kapitalallokations-Gates</h2></div>
+            <div class="ras-score" id="rasScore">–</div>
+          </div>
+          <div id="rasGates" class="gate-list"></div>
+          <div class="ras-verdict" id="rasVerdict">–</div>
+        </article>
+      </div>
+
+      <article class="panel action-plan">
+        <div class="panel-head">
+          <div><small>HANDLUNGSPLAN</small><h2>Nur handeln, wenn beide Hürden erfüllt sind</h2></div>
+          <span class="status-pill warning">Warten</span>
+        </div>
+        <div class="action-plan-grid" id="actionPlan"></div>
+      </article>
+    </section>
+
+    <!-- SCANNER -->
     <section class="view" id="scanner">
       <div class="scanner-toolbar">
         <div class="filters">
-          <input id="search" type="search" placeholder="Unternehmen oder Ticker">
+          <input id="search" type="search" placeholder="Unternehmen, Ticker oder ISIN">
+          <select id="region"><option value="all">Alle Regionen</option></select>
           <select id="sector"><option value="all">Alle Sektoren</option></select>
-          <select id="signal">
-            <option value="all">Alle Signale</option>
-            <option>Strong Buy</option>
-            <option>Buy</option>
-            <option>Watch</option>
-            <option>Hold</option>
+          <select id="conviction">
+            <option value="all">Alle Convictions</option>
+            <option>A+</option><option>A</option><option>B</option><option>C</option>
           </select>
         </div>
         <div class="result-count" id="resultCount">–</div>
       </div>
-      <div class="scanner-grid" id="scannerGrid"></div>
-    </section>
 
-    <section class="view" id="portfolio">
-      <div class="section-head">
-        <div><small>CAPITAL ALLOCATION</small><h2>Depotpositionen</h2></div>
-        <span class="pill positive">Regelbasiert</span>
-      </div>
-      <article class="panel table-panel">
+      <article class="panel scanner-table-panel">
         <div class="table-wrap">
-          <table>
+          <table class="scanner-table">
             <thead>
               <tr>
-                <th>Position</th><th>Stück</th><th>Einstieg</th><th>Aktuell</th>
-                <th>Performance</th><th>Stop</th><th>Ziel</th><th>Status</th>
+                <th>Rang</th><th>Kandidat</th><th>Region</th><th>Sektor</th>
+                <th>OS</th><th>Conviction</th><th>Bewegung</th><th>Status</th>
               </tr>
             </thead>
-            <tbody id="portfolioTable"></tbody>
+            <tbody id="scannerTable"></tbody>
           </table>
         </div>
       </article>
+
+      <div id="candidateDetail" class="candidate-detail panel"></div>
     </section>
 
+    <!-- PORTFOLIO -->
+    <section class="view" id="portfolio">
+      <div class="section-head">
+        <div><small>CHATGPT PORTFOLIO</small><h2>Positionen & Ausstiegslogik</h2></div>
+        <span class="status-pill neutral">Manuell bestätigt</span>
+      </div>
+
+      <div id="portfolioSummary" class="portfolio-summary"></div>
+      <div id="positionCards" class="position-cards"></div>
+
+      <article class="panel closed-trades">
+        <div class="panel-head">
+          <div><small>TRADING JOURNAL</small><h2>Realisierte Gewinne/Verluste</h2></div>
+        </div>
+        <div id="closedTrades"></div>
+      </article>
+    </section>
+
+    <!-- COMPETITION -->
+    <section class="view" id="competition">
+      <div class="section-head">
+        <div><small>BENCHMARK</small><h2>ChatGPT vs. Claude</h2></div>
+      </div>
+      <div id="competitionCards" class="competition-cards"></div>
+      <article class="panel comparison-panel">
+        <div class="panel-head">
+          <div><small>RELATIVE PERFORMANCE</small><h2>Wettbewerbsstand</h2></div>
+        </div>
+        <div id="comparisonBars"></div>
+      </article>
+    </section>
+
+    <!-- JOURNAL -->
     <section class="view" id="journal">
       <div class="section-head">
-        <div><small>DECISION QUALITY</small><h2>Trading Journal</h2></div>
-        <button class="primary" id="addEntry">+ Eintrag</button>
+        <div><small>DECISION QUALITY</small><h2>Entscheidungsjournal</h2></div>
       </div>
       <div class="journal-grid">
         <article class="panel pad">
-          <small>DISZIPLIN-SCORE</small>
+          <small>AKTUELLER FOKUS</small>
           <div class="discipline">84<span>/100</span></div>
-          <p class="muted">Gute Regelbefolgung. Größter Hebel: Einstiegskriterien vor jedem Kauf schriftlich festhalten.</p>
+          <p class="muted">Qualität vor Aktivität. Der nächste Lernhebel ist die dokumentierte Trennung zwischen absolut guter Chance und relativ bester Kapitalverwendung.</p>
         </article>
         <article class="panel pad" id="journalFeed"></article>
       </div>
     </section>
 
-    <section class="view" id="research">
-      <div class="section-head">
-        <div><small>RESEARCH PIPELINE</small><h2>Watchlist & Katalysatoren</h2></div>
+    <!-- METHOD -->
+    <section class="view" id="methodology">
+      <div class="method-grid">
+        <article class="panel pad">
+          <small>OPPORTUNITY SCORE</small>
+          <h2>Feste Gewichtung</h2>
+          <p class="muted">Die Gewichte werden vor der Bewertung festgelegt und nicht nachträglich angepasst.</p>
+          <div id="weightList" class="weight-list"></div>
+        </article>
+
+        <article class="panel pad">
+          <small>RELATIVE ADVANTAGE SCORE</small>
+          <h2>Nur marginale Information</h2>
+          <p class="muted">RAS prüft nicht erneut Fundamentaldaten, sondern den Vorsprung gegenüber Cash, dem zweitbesten Kandidaten und einer bestehenden Position.</p>
+          <div class="formula-box">
+            <span>Startwert 50</span>
+            <span>+ Vorsprung gegenüber Cash</span>
+            <span>+ Abstand zum zweitbesten Kandidaten</span>
+            <span>± Portfolio- und Wechselwirkung</span>
+          </div>
+        </article>
+
+        <article class="panel pad full-width">
+          <small>ALPHA 2.0 REGELWERK</small>
+          <h2>Keine starren Caps – aber volle Begründungspflicht</h2>
+          <div id="ruleGrid" class="rule-grid"></div>
+        </article>
       </div>
-      <div class="research-grid" id="researchGrid"></div>
     </section>
   </main>
 </div>
