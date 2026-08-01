@@ -4,7 +4,7 @@ const pct=v=>`${v>=0?'+':''}${v.toFixed(2).replace('.',',')} %`;
 const cls=s=>s==='Strong Buy'||s==='Buy'?'positive':s==='Watch'?'neutral':'warning';
 
 async function load(){
-  try{const r=await fetch('data/opportunities.json');if(!r.ok)throw 0;return await r.json();}
+  try{const r=await fetch('opportunities.json');if(!r.ok)throw 0;return await r.json();}
   catch{return {
     marketRegime:{label:'Risk-on mit erhöhter Volatilität',score:68,trend:'Positiv',volatility:'Erhöht'},budget:2500,
     portfolio:[{ticker:'MSFT',name:'Microsoft',shares:2,entry:421.30,current:428.60,stop:379.17,target:475},{ticker:'TSM',name:'TSMC',shares:2,entry:179.80,current:176.40,stop:161.82,target:205}],
