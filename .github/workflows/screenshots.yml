@@ -21,13 +21,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v6
         with:
           node-version: "24"
-          package-manager-cache: false
 
       - name: Install Playwright
         run: |
@@ -35,16 +34,23 @@ jobs:
           npm install playwright
           npx playwright install --with-deps chromium
 
-      - name: Wait for GitHub Pages
+      - name: Wait for Project Alpha OS v0.5.0
         run: |
-          for i in {1..24}; do
-            if curl -fsS "https://antraxio.github.io/project-alpha-os/?cachebust=$(date +%s)" > /dev/null; then
-              echo "Website is reachable."
+          for i in {1..36}; do
+            CACHEBUST="$(date +%s)"
+            HTML="$(curl -fsS "https://antraxio.github.io/project-alpha-os/?cachebust=${CACHEBUST}" || true)"
+            DATA="$(curl -fsS "https://antraxio.github.io/project-alpha-os/alpha-data.json?cachebust=${CACHEBUST}" || true)"
+
+            if echo "$HTML" | grep -q "v0.5.0" && echo "$DATA" | grep -q '"version": "0.5.0"'; then
+              echo "Project Alpha OS v0.5.0 is deployed."
               exit 0
             fi
-            echo "Website not ready yet. Retrying in 10 seconds."
+
+            echo "v0.5.0 is not deployed yet. Retrying in 10 seconds."
             sleep 10
           done
+
+          echo "Timed out while waiting for GitHub Pages v0.5.0."
           exit 1
 
       - name: Capture screenshots and validate browser console
