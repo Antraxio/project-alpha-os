@@ -452,7 +452,14 @@ function setManualDecisionTicker(ticker,openLab=false){
   state.selectedTicker=ticker;
   localStorage.setItem('alphaManualCandidate',ticker);
   localStorage.setItem('alphaDecisionMode','manual');
-  if(openLab) switchView('decision'); else renderDecision();
+
+  // Render the newly selected candidate before opening the Decision Lab.
+  // This fixes Universe/Scanner navigation retaining the previous ASML view.
+  renderDecision();
+
+  if(openLab){
+    switchView('decision');
+  }
 }
 function renderDecisionControls(selection){
   document.querySelectorAll('[data-decision-mode]').forEach(button=>{

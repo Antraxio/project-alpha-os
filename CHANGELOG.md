@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.0.1 – Navigation Hotfix
+
+### Fixed
+- Manual candidate selection now rerenders the Decision Lab before navigation.
+- Universe and Scanner navigation no longer retain the previous ASML view.
+- GitHub Actions candidate-navigation regression test can complete successfully.
+
+
 ## v0.5.0 – Universe 50 & Candidate Navigation
 
 ### Added

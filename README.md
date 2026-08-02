@@ -95,3 +95,10 @@ Der Screenshot-Workflow enthält nun einen funktionalen Regressionstest: Das def
 - Ranking-Diagnostik gegenüber dem ausgewogenen Standardprofil
 - Cache-Busting für CSS, JavaScript und Daten
 - Tests für exakt 50 Titel und Universe-to-Decision-Lab-Navigation
+
+
+## v0.5.0.1 – Navigation Hotfix
+
+- Universe-50-Klick rendert den gewählten Titel vor dem Öffnen des Decision Labs.
+- Scanner-Button „Im Decision Lab öffnen“ zeigt jetzt ebenfalls sofort den gewählten Titel.
+- Der automatische Workflow-Test Apple → Decision Lab kann dadurch erfolgreich abgeschlossen werden.
