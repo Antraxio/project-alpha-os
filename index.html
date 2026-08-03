@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080c16">
   <title>Project Alpha OS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=0.5.0">
+  <link rel="stylesheet" href="style.css?v=0.6.0">
 </head>
 <body>
 <div class="shell">
@@ -26,6 +26,7 @@
       <button class="nav" data-view="decision">✦ <span data-i18n="navDecision">Decision Lab</span></button>
       <button class="nav" data-view="scanner">⌁ <span data-i18n="navScanner">Scanner</span></button>
       <button class="nav" data-view="universe">◉ <span data-i18n="navUniverse">Universe 50</span></button>
+      <button class="nav" data-view="research">◌ <span data-i18n="navResearch">Research Pipeline</span></button>
       <button class="nav" data-view="timeline">↗ <span data-i18n="navTimeline">Alpha Timeline</span></button>
       <button class="nav" data-view="portfolio">◈ <span data-i18n="navPortfolio">Portfolio</span></button>
       <button class="nav" data-view="competition">⇄ <span data-i18n="navCompetition">Competition</span></button>
@@ -41,7 +42,7 @@
         <p><span data-i18n="osThreshold">OS-Schwelle</span><strong id="sideThreshold">85</strong></p>
         <p><span data-i18n="cashMargin">Cash-Marge</span><strong id="sideCashMargin">+5</strong></p>
       </div>
-      <div class="version">v0.5.0.1 · Navigation Hotfix</div>
+      <div class="version">v0.6.0 · Research Pipeline</div>
     </div>
   </aside>
 
@@ -227,6 +228,7 @@
         <select id="universeCoverage">
           <option value="all" data-i18n="allCoverage">Alle Abdeckungen</option>
           <option value="scored" data-i18n="scored">Bewertet</option>
+          <option value="research_active" data-i18n="researchActive">Research aktiv</option>
           <option value="research_pending" data-i18n="researchPending">Research ausstehend</option>
         </select>
         <select id="universeRegion"><option value="all" data-i18n="allRegions">Alle Regionen</option></select>
@@ -242,6 +244,35 @@
         <span data-i18n="tradeability">Handelbarkeit</span>
       </div>
       <article class="universe-list" id="universeList"></article>
+    </section>
+
+    <section class="view" id="research">
+      <div class="research-hero">
+        <div>
+          <small>RESEARCH PIPELINE</small>
+          <h2 data-i18n="researchHeadline">Von der Quelle zur freigegebenen Investmentthese</h2>
+          <p id="researchMethodology">–</p>
+        </div>
+        <div class="research-hero-stats" id="researchHeroStats"></div>
+      </div>
+
+      <div class="research-stage-strip" id="researchStageStrip"></div>
+
+      <div class="research-toolbar">
+        <input id="researchSearch" type="search" data-i18n-placeholder="researchSearchPlaceholder" placeholder="Unternehmen oder Ticker">
+        <select id="researchStageFilter">
+          <option value="all" data-i18n="allStages">Alle Stufen</option>
+          <option value="market_refresh_required" data-i18n="marketRefreshRequired">Marktdaten aktualisieren</option>
+          <option value="technical_pending" data-i18n="technicalPending">Technik ausstehend</option>
+          <option value="ready_for_review" data-i18n="readyForReview">Review bereit</option>
+          <option value="approved" data-i18n="approved">Freigegeben</option>
+        </select>
+      </div>
+
+      <div class="research-layout">
+        <article class="research-queue" id="researchQueue"></article>
+        <article class="panel research-dossier" id="researchDossier"></article>
+      </div>
     </section>
 
     <section class="view" id="timeline">
@@ -336,6 +367,6 @@
   </main>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script src="app.js?v=0.5.0.1"></script>
+<script src="app.js?v=0.6.0"></script>
 </body>
 </html>

@@ -8,7 +8,8 @@ const state={
   profile:'balanced',
   lastRanking:null,
   decisionMode:localStorage.getItem('alphaDecisionMode')||'auto',
-  manualDecisionTicker:localStorage.getItem('alphaManualCandidate')||'ASML'
+  manualDecisionTicker:localStorage.getItem('alphaManualCandidate')||'ASML',
+  selectedResearchTicker:localStorage.getItem('alphaResearchTicker')||'AAPL'
 };
 const $=id=>document.getElementById(id);
 const clone=x=>JSON.parse(JSON.stringify(x));
@@ -24,7 +25,7 @@ const realisedOf=p=>p.closedTrades.reduce((s,x)=>s+x.result,0);
 
 const I18N={
   de:{
-    brandSubtitle:'Decision Intelligence',navExecutive:'Executive',navDecision:'Decision Lab',navScanner:'Scanner',navUniverse:'Universe 50',navTimeline:'Alpha Timeline',navPortfolio:'Portfolio',navCompetition:'Competition',navJournal:'Journal',navMethodology:'Methodik',navSettings:'Strategy Studio',
+    brandSubtitle:'Decision Intelligence',navExecutive:'Executive',navDecision:'Decision Lab',navScanner:'Scanner',navUniverse:'Universe 50',navResearch:'Research Pipeline',navTimeline:'Alpha Timeline',navPortfolio:'Portfolio',navCompetition:'Competition',navJournal:'Journal',navMethodology:'Methodik',navSettings:'Strategy Studio',
     cashActive:'Cash ist eine aktive Position',osThreshold:'OS-Schwelle',cashMargin:'Cash-Marge',modelSnapshot:'MODELL-SNAPSHOT',modelDisclaimer:'Keine Live-Kursversorgung. Entscheidungen werden aus eingebetteten Daten und dem aktiven Strategieprofil abgeleitet.',
     todayDecision:'HEUTIGE ENTSCHEIDUNG',nextTrigger:'Nächster Trigger',bestNewOpportunity:'BESTE NEUE CHANCE',absoluteQuality:'absolute Qualität',relativeUse:'relative Verwendung',gates:'Gates',executionPassed:'Ausführung erfüllt',
     marketRegime:'MARKTREGIME',trend:'Trend',breadth:'Breite',stance:'Haltung',attentionToday:'Was heute Aufmerksamkeit verdient',partialProfitNear:'Teilgewinn fast erreicht',strategyLink:'Strategie →',watchlist:'WATCHLIST',largestChanges:'Größte Veränderungen',timelineLink:'Timeline →',
@@ -65,13 +66,23 @@ const I18N={
     universeRank:'Auswahl',security:'Unternehmen',coverage:'Abdeckung',portfolioStatus:'Depot',tradeability:'Handelbarkeit',held:'Im Depot',notHeld:'Nicht im Depot',verifyBroker:'Beim Broker prüfen',snapshotConfirmed:'Snapshot bestätigt',
     totalUniverse:'Universum',scoredCount:'Bewertet',pendingCount:'Ausstehend',openInDecisionLab:'Im Decision Lab öffnen',autoChangesWhen:'Die automatische Auswahl ändert sich, wenn ein anderer bewerteter Nicht-Depot-Titel den höchsten Strategy Score erreicht.',
     rankingDiagnostics:'RANKING-DIAGNOSE',versusBalanced:'gegen Ausgewogen',baselineRank:'Basisrang',currentRank:'Aktueller Rang',noDecisionAvailable:'Noch keine Entscheidung möglich',
-    universeEyebrow:'GLOBAL COVERAGE',universeTitle:'Universe 50',
+    universeEyebrow:'GLOBAL COVERAGE',universeTitle:'Universe 50',researchEyebrow:'RESEARCH GOVERNANCE',researchTitle:'Research Pipeline',
+    researchActive:'Research aktiv',navResearch:'Research Pipeline',
+    researchHeadline:'Von der Quelle zur freigegebenen Investmentthese',researchSearchPlaceholder:'Unternehmen oder Ticker',allStages:'Alle Stufen',
+    marketRefreshRequired:'Marktdaten aktualisieren',technicalPending:'Technik ausstehend',readyForReview:'Review bereit',approved:'Freigegeben',
+    activeResearch:'Aktives Research',sourceVerified:'Primärquellen geprüft',rankingApproved:'Für Ranking freigegeben',researchProgress:'Research-Fortschritt',
+    researchStage:'Research-Stufe',confidence:'Vertrauen',lastVerified:'Zuletzt geprüft',thesis:'Investmentthese',researchFacts:'Verifizierte Fakten',
+    researchChecklist:'Freigabe-Checkliste',sources:'Quellen',openSource:'Quelle öffnen',blocker:'Aktueller Blocker',openResearch:'Research öffnen',
+    promoteLocked:'Ranking-Freigabe gesperrt',openInLab:'Im Decision Lab öffnen',high:'Hoch',medium:'Mittel',low:'Niedrig',
+    identityCheck:'Identität & Listing',primarySourcesCheck:'Primärquellen',fundamentalCheck:'Fundamentalbild',catalystCheck:'Katalysator',
+    riskCheck:'Risiken',marketDataCheck:'Markt-Snapshot',technicalCheck:'Technik',setupCheck:'Einstieg / Stop / Ziel',reviewCheck:'Finales Review',
+    queuedResearch:'Research-Warteschlange',noResearchMatch:'Keine Research-Titel für diesen Filter.',
     formulaOS:'OS ≥ Schwelle',formulaCash:'Cash-Vorsprung ≥ Marge',formulaSwitch:'Wechselschwelle erfüllt',formulaPrice:'Preiszone bestätigt',
     noRigidCaps:'Keine starren Positionscaps',stopLogic:'Stop-Logik',crvHurdle:'CRV-Hürde',wholeSharesOnly:'Volle Stücke',cashHurdleLabel:'Cash-Hürde',activityStandard:'Aktivitätsstandard',
     riskProfile:'Risikoprofil',buy:'Kauf',sale:'Verkauf',review:'Review',method:'Methodik'
   },
   en:{
-    brandSubtitle:'Decision Intelligence',navExecutive:'Executive',navDecision:'Decision Lab',navScanner:'Scanner',navUniverse:'Universe 50',navTimeline:'Alpha Timeline',navPortfolio:'Portfolio',navCompetition:'Competition',navJournal:'Journal',navMethodology:'Methodology',navSettings:'Strategy Studio',
+    brandSubtitle:'Decision Intelligence',navExecutive:'Executive',navDecision:'Decision Lab',navScanner:'Scanner',navUniverse:'Universe 50',navResearch:'Research Pipeline',navTimeline:'Alpha Timeline',navPortfolio:'Portfolio',navCompetition:'Competition',navJournal:'Journal',navMethodology:'Methodology',navSettings:'Strategy Studio',
     cashActive:'Cash is an active position',osThreshold:'OS threshold',cashMargin:'Cash margin',modelSnapshot:'MODEL SNAPSHOT',modelDisclaimer:'No live market data. Decisions are derived from embedded data and the active strategy profile.',
     todayDecision:'TODAY’S DECISION',nextTrigger:'Next trigger',bestNewOpportunity:'BEST NEW OPPORTUNITY',absoluteQuality:'absolute quality',relativeUse:'relative use',gates:'Gates',executionPassed:'execution passed',
     marketRegime:'MARKET REGIME',trend:'Trend',breadth:'Breadth',stance:'Stance',attentionToday:'What deserves attention today',partialProfitNear:'Partial-profit target is close',strategyLink:'Strategy →',watchlist:'WATCHLIST',largestChanges:'Largest changes',timelineLink:'Timeline →',
@@ -112,7 +123,17 @@ const I18N={
     universeRank:'Selection',security:'Security',coverage:'Coverage',portfolioStatus:'Portfolio',tradeability:'Tradability',held:'Held',notHeld:'Not held',verifyBroker:'Verify at broker',snapshotConfirmed:'Snapshot confirmed',
     totalUniverse:'Universe',scoredCount:'Scored',pendingCount:'Pending',openInDecisionLab:'Open in Decision Lab',autoChangesWhen:'Automatic selection changes whenever another scored, non-held security reaches the highest Strategy Score.',
     rankingDiagnostics:'RANKING DIAGNOSTICS',versusBalanced:'versus Balanced',baselineRank:'Baseline rank',currentRank:'Current rank',noDecisionAvailable:'No decision available yet',
-    universeEyebrow:'GLOBAL COVERAGE',universeTitle:'Universe 50',
+    universeEyebrow:'GLOBAL COVERAGE',universeTitle:'Universe 50',researchEyebrow:'RESEARCH GOVERNANCE',researchTitle:'Research Pipeline',
+    researchActive:'Active research',navResearch:'Research Pipeline',
+    researchHeadline:'From source material to an approved investment thesis',researchSearchPlaceholder:'Company or ticker',allStages:'All stages',
+    marketRefreshRequired:'Refresh market data',technicalPending:'Technicals pending',readyForReview:'Ready for review',approved:'Approved',
+    activeResearch:'Active research',sourceVerified:'Primary sources verified',rankingApproved:'Approved for ranking',researchProgress:'Research progress',
+    researchStage:'Research stage',confidence:'Confidence',lastVerified:'Last verified',thesis:'Investment thesis',researchFacts:'Verified facts',
+    researchChecklist:'Approval checklist',sources:'Sources',openSource:'Open source',blocker:'Current blocker',openResearch:'Open research',
+    promoteLocked:'Ranking approval locked',openInLab:'Open in Decision Lab',high:'High',medium:'Medium',low:'Low',
+    identityCheck:'Identity & listing',primarySourcesCheck:'Primary sources',fundamentalCheck:'Fundamentals',catalystCheck:'Catalyst',
+    riskCheck:'Risks',marketDataCheck:'Market snapshot',technicalCheck:'Technicals',setupCheck:'Entry / stop / target',reviewCheck:'Final review',
+    queuedResearch:'Research queue',noResearchMatch:'No research securities match this filter.',
     formulaOS:'OS ≥ threshold',formulaCash:'Cash advantage ≥ margin',formulaSwitch:'Switch threshold passed',formulaPrice:'Price zone confirmed',
     noRigidCaps:'No rigid position caps',stopLogic:'Stop logic',crvHurdle:'Risk/reward hurdle',wholeSharesOnly:'Whole shares',cashHurdleLabel:'Cash hurdle',activityStandard:'Activity standard',
     riskProfile:'Risk profile',buy:'Buy',sale:'Sale',review:'Review',method:'Methodology'
@@ -358,7 +379,7 @@ function applyStaticTranslations(){
   document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===state.language));
   const titles={
     dashboard:['executiveEyebrow','projectAlpha'],decision:['decisionEyebrow','decisionLab'],scanner:['scannerEyebrow','scannerTitle'],
-    universe:['universeEyebrow','universeTitle'],
+    universe:['universeEyebrow','universeTitle'],research:['researchEyebrow','researchTitle'],
     timeline:['timelineEyebrow','timelineTitle'],portfolio:['portfolioEyebrow','portfolioTitle'],competition:['competitionEyebrow','competitionTitle'],
     journal:['journalEyebrow','journalTitle'],methodology:['methodologyEyebrow','methodologyTitle'],settings:['settingsEyebrow','settingsTitle']
   };
@@ -481,7 +502,10 @@ function renderDecisionControls(selection){
 }
 function renderPendingDecision(entry){
   $('decisionCoverageNotice').classList.add('show');
-  $('decisionCoverageNotice').textContent=t('researchRequiredText');
+  const activeResearch=researchRecord(entry.ticker);
+  $('decisionCoverageNotice').innerHTML=activeResearch
+    ?`${t('researchActive')}: ${activeResearch.progress}% · ${researchStageLabel(activeResearch.stage)}<div class="research-inline"><b>${t('blocker')}</b><span>${loc(activeResearch.blocker)}</span></div>`
+    :t('researchRequiredText');
   $('decisionCandidate').innerHTML=`${entry.name} (${entry.ticker})<span class="calculated-score-label">${t('researchRequired')}</span>`;
   $('decisionMeta').textContent=`${regionName(entry.region)} · ${sectorName(entry.sector)} · ${entry.exchange}`;
   $('decisionScore').textContent='–';
@@ -502,7 +526,7 @@ function renderPendingDecision(entry){
     [state.language==='de'?'Quellkorb':'Source basket',entry.sourceBasket],
     [t('tradeability'),t('verifyBroker')],
     [t('portfolioStatus'),entry.portfolioStatus==='held'?t('held'):t('notHeld')],
-    [state.language==='de'?'Priorität':'Priority',state.language==='de'?'Research-Warteschlange':'Research queue']
+    [state.language==='de'?'Priorität':'Priority',activeResearch?`${t('researchActive')} ${activeResearch.progress}%`:(state.language==='de'?'Research-Warteschlange':'Research queue')]
   ].map(item=>`<div class="evidence-card"><header><span>${item[0]}</span></header><p>${item[1]}</p></div>`).join('');
 }
 function renderDecision(){
@@ -560,6 +584,42 @@ function renderCandidateDetail(){
   });
 }
 
+
+function researchRecord(ticker){
+  return state.data.researchPipeline?.records?.find(record=>record.ticker===ticker)||null;
+}
+function researchStageLabel(stage){
+  const map={
+    market_refresh_required:'marketRefreshRequired',
+    technical_pending:'technicalPending',
+    ready_for_review:'readyForReview',
+    approved:'approved'
+  };
+  return t(map[stage]||stage);
+}
+function researchConfidenceLabel(value){
+  return t(value||'medium');
+}
+function checklistLabel(key){
+  const map={
+    identity:'identityCheck',
+    primarySources:'primarySourcesCheck',
+    fundamental:'fundamentalCheck',
+    catalyst:'catalystCheck',
+    risk:'riskCheck',
+    marketData:'marketDataCheck',
+    technical:'technicalCheck',
+    setup:'setupCheck',
+    review:'reviewCheck'
+  };
+  return t(map[key]||key);
+}
+function setResearchTicker(ticker,openPage=false){
+  state.selectedResearchTicker=ticker;
+  localStorage.setItem('alphaResearchTicker',ticker);
+  if(openPage) switchView('research');
+  else renderResearch();
+}
 function populateUniverseFilters(){
   const region=$('universeRegion');
   const sector=$('universeSector');
@@ -586,30 +646,131 @@ function renderUniverse(){
     (sector==='all'||item.sector===sector)
   );
   const scoredCount=state.data.universe.filter(item=>item.coverageStatus==='scored').length;
+  const activeCount=state.data.universe.filter(item=>item.coverageStatus==='research_active').length;
+  const pendingCount=state.data.universe.length-scoredCount-activeCount;
   $('universeMethodology').textContent=loc(state.data.universeMethodology);
   $('universeStats').innerHTML=[
     [t('totalUniverse'),state.data.universe.length],
     [t('scoredCount'),scoredCount],
-    [t('pendingCount'),state.data.universe.length-scoredCount]
+    [t('activeResearch'),activeCount],
+    [t('pendingCount'),pendingCount]
   ].map(item=>`<div class="universe-stat"><span>${item[0]}</span><b>${item[1]}</b></div>`).join('');
   $('universeList').innerHTML=items.map(item=>{
     const scored=scoredMap.get(item.ticker);
-    const coverageClass=item.coverageStatus==='scored'?'scored':'pending';
-    const coverageLabel=item.coverageStatus==='scored'?t('scored'):t('researchPending');
+    const active=item.coverageStatus==='research_active';
+    const coverageClass=item.coverageStatus==='scored'?'scored':active?'active':'pending';
+    const coverageLabel=item.coverageStatus==='scored'?t('scored'):active?t('researchActive'):t('researchPending');
     const portfolioClass=item.portfolioStatus==='held'?'held':'not-held';
     const portfolioLabel=item.portfolioStatus==='held'?t('held'):t('notHeld');
     const tradeability=item.tradeabilityStatus==='confirmed_snapshot'?t('snapshotConfirmed'):t('verifyBroker');
+    const record=researchRecord(item.ticker);
     return`<div class="universe-row" data-universe-ticker="${item.ticker}">
       <div class="universe-order">${String(item.universeOrder).padStart(2,'0')}</div>
       <div class="universe-company"><b>${item.name}</b><span>${item.ticker} · ${regionName(item.region)} · ${sectorName(item.sector)} · ${item.exchange}</span></div>
       <div><span class="coverage-badge ${coverageClass}">${coverageLabel}</span></div>
-      <div class="universe-score">${scored?`<b>${scored.strategyScore}</b><span>OS ${scored.customScore}</span>`:`<b>–</b><span>${t('researchRequired')}</span>`}</div>
+      <div class="universe-score">${scored?`<b>${scored.strategyScore}</b><span>OS ${scored.customScore}</span>`:record?`<b>${record.progress}%</b><span>${t('researchProgress')}</span>`:`<b>–</b><span>${t('researchRequired')}</span>`}</div>
       <div><span class="portfolio-badge ${portfolioClass}">${portfolioLabel}</span></div>
       <div><span class="tradeability-badge">${tradeability}</span></div>
     </div>`;
   }).join('');
   document.querySelectorAll('[data-universe-ticker]').forEach(row=>{
-    row.onclick=()=>setManualDecisionTicker(row.dataset.universeTicker,true);
+    row.onclick=()=>{
+      const record=researchRecord(row.dataset.universeTicker);
+      if(record) setResearchTicker(record.ticker,true);
+      else setManualDecisionTicker(row.dataset.universeTicker,true);
+    };
+  });
+}
+
+
+function renderResearch(){
+  const pipeline=state.data.researchPipeline;
+  if(!pipeline) return;
+  const records=pipeline.records;
+  const query=$('researchSearch').value.trim().toLowerCase();
+  const stage=$('researchStageFilter').value;
+  const visible=records.filter(record=>{
+    const universe=universeEntry(record.ticker);
+    const text=`${universe?.name||record.ticker} ${record.ticker}`.toLowerCase();
+    return(!query||text.includes(query))&&(stage==='all'||record.stage===stage);
+  });
+  if(!records.some(record=>record.ticker===state.selectedResearchTicker)){
+    state.selectedResearchTicker=records[0]?.ticker||'';
+  }
+  if(visible.length&&!visible.some(record=>record.ticker===state.selectedResearchTicker)){
+    state.selectedResearchTicker=visible[0].ticker;
+  }
+  const selected=records.find(record=>record.ticker===state.selectedResearchTicker)||records[0];
+  const verified=records.filter(record=>record.checklist.primarySources).length;
+  const approved=records.filter(record=>record.stage==='approved').length;
+  $('researchMethodology').textContent=loc(pipeline.methodology);
+  $('researchHeroStats').innerHTML=[
+    [t('activeResearch'),records.length],
+    [t('sourceVerified'),verified],
+    [t('rankingApproved'),approved]
+  ].map(item=>`<div class="research-hero-stat"><span>${item[0]}</span><b>${item[1]}</b></div>`).join('');
+  const stageOrder=['market_refresh_required','technical_pending','ready_for_review','approved'];
+  $('researchStageStrip').innerHTML=stageOrder.map(stageKey=>{
+    const count=records.filter(record=>record.stage===stageKey).length;
+    return`<div class="research-stage"><span>${researchStageLabel(stageKey)}</span><b>${count}</b><small>${pipeline.batchName}</small></div>`;
+  }).join('');
+  $('researchQueue').innerHTML=visible.length?visible.sort((a,b)=>a.priority-b.priority).map(record=>{
+    const universe=universeEntry(record.ticker);
+    return`<div class="research-card ${record.ticker===selected.ticker?'active':''}" data-research-ticker="${record.ticker}">
+      <div class="research-priority">#${record.priority}</div>
+      <div class="research-company"><b>${universe?.name||record.ticker}</b><span>${record.ticker} · ${researchStageLabel(record.stage)}</span><small>${loc(record.blocker)}</small></div>
+      <div class="research-progress"><b>${record.progress}%</b><span>${researchConfidenceLabel(record.confidence)}</span><div class="research-mini-track"><i style="width:${record.progress}%"></i></div></div>
+    </div>`;
+  }).join(''):`<div class="pending-score"><div><strong>${t('noResearchMatch')}</strong></div></div>`;
+  document.querySelectorAll('[data-research-ticker]').forEach(card=>{
+    card.onclick=()=>setResearchTicker(card.dataset.researchTicker,false);
+  });
+  renderResearchDossier(selected);
+}
+function renderResearchDossier(record){
+  if(!record){
+    $('researchDossier').innerHTML='';
+    return;
+  }
+  const universe=universeEntry(record.ticker);
+  const complete=Object.values(record.checklist).filter(Boolean).length;
+  const total=Object.keys(record.checklist).length;
+  $('researchDossier').innerHTML=`
+    <div class="dossier-head">
+      <div><h2>${universe?.name||record.ticker}</h2><p>${record.ticker} · ${regionName(universe?.region)} · ${sectorName(universe?.sector)} · ${universe?.exchange||''}</p></div>
+      <span class="stage-badge">${researchStageLabel(record.stage)}</span>
+    </div>
+    <div class="dossier-progress">
+      <div class="dossier-progress-head"><span>${t('researchProgress')}</span><b>${record.progress}% · ${complete}/${total}</b></div>
+      <div class="dossier-track"><i style="width:${record.progress}%"></i></div>
+    </div>
+    <div class="dossier-summary-grid">
+      <div class="dossier-summary"><span>${t('thesis')}</span><b>${loc(record.thesis)}</b></div>
+      <div class="dossier-summary"><span>${t('catalyst')}</span><b>${loc(record.catalyst)}</b></div>
+      <div class="dossier-summary"><span>${t('risk')}</span><b>${loc(record.riskSummary)}</b></div>
+    </div>
+    <div class="dossier-section">
+      <h3>${t('researchFacts')}</h3>
+      <div class="research-facts">${record.facts.map(fact=>`<div class="research-fact"><span>${loc(fact.label)}</span><b>${loc(fact.value)}</b><small>${loc(fact.note)}</small></div>`).join('')}</div>
+    </div>
+    <div class="dossier-section">
+      <h3>${t('researchChecklist')}</h3>
+      <div class="research-checklist">${Object.entries(record.checklist).map(([key,value])=>`<div class="research-check ${value?'complete':'open'}"><i>${value?'✓':'…'}</i><span>${checklistLabel(key)}</span></div>`).join('')}</div>
+    </div>
+    <div class="dossier-section">
+      <h3>${t('sources')}</h3>
+      <div class="research-sources">${record.sources.map(source=>`<div class="research-source"><div><b>${source.publisher}</b><span>${loc(source.title)}</span><small>${source.date} · ${source.type.replaceAll('_',' ')}</small></div><a href="${source.url}" target="_blank" rel="noopener">${t('openSource')} ↗</a></div>`).join('')}</div>
+    </div>
+    <div class="dossier-section">
+      <h3>${t('blocker')}</h3>
+      <div class="research-blocker">${loc(record.blocker)}</div>
+      <div class="research-actions">
+        <button class="open-lab" data-research-open-lab="${record.ticker}">${t('openInLab')}</button>
+        <button class="locked" disabled>${t('promoteLocked')}</button>
+      </div>
+    </div>`;
+  document.querySelectorAll('[data-research-open-lab]').forEach(button=>{
+    button.onclick=()=>setManualDecisionTicker(button.dataset.researchOpenLab,true);
   });
 }
 function renderTimeline(){
@@ -750,7 +911,7 @@ function updateProfileUI(){
   document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===p));
 }
 function renderModelViews(){
-  renderExecutive();renderDecision();renderScanner();renderUniverse();renderTimeline();renderPortfolio();renderCompetition();renderJournal();renderMethod();
+  renderExecutive();renderDecision();renderScanner();renderUniverse();renderResearch();renderTimeline();renderPortfolio();renderCompetition();renderJournal();renderMethod();
 }
 function switchView(id){
   state.view=id;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));
@@ -782,10 +943,13 @@ function bind(){
   ['universeSearch','universeCoverage','universeRegion','universeSector'].forEach(id=>{
     $(id).addEventListener('input',renderUniverse);
   });
+  ['researchSearch','researchStageFilter'].forEach(id=>{
+    $(id).addEventListener('input',renderResearch);
+  });
 }
 async function init(){
   try{
-    const r=await fetch('alpha-data.json?v=0.5.0',{cache:'no-store'});if(!r.ok)throw new Error('alpha-data.json');state.data=await r.json();
+    const r=await fetch('alpha-data.json?v=0.6.0',{cache:'no-store'});if(!r.ok)throw new Error('alpha-data.json');state.data=await r.json();
     const saved=localStorage.getItem('alphaStrategySettings');state.settings=saved?{...clone(state.data.strategyDefaults),...JSON.parse(saved),scoreWeights:{...state.data.strategyDefaults.scoreWeights,...JSON.parse(saved).scoreWeights}}:clone(state.data.strategyDefaults);
     bind();renderAll();
   }catch(e){$('systemLabel').textContent='Data error';document.body.insertAdjacentHTML('beforeend',`<div class="toast show">${e.message}</div>`)}

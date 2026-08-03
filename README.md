@@ -102,3 +102,43 @@ Der Screenshot-Workflow enthält nun einen funktionalen Regressionstest: Das def
 - Universe-50-Klick rendert den gewählten Titel vor dem Öffnen des Decision Labs.
 - Scanner-Button „Im Decision Lab öffnen“ zeigt jetzt ebenfalls sofort den gewählten Titel.
 - Der automatische Workflow-Test Apple → Decision Lab kann dadurch erfolgreich abgeschlossen werden.
+
+
+## v0.6.0 – Research Pipeline
+
+### Neue Research-Governance
+
+Ein Titel wird nicht allein aufgrund interessanter Nachrichten in das Ranking aufgenommen. Die Freigabe erfordert:
+
+- Identität und Listing
+- überprüfte Primärquellen
+- Fundamentalbild
+- Katalysator
+- dokumentierte Risiken
+- aktuellen Markt-Snapshot
+- technische Analyse
+- Einstiegszone, Stop und Ziel
+- finales Review
+
+### Batch 1
+
+Aktives Research für:
+
+- Apple
+- NVIDIA
+- Alphabet
+- Amazon
+- SAP
+
+Die Unternehmensfakten und Quellen sind hinterlegt. Da Markt-/Technik- und Handelssetup noch nicht für alle Titel vollständig validiert sind, erzeugen diese fünf Titel bewusst noch keinen Opportunity Score und keine automatische Kaufentscheidung.
+
+### UI
+
+- neuer Menüpunkt Research Pipeline
+- Research-Stufen und Fortschritt
+- Dossiers mit These, Katalysator, Risiko und Fakten
+- vollständige Freigabe-Checkliste
+- klickbare Primärquellen
+- sichtbarer Blocker
+- gesperrte Ranking-Freigabe
+- Universe 50 unterscheidet bewertet, aktives Research und Warteschlange

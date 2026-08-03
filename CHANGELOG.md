@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.6.0 – Research Pipeline
+
+### Added
+- research governance and approval checklist
+- active research batch for AAPL, NVDA, GOOGL, AMZN and SAP
+- source-backed research dossiers
+- progress, confidence, blockers and stages
+- verified-source links
+- active-research status in Universe 50
+- research context inside the Decision Lab
+
+### Governance
+- preliminary research does not create an Opportunity Score
+- ranking approval remains locked until market data, technicals, trade setup and review are complete
+
+### Tests
+- assert five active research records
+- assert verified source links
+- assert disabled ranking-approval control
+- capture Research Pipeline screenshot
+
+
 ## v0.5.0.1 – Navigation Hotfix
 
 ### Fixed
