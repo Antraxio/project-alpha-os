@@ -1,4 +1,29 @@
-function applyStaticTranslations(){
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js';
+import {movement,normalisedWeights,profileName,scoreClass} from '../scoring.js';
+import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js';
+import {computeModel} from '../strategy-ranking.js';
+import {activeDecisionSelection,universeEntry} from '../universe.js';
+import {researchRecord} from '../research-pipeline.js';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js';
+
+let navigateToView=()=>{};
+export function setViewNavigator(navigator){navigateToView=navigator;}
+function researchStageLabel(stage){
+  const map={market_refresh_required:'marketRefreshRequired',technical_pending:'technicalPending',ready_for_review:'readyForReview',approved:'approved'};
+  return t(map[stage]||stage);
+}
+function researchConfidenceLabel(value){return t(value||'medium');}
+function checklistLabel(key){
+  const map={identity:'identityCheck',primarySources:'primarySourcesCheck',fundamental:'fundamentalCheck',catalyst:'catalystCheck',risk:'riskCheck',marketData:'marketDataCheck',technical:'technicalCheck',setup:'setupCheck',review:'reviewCheck'};
+  return t(map[key]||key);
+}
+function setResearchTicker(ticker,openPage=false){
+  state.selectedResearchTicker=ticker;
+  storage.setItem('alphaResearchTicker',ticker);
+  if(openPage)navigateToView('research');else renderResearch();
+}
+
+export function applyStaticTranslations(){
   document.documentElement.lang=state.language;
   document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
@@ -11,10 +36,10 @@ function applyStaticTranslations(){
   };
   $('eyebrow').textContent=t(titles[state.view][0]);$('title').textContent=t(titles[state.view][1]);
 }
-function profileLabel(name){
+export function profileLabel(name){
   return t({defensive:'profileDefensive',balanced:'profileBalanced',offensive:'profileOffensive',custom:'profileCustom'}[name]);
 }
-function showToast(message){
+export function showToast(message){
   $('toast').textContent=message;$('toast').classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>$('toast').classList.remove('show'),2200);
 }
 function radarSvg(x,compact=false){
@@ -36,8 +61,18 @@ function sparkline(values){
   return`<svg class="mini-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}"/></svg>`;
 }
 
-function renderExecutive(){
+export function renderExecutive(){
   const d=state.data,m=computeModel(),c=d.portfolios.chatgpt,cl=d.portfolios.claude,msft=c.positions[0],cv=valueOf(c),clv=valueOf(cl),gap=cv-clv,open=(msft.current-msft.entry)*msft.shares;
+  if(!m.candidate){
+    $('briefingSalutation').textContent=state.language==='de'?'Alex, heute zählt Disziplin – nicht Aktivität.':'Alex, today discipline matters more than activity.';
+    $('briefingHeadline').textContent=t('noEligibleCandidate');$('briefingSummary').textContent=t('noEligibleCandidateText');
+    $('briefingPoints').innerHTML=`<div class="briefing-point">${t('noEligibleCandidateText')}</div>`;$('briefingTrigger').textContent=t('noEligibleCandidateText');
+    $('executiveMetrics').innerHTML=[[t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100)],[t('activeCash'),euro(c.cash),`${num(c.cash/cv*100,1)} % ${t('cashQuote')}`],[t('openProfit'),`+${euro(open)}`,'Microsoft'],[t('gapClaude'),`${gap>=0?'+':''}${euro(gap)}`,gap>=0?`ChatGPT ${t('leads')}`:`Claude ${t('leads')}`]].map((x,i)=>`<div class="metric-line"><span>${x[0]}</span><b class="${i===2?'positive':i===3?(gap>=0?'positive':'negative'):''}">${x[1]}</b><small>${x[2]}</small></div>`).join('');
+    $('execCandidate').textContent=t('noEligibleCandidate');$('execVerdict').textContent=t('wait');$('execOS').textContent='–';$('execRAS').textContent='–';$('execGates').textContent='0/0';
+    $('triggerZone').textContent=t('noEligibleCandidate');$('triggerDistance').textContent='–';$('priceZoneProgress').style.width='0%';$('execWhy').innerHTML=`<div class="why-item"><i>×</i><span>${t('noEligibleCandidateText')}</span></div>`;
+    $('regimeLabel').textContent=loc(d.marketRegime.label);$('regimeScore').textContent=d.marketRegime.score;$('regimeRing').style.setProperty('--score',d.marketRegime.score);$('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
+    $('microsoftFocus').innerHTML='';$('rankingFocus').innerHTML='';return;
+  }
   const passed=m.gates.filter(g=>g.pass).length,dist=(m.candidate.price/m.candidate.entryHigh-1)*100,targetDist=(msft.target1/msft.current-1)*100;
   $('briefingSalutation').textContent=state.language==='de'?'Alex, heute zählt Disziplin – nicht Aktivität.':'Alex, today discipline matters more than activity.';
   $('briefingHeadline').textContent=m.allPassed?t('buyReview'):t('noNewPosition');
@@ -73,24 +108,24 @@ function renderExecutive(){
   $('rankingFocus').innerHTML=m.opportunities.slice(0,4).map(o=>{const mv=movement(o,o.customRank);return`<div class="focus-rank"><b>#${o.customRank}</b><div><b>${o.name}</b><span>${o.ticker}</span></div><div class="score">${o.strategyScore}<small class="calculated-score-label">OS ${o.customScore}</small></div><div class="${mv.cls}">${mv.label}</div></div>`}).join('');
 }
 
-function setDecisionMode(mode){
+export function setDecisionMode(mode){
   state.decisionMode=mode;
-  localStorage.setItem('alphaDecisionMode',mode);
+  storage.setItem('alphaDecisionMode',mode);
   renderDecision();
 }
-function setManualDecisionTicker(ticker,openLab=false){
+export function setManualDecisionTicker(ticker,openLab=false){
   state.manualDecisionTicker=ticker;
   state.decisionMode='manual';
   state.selectedTicker=ticker;
-  localStorage.setItem('alphaManualCandidate',ticker);
-  localStorage.setItem('alphaDecisionMode','manual');
+  storage.setItem('alphaManualCandidate',ticker);
+  storage.setItem('alphaDecisionMode','manual');
 
   // Render the newly selected candidate before opening the Decision Lab.
   // This fixes Universe/Scanner navigation retaining the previous ASML view.
   renderDecision();
 
   if(openLab){
-    switchView('decision');
+    navigateToView('decision');
   }
 }
 function renderDecisionControls(selection){
@@ -106,7 +141,7 @@ function renderDecisionControls(selection){
   select.disabled=state.decisionMode==='auto';
   if(state.decisionMode==='auto'){
     const x=selection.scored;
-    $('candidateSelectionReason').innerHTML=`${t('automaticSelectionReason')}<span class="selection-explanation"><div><i>1</i><span>${x.name}: ${t('strategyScore')} ${x.strategyScore}, OS ${x.customScore}.</span></div><div><i>2</i><span>${state.language==='de'?'Microsoft wird als bestehende Position nicht als neue Chance gewertet.':'Microsoft is already held and is excluded from new-opportunity selection.'}</span></div><div><i>3</i><span>${t('autoChangesWhen')}</span></div></span>`;
+    $('candidateSelectionReason').innerHTML=x?`${t('automaticSelectionReason')}<span class="selection-explanation"><div><i>1</i><span>${x.name}: ${t('strategyScore')} ${x.strategyScore}, OS ${x.customScore}.</span></div><div><i>2</i><span>${state.language==='de'?'Microsoft wird als bestehende Position nicht als neue Chance gewertet.':'Microsoft is already held and is excluded from new-opportunity selection.'}</span></div><div><i>3</i><span>${t('autoChangesWhen')}</span></div></span>`:`<b>${t('noEligibleCandidate')}</b><span class="selection-explanation">${t('noEligibleCandidateText')}</span>`;
   }else{
     $('candidateSelectionReason').textContent=t('manualSelectionReason');
   }
@@ -140,11 +175,16 @@ function renderPendingDecision(entry){
     [state.language==='de'?'Priorität':'Priority',activeResearch?`${t('researchActive')} ${activeResearch.progress}%`:(state.language==='de'?'Research-Warteschlange':'Research queue')]
   ].map(item=>`<div class="evidence-card"><header><span>${item[0]}</span></header><p>${item[1]}</p></div>`).join('');
 }
-function renderDecision(){
+export function renderDecision(){
   const selection=activeDecisionSelection();
   const m=selection.model;
   renderDecisionControls(selection);
-  if(!selection.universe) return;
+  if(!selection.universe){
+    $('decisionCoverageNotice').classList.add('show');$('decisionCoverageNotice').textContent=t('noEligibleCandidateText');
+    $('decisionCandidate').textContent=t('noEligibleCandidate');$('decisionMeta').textContent='';$('decisionScore').textContent='–';$('decisionRas').textContent='–';
+    $('decisionRadar').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;
+    $('scoreBreakdown').innerHTML='';$('decisionGates').innerHTML='';$('decisionVerdict').textContent=t('noEligibleCandidateText');$('actionLadder').innerHTML='';$('evidenceGrid').innerHTML='';return;
+  }
   if(!selection.scored){
     renderPendingDecision(selection.universe);
     return;
@@ -180,7 +220,7 @@ function renderDecision(){
   $('evidenceGrid').innerHTML=Object.entries(x.componentReasons).map(([key,value])=>`<div class="evidence-card"><header><span>${t(key)}</span><b>${x.components[key]}</b></header><p>${loc(value)}</p></div>`).join('');
 }
 
-function renderScanner(){
+export function renderScanner(){
   const m=computeModel(),q=$('search').value.trim().toLowerCase(),r=$('region').value,s=$('sector').value,c=$('conviction').value;
   const items=m.opportunities.filter(x=>(!q||[x.name,x.ticker,x.isin].some(v=>v.toLowerCase().includes(q)))&&(r==='all'||x.region===r)&&(s==='all'||x.sector===s)&&(c==='all'||x.conviction===c));
   $('resultCount').textContent=`${items.length} ${t('candidates')}`;
@@ -188,15 +228,17 @@ function renderScanner(){
   document.querySelectorAll('.scanner-row').forEach(row=>row.onclick=()=>{state.selectedTicker=row.dataset.ticker;renderScanner()});renderCandidateDetail();
 }
 function renderCandidateDetail(){
-  const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0],sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${x.fitAdjustment>=0?'+':''}${num(x.fitAdjustment,1)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${x.fitReasons.map(r=>`<div class="fit-reason"><b class="${r.value>0?'fit-positive':r.value<0?'fit-negative':'fit-neutral'}">${r.value>=0?'+':''}${num(r.value,1)}</b><span>${t(r.key)}</span></div>`).join('')}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
+  const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0];
+  if(!x){$('candidateDetail').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;}
+  const sizing=computeSizing(x);
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${x.fitAdjustment>=0?'+':''}${num(x.fitAdjustment,1)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${x.fitReasons.map(r=>`<div class="fit-reason"><b class="${r.value>0?'fit-positive':r.value<0?'fit-negative':'fit-neutral'}">${r.value>=0?'+':''}${num(r.value,1)}</b><span>${t(r.key)}</span></div>`).join('')}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
   document.querySelectorAll('[data-open-decision]').forEach(button=>{
     button.onclick=()=>setManualDecisionTicker(button.dataset.openDecision,true);
   });
 }
 
 
-function populateUniverseFilters(){
+export function populateUniverseFilters(){
   const region=$('universeRegion');
   const sector=$('universeSector');
   const currentRegion=region.value||'all';
@@ -208,7 +250,7 @@ function populateUniverseFilters(){
   region.value=[...region.options].some(o=>o.value===currentRegion)?currentRegion:'all';
   sector.value=[...sector.options].some(o=>o.value===currentSector)?currentSector:'all';
 }
-function renderUniverse(){
+export function renderUniverse(){
   const m=computeModel();
   const scoredMap=new Map(m.opportunities.map(item=>[item.ticker,item]));
   const query=$('universeSearch').value.trim().toLowerCase();
@@ -259,7 +301,7 @@ function renderUniverse(){
 }
 
 
-function renderResearch(){
+export function renderResearch(){
   const pipeline=state.data.researchPipeline;
   if(!pipeline) return;
   const records=pipeline.records;
@@ -349,7 +391,7 @@ function renderResearchDossier(record){
     button.onclick=()=>setManualDecisionTicker(button.dataset.researchOpenLab,true);
   });
 }
-function renderTimeline(){
+export function renderTimeline(){
   const d=state.data,m=computeModel(),top=m.opportunities.slice(0,5),dates=d.timeline.dates,colors=['#21d4a7','#7c5cff','#f7b955','#ff6b7a','#61a5ff'];
   $('timelineLegend').innerHTML=top.map((x,i)=>`<div class="legend-item"><i class="legend-dot" style="background:${colors[i]}"></i>${x.ticker}</div>`).join('');
   const W=760,H=300,left=48,right=20,topPad=24,bottom=42,minY=70,maxY=90,xp=i=>left+i*(W-left-right)/(dates.length-1),yp=v=>topPad+(maxY-v)/(maxY-minY)*(H-topPad-bottom),grid=[70,75,80,85,90];
@@ -358,7 +400,7 @@ function renderTimeline(){
   $('timelineMovers').innerHTML=m.opportunities.filter(x=>movement(x,x.customRank).delta!==0).map(x=>{const mv=movement(x,x.customRank);return`<div class="mover-row"><b>${x.name}</b><span>${x.customScore}</span><span class="${mv.cls}">${mv.label}</span></div>`}).join('');
 }
 function donutGradient(parts){let acc=0;return`conic-gradient(${parts.map(p=>{const start=acc;acc+=p.value;return`${p.color} ${start}% ${acc}%`}).join(',')})`}
-function renderPortfolio(){
+export function renderPortfolio(){
   const p=state.data.portfolios.chatgpt,x=p.positions[0],value=valueOf(p),open=(x.current-x.entry)*x.shares,real=realisedOf(p),ifStop=(x.stop-x.entry)*x.shares,giveback=(x.current-x.stop)*x.shares,targetDist=(x.target1/x.current-1)*100;
   $('portfolioMetrics').innerHTML=[[t('portfolioValue'),euro(value),pct((value/p.startCapital-1)*100)],[t('cash'),euro(p.cash),`${num(p.cash/value*100,1)} %`],[t('unrealised'),`+${euro(open)}`,`Microsoft ${pct((x.current/x.entry-1)*100)}`],[t('realisedLabel'),euro(real),'Meta + TSMC']].map((a,i)=>`<div class="portfolio-metric"><span>${a[0]}</span><b class="${i===2?'positive':i===3?'negative':''}">${a[1]}</b><small>${a[2]}</small></div>`).join('');
   $('positionIntelligence').innerHTML=`<div class="position-head"><div><small>${t('activePosition')}</small><h2>${x.name}</h2><p>${x.ticker} · ${x.isin} · ${sectorName(x.sector)} · ${x.country}</p></div><div class="position-value"><b>${euro(x.current*x.shares)}</b><span class="positive">${pct((x.current/x.entry-1)*100)}</span></div></div><div class="position-strategy"><div class="strategy-levels"><div class="strategy-level"><span>${t('entry').toUpperCase()}</span><b>${euro(x.entry)}</b><small>${wholeShareLabel(x.shares)}</small></div><div class="strategy-level"><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b><small>${state.language==='de'?'über Einstand':'above entry'}</small></div><div class="strategy-level"><span>${t('target').toUpperCase()} 1</span><b>${euro(x.target1)}</b><small>${num(targetDist,2)} %</small></div><div class="strategy-level"><span>TRAILING</span><b>${x.trailingStopPct} %</b><small>${state.language==='de'?'Restposition':'remaining position'}</small></div></div><div class="strategy-copy"><h3>${t('currentStrategy')}</h3><p>${loc(x.strategy)}</p><h3>${t('investmentThesis')}</h3><p>${loc(x.thesis)}</p></div></div>`;
@@ -369,12 +411,12 @@ function renderPortfolio(){
   const max=Math.max(...p.closedTrades.map(v=>Math.abs(v.result)));
   $('closedTrades').innerHTML=p.closedTrades.map(v=>`<div class="trade-row"><span>${new Intl.DateTimeFormat(locale()).format(new Date(v.date+'T12:00:00'))}</span><b>${v.name}</b><div class="trade-bar"><i style="width:${Math.abs(v.result)/max*100}%;background:${v.result>=0?'var(--green)':'var(--red)'}"></i></div><b class="${v.result>=0?'positive':'negative'}">${v.result>=0?'+':''}${euro(v.result)}</b><span>${v.days} ${t('days')}</span><span>${v.reason}</span></div>`).join('');
 }
-function renderCompetition(){
+export function renderCompetition(){
   const arr=[state.data.portfolios.chatgpt,state.data.portfolios.claude],max=Math.max(...arr.map(valueOf));
   $('competitionCards').innerHTML=arr.map((p,i)=>{const v=valueOf(p),ret=v-p.startCapital,real=realisedOf(p);return`<article class="panel competition-card"><header><div><small>${i===0?t('mainPortfolio'):t('benchmark')}</small><h2>${p.name}</h2></div><span class="status-pill ${i===0?'neutral':'positive'}">${p.positions.length} ${p.positions.length===1?t('position'):t('positions')}</span></header><div class="portfolio-total">${euro(v)}</div><div class="${ret>=0?'positive':'negative'}">${ret>=0?'+':''}${euro(ret)} · ${pct(ret/p.startCapital*100)}</div><div class="competition-stats"><div><span>CASH</span><b>${euro(p.cash)}</b></div><div><span>${t('capitalInvested')}</span><b>${euro(p.positions.reduce((s,x)=>s+x.current*x.shares,0))}</b></div><div><span>${t('realised').toUpperCase()}</span><b class="${real>=0?'positive':'negative'}">${real>=0?'+':''}${euro(real)}</b></div></div></article>`}).join('');
   $('comparisonBars').innerHTML=arr.map(p=>`<div class="comparison-row"><b>${p.name.replace(' Benchmark','')}</b><div class="comparison-track"><i style="width:${valueOf(p)/max*100}%"></i></div><b>${euro(valueOf(p))}</b></div>`).join('');
 }
-function renderJournal(){
+export function renderJournal(){
   const items=state.language==='de'?[
     ['01.08.2026','Strategy Studio eingeführt','Score-Gewichte, Ausführungsschwellen und Portfolio-Präferenzen sind jetzt live anpassbar.','Methodik'],
     ['01.08.2026','Zweisprachige Oberfläche','Deutsch und Englisch werden vollständig im Browser gespeichert.','Review'],
@@ -388,7 +430,7 @@ function renderJournal(){
   ];
   $('journalFeed').innerHTML=items.map(x=>`<div class="journal-entry"><time>${x[0]}</time><div><b>${x[1]}</b><p>${x[2]}</p></div><span class="status-pill neutral">${x[3]}</span></div>`).join('');
 }
-function renderMethod(){
+export function renderMethod(){
   const d=state.data,w=normalisedWeights();
   $('weightList').innerHTML=Object.entries(w).map(([k,v])=>`<div class="weight-row"><span>${t(k)}</span><div class="weight-track"><i style="width:${v*100/0.35}%"></i></div><b>${num(v*100,1)}%</b></div>`).join('');
   $('formulaList').innerHTML=[t('formulaOS'),t('formulaCash'),t('formulaSwitch'),t('formulaPrice')].map(x=>`<span>${x}</span>`).join('');

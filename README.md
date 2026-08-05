@@ -28,6 +28,7 @@ src/
   research-pipeline.js       Research records, stages, eligibility guard
   universe.js                Universe lookup and candidate selection
   data-loader.js             Split-data loading and assembly
+  version.js                 Single browser build/cache version
   ui/views.js                Existing DOM view renderers
 data/
   core.json                  Snapshot, rules, presets, timeline, decision copy
@@ -37,7 +38,7 @@ data/
   research.json              Research pipeline and source-backed dossiers
 ```
 
-`alpha-data.json` remains as a small compatibility manifest pointing to the split datasets. Static assets and datasets use the release version as a cache-busting query parameter.
+`data/manifest.json` describes the modular resources. The public `alpha-data.json` remains a complete v0.6-compatible payload, and the historic `opportunities.json` endpoint retains its v0.1.1 schema for existing consumers. Run `npm run build:data` after changing modular data; CI verifies that the compatibility payload is current. Static assets and datasets use the release version as a cache-busting query parameter.
 
 ## Persistence compatibility
 
@@ -58,7 +59,7 @@ All existing view IDs and navigation targets remain unchanged.
 - Position and diversification settings are visible preferences/warnings, not hidden rigid caps.
 - Sizing uses whole shares only and respects the configured cash reserve.
 - Cash remains an active competitor.
-- A research record must be in the `approved` stage with every checklist item complete before the security can enter active ranking or automatic selection.
+- `research_pending` and `research_active` Universe records are always excluded. A dossier, when present, must be `approved` and contain every required checklist key set to literal `true`. Complete v0.6.0 `scored` records without dossiers retain their governed legacy approval.
 - Preliminary research never creates scores, trade setups, or buy decisions.
 
 See [AGENTS.md](AGENTS.md) for the binding development, bilingual, data-integrity, and investment rules.
@@ -67,15 +68,16 @@ See [AGENTS.md](AGENTS.md) for the binding development, bilingual, data-integrit
 
 ```bash
 npm test
-npm install
+npm ci
+npm run test:syntax
 npx playwright install chromium
 npm run test:screenshots
 ```
 
-The Node unit suite covers Opportunity Score, Strategy Score, preset ranking changes, whole-share sizing, automatic candidate selection, research-pending exclusion, bilingual completeness, and split-data integrity.
+The Node suite compares every scored security under Balanced, Defensive, and Offensive against the committed v0.6.0 model fixture. It also covers score formulae, rankings, gates, RAS, whole-share sizing, automatic selection, fail-closed research states, zero candidates, bilingual completeness, and both legacy resource schemas.
 
-The Playwright workflow serves the checked-out commit locally, checks browser console/page errors, validates dynamic ranking, Universe 50 navigation, research locks, and browser persistence, and captures the existing German/English desktop, tablet, and mobile screenshots. On `main`, changed screenshots are committed by the workflow; pull requests receive artifacts without repository writes.
+The Playwright workflow serves the checked-out commit locally, checks browser console/page errors, validates dynamic ranking, Universe 50 navigation, research locks, and browser persistence, and compares approved German/English desktop, tablet, and mobile baselines. A 1.5% pixel mismatch is the documented failure threshold. Pull-request validation is read-only. Baselines can only be replaced through the explicit `update_baselines` manual workflow input; screenshot publication on `main` is a separate write-enabled job.
 
 ## Data changes
 
-Do not invent data. Any change to prices, components, scores, sources, portfolio records, research state, or snapshot freshness must be documented and traceable. Production data is authoritative only in the logical files under `data/`.
+Do not invent data. Any change to prices, components, scores, sources, portfolio records, research state, or snapshot freshness must be documented and traceable. Production data is authoritative only in the logical files under `data/`. The duplicated top-level `scoreWeights` field is retained solely for v0.6 compatibility; `strategyDefaults.scoreWeights` remains authoritative.

@@ -1,4 +1,35 @@
 import { chromium } from "playwright";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
+
+const mismatchThreshold = 0.015;
+const baselineDirectory = "tests/e2e/baselines";
+const diffDirectory = "screenshots/diffs";
+
+function compareScreenshot(name) {
+  const baselinePath = path.join(baselineDirectory, name);
+  if (process.env.UPDATE_SCREENSHOT_BASELINES === "1") {
+    mkdirSync(baselineDirectory, { recursive: true });
+    copyFileSync(path.join("screenshots", name), baselinePath);
+    return;
+  }
+  if (!existsSync(baselinePath)) return;
+  const actual = PNG.sync.read(readFileSync(path.join("screenshots", name)));
+  const baseline = PNG.sync.read(readFileSync(baselinePath));
+  if (actual.width !== baseline.width || actual.height !== baseline.height) {
+    throw new Error(`Visual regression in ${name}: dimensions changed from ${baseline.width}x${baseline.height} to ${actual.width}x${actual.height}.`);
+  }
+  const diff = new PNG({ width: actual.width, height: actual.height });
+  const changed = pixelmatch(baseline.data, actual.data, diff.data, actual.width, actual.height, { threshold: 0.1 });
+  const ratio = changed / (actual.width * actual.height);
+  if (ratio > mismatchThreshold) {
+    mkdirSync(diffDirectory, { recursive: true });
+    writeFileSync(path.join(diffDirectory, name), PNG.sync.write(diff));
+    throw new Error(`Visual regression in ${name}: ${(ratio * 100).toFixed(3)}% exceeds ${(mismatchThreshold * 100).toFixed(1)}%.`);
+  }
+}
 
 const browser = await chromium.launch();
 const baseUrl = (process.env.ALPHA_BASE_URL || "http://127.0.0.1:4173") +
@@ -81,6 +112,7 @@ async function assertDynamicRanking() {
     path: "screenshots/latest-scanner-defensive-ipad-de.png",
     fullPage: true
   });
+  compareScreenshot("latest-scanner-defensive-ipad-de.png");
 
   if (errors.length) {
     throw new Error(
@@ -108,6 +140,8 @@ async function assertUniverseAndCandidateNavigation() {
   }
 
   await page.locator('[data-universe-ticker="AAPL"]').click();
+  await page.waitForSelector("#research.active");
+  await page.locator('[data-research-open-lab="AAPL"]').click();
   await page.waitForSelector("#decision.active");
 
   const candidateText = await page
@@ -132,6 +166,7 @@ async function assertUniverseAndCandidateNavigation() {
     path: "screenshots/latest-decision-apple-pending-ipad-de.png",
     fullPage: true
   });
+  compareScreenshot("latest-decision-apple-pending-ipad-de.png");
 
   if (errors.length) {
     throw new Error(
@@ -230,6 +265,7 @@ async function capture(name, width, height, options = {}) {
     path: `screenshots/${name}`,
     fullPage: true
   });
+  compareScreenshot(name);
 
   if (errors.length) {
     throw new Error(

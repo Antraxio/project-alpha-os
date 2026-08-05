@@ -1,7 +1,9 @@
-const valueOf=p=>p.cash+p.positions.reduce((s,x)=>s+x.current*x.shares,0);
-const realisedOf=p=>p.closedTrades.reduce((s,x)=>s+x.result,0);
+import {state} from './state.js';
 
-function computeSizing(candidate){
+export const valueOf=p=>p.cash+p.positions.reduce((s,x)=>s+x.current*x.shares,0);
+export const realisedOf=p=>p.closedTrades.reduce((s,x)=>s+x.result,0);
+
+export function computeSizing(candidate){
   const p=state.data.portfolios.chatgpt,portfolio=valueOf(p);
   const reserve=portfolio*state.settings.cashReservePct/100;
   const spendable=Math.max(0,p.cash-reserve);

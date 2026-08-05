@@ -1,0 +1,14 @@
+{
+  "version": "0.6.1",
+  "files": [
+    "core.json",
+    "portfolios.json",
+    "opportunities.json",
+    "universe.json",
+    "research.json"
+  ],
+  "legacyResources": [
+    "../alpha-data.json",
+    "../opportunities.json"
+  ]
+}

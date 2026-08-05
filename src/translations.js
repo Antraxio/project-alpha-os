@@ -1,4 +1,6 @@
-const I18N={
+import {state} from './state.js';
+
+export const I18N={
   de:{
     brandSubtitle:'Decision Intelligence',navExecutive:'Executive',navDecision:'Decision Lab',navScanner:'Scanner',navUniverse:'Universe 50',navResearch:'Research Pipeline',navTimeline:'Alpha Timeline',navPortfolio:'Portfolio',navCompetition:'Competition',navJournal:'Journal',navMethodology:'Methodik',navSettings:'Strategy Studio',
     cashActive:'Cash ist eine aktive Position',osThreshold:'OS-Schwelle',cashMargin:'Cash-Marge',modelSnapshot:'MODELL-SNAPSHOT',modelDisclaimer:'Keine Live-Kursversorgung. Entscheidungen werden aus eingebetteten Daten und dem aktiven Strategieprofil abgeleitet.',
@@ -54,7 +56,8 @@ const I18N={
     queuedResearch:'Research-Warteschlange',noResearchMatch:'Keine Research-Titel für diesen Filter.',
     formulaOS:'OS ≥ Schwelle',formulaCash:'Cash-Vorsprung ≥ Marge',formulaSwitch:'Wechselschwelle erfüllt',formulaPrice:'Preiszone bestätigt',
     noRigidCaps:'Keine starren Positionscaps',stopLogic:'Stop-Logik',crvHurdle:'CRV-Hürde',wholeSharesOnly:'Volle Stücke',cashHurdleLabel:'Cash-Hürde',activityStandard:'Aktivitätsstandard',
-    riskProfile:'Risikoprofil',buy:'Kauf',sale:'Verkauf',review:'Review',method:'Methodik'
+    riskProfile:'Risikoprofil',buy:'Kauf',sale:'Verkauf',review:'Review',method:'Methodik',
+    noEligibleCandidate:'Kein geeigneter Kandidat',noEligibleCandidateText:'Aktuell erfüllt kein nicht gehaltener Titel die Research- und Ranking-Freigabe.'
   },
   en:{
     brandSubtitle:'Decision Intelligence',navExecutive:'Executive',navDecision:'Decision Lab',navScanner:'Scanner',navUniverse:'Universe 50',navResearch:'Research Pipeline',navTimeline:'Alpha Timeline',navPortfolio:'Portfolio',navCompetition:'Competition',navJournal:'Journal',navMethodology:'Methodology',navSettings:'Strategy Studio',
@@ -111,12 +114,13 @@ const I18N={
     queuedResearch:'Research queue',noResearchMatch:'No research securities match this filter.',
     formulaOS:'OS ≥ threshold',formulaCash:'Cash advantage ≥ margin',formulaSwitch:'Switch threshold passed',formulaPrice:'Price zone confirmed',
     noRigidCaps:'No rigid position caps',stopLogic:'Stop logic',crvHurdle:'Risk/reward hurdle',wholeSharesOnly:'Whole shares',cashHurdleLabel:'Cash hurdle',activityStandard:'Activity standard',
-    riskProfile:'Risk profile',buy:'Buy',sale:'Sale',review:'Review',method:'Methodology'
+    riskProfile:'Risk profile',buy:'Buy',sale:'Sale',review:'Review',method:'Methodology',
+    noEligibleCandidate:'No eligible candidate',noEligibleCandidateText:'No non-held security currently passes research and ranking approval.'
   }
 };
-const t=k=>I18N[state.language][k]??k;
+export const t=k=>I18N[state.language][k]??k;
 
-const wholeShareLabel=count=>{
+export const wholeShareLabel=count=>{
   if(state.language==='de'){
     return count===1?'1 ganze Akte':`${count} ganze Aktien`;
   }
@@ -129,5 +133,5 @@ const sectorMap={
   Financials:{de:'Finanzen',en:'Financials'},Telecom:{de:'Telekom',en:'Telecom'},Energy:{de:'Energie',en:'Energy'}
 };
 const regionMap={USA:{de:'USA',en:'USA'},Europe:{de:'Europa',en:'Europe'},Asia:{de:'Asien',en:'Asia'}};
-const sectorName=x=>sectorMap[x]?.[state.language]??x;
-const regionName=x=>regionMap[x]?.[state.language]??x;
+export const sectorName=x=>sectorMap[x]?.[state.language]??x;
+export const regionName=x=>regionMap[x]?.[state.language]??x;

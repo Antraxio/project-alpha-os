@@ -1,3 +1,10 @@
+import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js';
+import {profileName} from './src/scoring.js';
+import {computeModel} from './src/strategy-ranking.js';
+import {regionName,sectorName,t} from './src/translations.js';
+import {loadAlphaData} from './src/data-loader.js';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js';
+
 const controlDefs={
   weights:[
     ['fundamental',0,50,1,'Fundamental quality','Fundamentale Qualität'],
@@ -23,18 +30,18 @@ const controlDefs={
   ]
 };
 function controlLabel(def){return state.language==='de'?def[5]:def[4]}
-function renderControl(container,def,path){
+function renderControl(def,path){
   const[key,min,max,step]=def,value=path==='scoreWeights'?state.settings.scoreWeights[key]:state.settings[key],unit=key==='minCrv'?':1':key.includes('Pct')?'%':'';
   return`<div class="slider-control"><div class="slider-head"><div><b>${controlLabel(def)}</b><span>${key==='diversification'?(state.language==='de'?'Verändert die Gewichtung im Score.':'Changes the score weighting.'):(state.language==='de'?'Wirkt sofort auf das Modell.':'Updates the model immediately.')}</span></div><span class="slider-value" id="value-${key}">${num(value,key==='minCrv'?1:0)}${unit}</span></div><div class="slider-row"><span>${min}</span><input type="range" min="${min}" max="${max}" step="${step}" value="${value}" data-setting="${key}" data-path="${path}"><span>${max}</span></div></div>`;
 }
 function renderSettings(){
-  $('weightControls').innerHTML=controlDefs.weights.map(d=>renderControl('weightControls',d,'scoreWeights')).join('');
-  $('ruleControls').innerHTML=controlDefs.rules.map(d=>renderControl('ruleControls',d,'root')).join('');
-  $('portfolioControls').innerHTML=controlDefs.portfolio.map(d=>renderControl('portfolioControls',d,'root')).join('');
+  $('weightControls').innerHTML=controlDefs.weights.map(d=>renderControl(d,'scoreWeights')).join('');
+  $('ruleControls').innerHTML=controlDefs.rules.map(d=>renderControl(d,'root')).join('');
+  $('portfolioControls').innerHTML=controlDefs.portfolio.map(d=>renderControl(d,'root')).join('');
   document.querySelectorAll('input[data-setting]').forEach(input=>input.addEventListener('input',e=>{
     const key=e.target.dataset.setting,path=e.target.dataset.path,value=Number(e.target.value);
     if(path==='scoreWeights')state.settings.scoreWeights[key]=value;else state.settings[key]=value;
-    localStorage.setItem('alphaStrategySettings',JSON.stringify(state.settings));
+    storage.setItem('alphaStrategySettings',JSON.stringify(state.settings));
     const unit=key==='minCrv'?':1':key.includes('Pct')?'%':'';
     $(`value-${key}`).textContent=`${num(value,key==='minCrv'?1:0)}${unit}`;
     const previousOrder=state.lastRanking;
@@ -66,6 +73,10 @@ function rankingDiagnostics(currentModel){
 }
 function renderSettingsPreview(){
   const m=computeModel(),p=profileName(),warnings=[];
+  if(!m.candidate){
+    $('customBadge').textContent=profileLabel(p);$('customBadge').classList.toggle('custom-indicator',p==='custom');$('weightTotal').textContent='100%';
+    $('settingsPreview').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;
+  }
   if(m.sizing.aboveTarget)warnings.push(t('wholeShareAboveTarget'));
   if(m.sizing.shares===0)warnings.push(t('notFinanceable'));
   if(m.sizing.concentrationWarning)warnings.push(t('concentrationWarning'));
@@ -93,10 +104,11 @@ function switchView(id){
   state.view=id;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));
   applyStaticTranslations();$('sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});
 }
-function saveSettings(){localStorage.setItem('alphaStrategySettings',JSON.stringify(state.settings));showToast(`${t('saved')} ${t('localOnly')}`)}
-function setPreset(name){state.settings=clone(state.data.strategyPresets[name]);state.profile=name;localStorage.setItem('alphaStrategySettings',JSON.stringify(state.settings));renderAll();showToast(t('presetApplied'))}
-function resetSettings(){state.settings=clone(state.data.strategyDefaults);localStorage.removeItem('alphaStrategySettings');renderAll();showToast(t('resetDone'))}
-function setLanguage(lang){state.language=lang;localStorage.setItem('alphaLanguage',lang);renderAll()}
+setViewNavigator(switchView);
+function saveSettings(){storage.setItem('alphaStrategySettings',JSON.stringify(state.settings));showToast(`${t('saved')} ${t('localOnly')}`)}
+function setPreset(name){state.settings=clone(state.data.strategyPresets[name]);storage.setItem('alphaStrategySettings',JSON.stringify(state.settings));renderAll();showToast(t('presetApplied'))}
+function resetSettings(){state.settings=clone(state.data.strategyDefaults);storage.removeItem('alphaStrategySettings');renderAll();showToast(t('resetDone'))}
+function setLanguage(lang){state.language=lang;storage.setItem('alphaLanguage',lang);renderAll()}
 function populateFilters(){
   const r=$('region'),s=$('sector');r.innerHTML=`<option value="all">${t('allRegions')}</option>`;s.innerHTML=`<option value="all">${t('allSectors')}</option>`;
   [...new Set(state.data.opportunities.map(x=>x.region))].sort().forEach(v=>r.insertAdjacentHTML('beforeend',`<option value="${v}">${regionName(v)}</option>`));
@@ -126,7 +138,7 @@ function bind(){
 async function init(){
   try{
     state.data=await loadAlphaData();
-    const saved=localStorage.getItem('alphaStrategySettings');state.settings=saved?{...clone(state.data.strategyDefaults),...JSON.parse(saved),scoreWeights:{...state.data.strategyDefaults.scoreWeights,...JSON.parse(saved).scoreWeights}}:clone(state.data.strategyDefaults);
+    const saved=storage.getItem('alphaStrategySettings');state.settings=saved?{...clone(state.data.strategyDefaults),...JSON.parse(saved),scoreWeights:{...state.data.strategyDefaults.scoreWeights,...JSON.parse(saved).scoreWeights}}:clone(state.data.strategyDefaults);
     bind();renderAll();
   }catch(e){$('systemLabel').textContent='Data error';document.body.insertAdjacentHTML('beforeend',`<div class="toast show">${e.message}</div>`)}
 }

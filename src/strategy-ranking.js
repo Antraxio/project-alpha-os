@@ -1,4 +1,10 @@
-function strategyFitFor(o,customScore,held){
+import {clamp,euro,num,state} from './state.js';
+import {opportunityScore,normalisedWeights} from './scoring.js';
+import {computeSizing,valueOf} from './portfolio-calculations.js';
+import {isRankingEligible} from './research-pipeline.js';
+import {wholeShareLabel} from './translations.js';
+
+export function strategyFitFor(o,customScore,held){
   const p=state.data.portfolios.chatgpt;
   const portfolioValue=valueOf(p);
   const isHeld=held.has(o.ticker);
@@ -75,13 +81,13 @@ function strategyFitFor(o,customScore,held){
     isHeld
   };
 }
-function computeModel(){
+export function computeModel(){
   const weights=normalisedWeights();
   const held=new Set(
     state.data.portfolios.chatgpt.positions.map(x=>x.ticker)
   );
 
-  let opportunities=state.data.opportunities.filter(o=>!isResearchPending(o.ticker)).map(o=>{
+  const opportunities=state.data.opportunities.filter(o=>isRankingEligible(o)).map(o=>{
     const customScore=opportunityScore(o.components,weights);
     const fit=strategyFitFor(o,customScore,held);
     return{...o,customScore,...fit};
@@ -97,6 +103,14 @@ function computeModel(){
   const heldBest=opportunities
     .filter(o=>held.has(o.ticker))
     .sort((a,b)=>b.strategyScore-a.strategyScore)[0];
+
+  if(!candidate){
+    return{
+      opportunities,candidate:null,second:null,heldBest,
+      sizing:null,ras:null,gates:[],allPassed:false,
+      cashAdv:null,heldGap:null,inZone:false,hasEligibleCandidate:false
+    };
+  }
 
   const sizing=candidate.sizing;
   const cashAdv=candidate.customScore-state.settings.cashHurdle;
@@ -165,6 +179,7 @@ function computeModel(){
     allPassed:gates.every(g=>g.pass),
     cashAdv,
     heldGap,
-    inZone
+    inZone,
+    hasEligibleCandidate:true
   };
 }
