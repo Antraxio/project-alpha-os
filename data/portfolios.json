@@ -1,0 +1,106 @@
+{
+  "portfolios": {
+    "chatgpt": {
+      "name": "ChatGPT",
+      "startCapital": 2500.0,
+      "cash": 1654.1,
+      "positions": [
+        {
+          "ticker": "MSFT",
+          "isin": "US5949181045",
+          "name": "Microsoft",
+          "shares": 2,
+          "entry": 337.15,
+          "current": 402.58,
+          "stop": 370.0,
+          "target1": 404.6,
+          "trailingStopPct": 5,
+          "strategy": {
+            "de": "Bei 404,60 € eine Aktie verkaufen; die Restposition anschließend mit 5 % Trailing-Stop laufen lassen.",
+            "en": "Sell one share at €404.60; then manage the remaining share with a 5% trailing stop."
+          },
+          "thesis": {
+            "de": "Azure-, Cloud- und AI-Wachstum; Trend intakt, Teilgewinnziel fast erreicht.",
+            "en": "Azure, cloud and AI growth; trend intact and partial-profit target nearly reached."
+          },
+          "sector": "Technology",
+          "country": "USA",
+          "currency": "USD"
+        }
+      ],
+      "closedTrades": [
+        {
+          "date": "2026-07-29",
+          "ticker": "META",
+          "name": "Meta Platforms A",
+          "result": -83.6,
+          "resultPct": -14.47,
+          "days": 14,
+          "reason": "Stop-Loss"
+        },
+        {
+          "date": "2026-07-29",
+          "ticker": "TSM",
+          "name": "TSMC ADR",
+          "result": -88.0,
+          "resultPct": -11.76,
+          "days": 14,
+          "reason": "Stop-Loss"
+        }
+      ]
+    },
+    "claude": {
+      "name": "Claude Benchmark",
+      "startCapital": 2500.0,
+      "cash": 1855.28,
+      "positions": [
+        {
+          "ticker": "DTE",
+          "isin": "DE0005557508",
+          "name": "Deutsche Telekom",
+          "shares": 14,
+          "entry": 26.42,
+          "current": 26.86,
+          "stop": 23.78,
+          "target1": 31.7,
+          "sector": "Telecom",
+          "country": "Germany",
+          "currency": "EUR"
+        },
+        {
+          "ticker": "JPM",
+          "isin": "US46625H1005",
+          "name": "JPMorgan Chase",
+          "shares": 1,
+          "entry": 300.3,
+          "current": 304.72,
+          "stop": 287.0,
+          "target1": 360.36,
+          "sector": "Financials",
+          "country": "USA",
+          "currency": "USD"
+        }
+      ],
+      "closedTrades": [
+        {
+          "date": "2026-07-27",
+          "ticker": "TTE",
+          "name": "TotalEnergies",
+          "result": 19.86,
+          "resultPct": 4.01,
+          "days": 12,
+          "reason": "Trailing-Stop"
+        },
+        {
+          "date": "2026-07-27",
+          "ticker": "SHEL",
+          "name": "Shell",
+          "result": 5.6,
+          "resultPct": 1.88,
+          "days": 12,
+          "reason": "Trailing-Stop"
+        }
+      ]
+    }
+  }
+}

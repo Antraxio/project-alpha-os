@@ -1,0 +1,532 @@
+{
+  "researchPipeline": {
+    "methodology": {
+      "de": "Ein Titel wird erst dann ins aktive Ranking aufgenommen, wenn Identität, Primärquellen, Fundamentalbild, Katalysator, Risiken, aktueller Markt-Snapshot, Technik, Einstiegszone, Stop, Ziel und Review vollständig dokumentiert sind. Vorläufige Research-Fakten erzeugen bewusst keinen Opportunity Score.",
+      "en": "A security enters the active ranking only after identity, primary sources, fundamentals, catalyst, risks, current market snapshot, technicals, entry zone, stop, target and review are fully documented. Preliminary research facts deliberately do not generate an Opportunity Score."
+    },
+    "batchName": "Batch 1 · Mega Caps & SAP",
+    "records": [
+      {
+        "ticker": "AAPL",
+        "priority": 1,
+        "stage": "market_refresh_required",
+        "progress": 58,
+        "confidence": "medium",
+        "lastVerified": "2026-08-02",
+        "thesis": {
+          "de": "Außergewöhnliche Markenstärke, installierte Basis und Services-Mix liefern hohe Cashflow-Qualität. Vor einer Freigabe muss das jüngste Quartal nachgezogen und die technische Lage neu vermessen werden.",
+          "en": "Exceptional brand strength, installed base and services mix support high cash-flow quality. The latest quarter and technical setup must be refreshed before approval."
+        },
+        "catalyst": {
+          "de": "Services-Wachstum, iPhone-17-Zyklus, Apple Intelligence und das zusätzliche Aktienrückkaufprogramm.",
+          "en": "Services growth, the iPhone 17 cycle, Apple Intelligence and the additional share-repurchase programme."
+        },
+        "riskSummary": {
+          "de": "Hohe Bewertung, Lieferketten- und Speicherengpässe, China-Abhängigkeit sowie Ausführungsrisiken beim AI-Übergang.",
+          "en": "Elevated valuation, supply-chain and memory constraints, China exposure and execution risk in the AI transition."
+        },
+        "facts": [
+          {
+            "label": {
+              "de": "Quartalsumsatz",
+              "en": "Quarterly revenue"
+            },
+            "value": "111,2 Mrd. USD",
+            "note": {
+              "de": "+17 % gegenüber Vorjahr, Q2 GJ 2026",
+              "en": "+17% year on year, fiscal Q2 2026"
+            }
+          },
+          {
+            "label": {
+              "de": "Verwässertes EPS",
+              "en": "Diluted EPS"
+            },
+            "value": "2,01 USD",
+            "note": {
+              "de": "+22 % gegenüber Vorjahr",
+              "en": "+22% year on year"
+            }
+          },
+          {
+            "label": {
+              "de": "Services",
+              "en": "Services"
+            },
+            "value": {
+              "de": "Allzeithoch",
+              "en": "All-time high"
+            },
+            "note": {
+              "de": "Umsatzrekord im Berichtsquartal",
+              "en": "Revenue record in the reported quarter"
+            }
+          },
+          {
+            "label": {
+              "de": "Rückkaufprogramm",
+              "en": "Buyback programme"
+            },
+            "value": "100 Mrd. USD",
+            "note": {
+              "de": "zusätzliche Genehmigung",
+              "en": "additional authorisation"
+            }
+          }
+        ],
+        "checklist": {
+          "identity": true,
+          "primarySources": true,
+          "fundamental": true,
+          "catalyst": true,
+          "risk": true,
+          "marketData": false,
+          "technical": false,
+          "setup": false,
+          "review": false
+        },
+        "blocker": {
+          "de": "Q3-GJ-2026-Dokumente und aktueller Kurs-/Trend-Snapshot müssen nachgezogen werden.",
+          "en": "Fiscal Q3 2026 documents and a current price/trend snapshot must be added."
+        },
+        "sources": [
+          {
+            "publisher": "Apple",
+            "type": "official_results",
+            "date": "2026-04-30",
+            "title": {
+              "de": "Ergebnisse Q2 GJ 2026",
+              "en": "Fiscal Q2 2026 results"
+            },
+            "url": "https://www.apple.com/de/newsroom/2026/04/apple-reports-second-quarter-results/"
+          },
+          {
+            "publisher": "Apple Investor Relations",
+            "type": "official_event",
+            "date": "2026-07-30",
+            "title": {
+              "de": "Investor-Update Q3 GJ 2026",
+              "en": "Fiscal Q3 2026 investor update"
+            },
+            "url": "https://investor.apple.com/investor-relations/default.aspx"
+          }
+        ]
+      },
+      {
+        "ticker": "NVDA",
+        "priority": 2,
+        "stage": "technical_pending",
+        "progress": 68,
+        "confidence": "high",
+        "lastVerified": "2026-08-02",
+        "thesis": {
+          "de": "NVIDIA bleibt der dominante Infrastrukturprofiteur des AI-Ausbaus. Wachstum und Margen sind außergewöhnlich, gleichzeitig ist die Erwartungshürde extrem hoch.",
+          "en": "NVIDIA remains the dominant infrastructure beneficiary of AI investment. Growth and margins are exceptional, while expectations are extremely demanding."
+        },
+        "catalyst": {
+          "de": "Weiterer Ausbau von AI-Fabriken, neue Plattformzyklen und die nächsten Quartalszahlen am 26. August 2026.",
+          "en": "Continued AI-factory build-out, new platform cycles and the next earnings release on 26 August 2026."
+        },
+        "riskSummary": {
+          "de": "Bewertungs- und Erwartungsrisiko, Exportrestriktionen, Kundenkonzentration und mögliche Normalisierung der AI-Investitionen.",
+          "en": "Valuation and expectations risk, export restrictions, customer concentration and potential normalisation of AI investment."
+        },
+        "facts": [
+          {
+            "label": {
+              "de": "Quartalsumsatz",
+              "en": "Quarterly revenue"
+            },
+            "value": "81,6 Mrd. USD",
+            "note": {
+              "de": "+85 % gegenüber Vorjahr",
+              "en": "+85% year on year"
+            }
+          },
+          {
+            "label": {
+              "de": "Data-Center-Umsatz",
+              "en": "Data-centre revenue"
+            },
+            "value": "75,2 Mrd. USD",
+            "note": {
+              "de": "+92 % gegenüber Vorjahr",
+              "en": "+92% year on year"
+            }
+          },
+          {
+            "label": {
+              "de": "GAAP-Bruttomarge",
+              "en": "GAAP gross margin"
+            },
+            "value": "74,9 %",
+            "note": {
+              "de": "Q1 GJ 2027",
+              "en": "Fiscal Q1 2027"
+            }
+          },
+          {
+            "label": {
+              "de": "Nächster Bericht",
+              "en": "Next report"
+            },
+            "value": "26.08.2026",
+            "note": {
+              "de": "Q2 GJ 2027",
+              "en": "Fiscal Q2 2027"
+            }
+          }
+        ],
+        "checklist": {
+          "identity": true,
+          "primarySources": true,
+          "fundamental": true,
+          "catalyst": true,
+          "risk": true,
+          "marketData": true,
+          "technical": false,
+          "setup": false,
+          "review": false
+        },
+        "blocker": {
+          "de": "Technischer Trend, Volatilität, Einstiegszone, Stop und Ziel müssen festgelegt werden.",
+          "en": "Technical trend, volatility, entry zone, stop and target still need to be defined."
+        },
+        "sources": [
+          {
+            "publisher": "NVIDIA Investor Relations",
+            "type": "official_results",
+            "date": "2026-05-20",
+            "title": {
+              "de": "Ergebnisse Q1 GJ 2027",
+              "en": "Fiscal Q1 2027 results"
+            },
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2027/default.aspx"
+          },
+          {
+            "publisher": "NVIDIA Investor Relations",
+            "type": "official_event",
+            "date": "2026-08-26",
+            "title": {
+              "de": "Termin Q2 GJ 2027",
+              "en": "Fiscal Q2 2027 event"
+            },
+            "url": "https://investor.nvidia.com/events-and-presentations/events-and-presentations/event-details/2026/NVIDIA-2nd-Quarter-FY27-Financial-Results/default.aspx"
+          }
+        ]
+      },
+      {
+        "ticker": "GOOGL",
+        "priority": 3,
+        "stage": "market_refresh_required",
+        "progress": 52,
+        "confidence": "medium",
+        "lastVerified": "2026-08-02",
+        "thesis": {
+          "de": "Search, YouTube und Cloud bilden ein hochprofitables Ökosystem; Gemini erweitert die Monetarisierungsoptionen. Die derzeit hinterlegte Ergebnisquelle ist jedoch nicht frisch genug für eine Ranking-Freigabe.",
+          "en": "Search, YouTube and Cloud form a highly profitable ecosystem; Gemini expands monetisation options. The current earnings source is not fresh enough for ranking approval."
+        },
+        "catalyst": {
+          "de": "Beschleunigtes Cloud-Wachstum, Gemini-Adoption, Enterprise-AI und weitere Monetarisierung in Search und YouTube.",
+          "en": "Accelerating Cloud growth, Gemini adoption, enterprise AI and further monetisation in Search and YouTube."
+        },
+        "riskSummary": {
+          "de": "Sehr hohe AI-Investitionen, Regulierungs- und Kartellrisiken sowie mögliche Kannibalisierung klassischer Suche.",
+          "en": "Very high AI investment, regulatory and antitrust risks, and potential cannibalisation of traditional search."
+        },
+        "facts": [
+          {
+            "label": {
+              "de": "Q4-Umsatz",
+              "en": "Q4 revenue"
+            },
+            "value": "113,8 Mrd. USD",
+            "note": {
+              "de": "+18 % gegenüber Vorjahr",
+              "en": "+18% year on year"
+            }
+          },
+          {
+            "label": {
+              "de": "Search-Wachstum",
+              "en": "Search growth"
+            },
+            "value": "+17 %",
+            "note": {
+              "de": "Q4 2025",
+              "en": "Q4 2025"
+            }
+          },
+          {
+            "label": {
+              "de": "Cloud-Wachstum",
+              "en": "Cloud growth"
+            },
+            "value": "+48 %",
+            "note": {
+              "de": "Run-Rate über 70 Mrd. USD",
+              "en": "Run rate above $70bn"
+            }
+          },
+          {
+            "label": {
+              "de": "Erwartete CapEx 2026",
+              "en": "Expected 2026 capex"
+            },
+            "value": "175–185 Mrd. USD",
+            "note": {
+              "de": "hohe Investitionsintensität",
+              "en": "high investment intensity"
+            }
+          }
+        ],
+        "checklist": {
+          "identity": true,
+          "primarySources": true,
+          "fundamental": true,
+          "catalyst": true,
+          "risk": true,
+          "marketData": false,
+          "technical": false,
+          "setup": false,
+          "review": false
+        },
+        "blocker": {
+          "de": "Neueren Quartalsbericht und aktuellen Markt-Snapshot ergänzen.",
+          "en": "Add a more recent quarterly report and current market snapshot."
+        },
+        "sources": [
+          {
+            "publisher": "Alphabet Investor Relations",
+            "type": "official_results",
+            "date": "2026-02-04",
+            "title": {
+              "de": "Q4- und Gesamtjahresergebnisse 2025",
+              "en": "Q4 and full-year 2025 results"
+            },
+            "url": "https://abc.xyz/investor/news/news-details/2026/Alphabet-Announces-Fourth-Quarter-2025-and-Fiscal-Year-Results-2026-KEvZIMKBLS/default.aspx"
+          },
+          {
+            "publisher": "Alphabet Investor Relations",
+            "type": "official_earnings_hub",
+            "date": "2026-08-02",
+            "title": {
+              "de": "Earnings-Übersicht",
+              "en": "Earnings hub"
+            },
+            "url": "https://abc.xyz/investor/earnings/"
+          }
+        ]
+      },
+      {
+        "ticker": "AMZN",
+        "priority": 4,
+        "stage": "market_refresh_required",
+        "progress": 58,
+        "confidence": "medium",
+        "lastVerified": "2026-08-02",
+        "thesis": {
+          "de": "AWS, Werbung und verbesserte Retail-Margen bilden mehrere Gewinnhebel. Der massive AI-Kapazitätsausbau belastet jedoch kurzfristig den freien Cashflow.",
+          "en": "AWS, advertising and improving retail margins provide multiple profit engines. Massive AI capacity investment weighs on near-term free cash flow."
+        },
+        "catalyst": {
+          "de": "AWS-Wachstum, AI-Services, operative Hebel im Handel und Ergebnisse des zweiten Quartals 2026.",
+          "en": "AWS growth, AI services, retail operating leverage and second-quarter 2026 results."
+        },
+        "riskSummary": {
+          "de": "Sehr hohe Investitionsausgaben, niedriger freier Cashflow, Wettbewerbsdruck im Cloud-Geschäft und konjunktursensitiver Konsum.",
+          "en": "Very high capital expenditure, low free cash flow, cloud competition and economically sensitive consumer demand."
+        },
+        "facts": [
+          {
+            "label": {
+              "de": "Quartalsumsatz",
+              "en": "Quarterly revenue"
+            },
+            "value": "181,5 Mrd. USD",
+            "note": {
+              "de": "+17 % gegenüber Vorjahr",
+              "en": "+17% year on year"
+            }
+          },
+          {
+            "label": "AWS",
+            "value": "37,6 Mrd. USD",
+            "note": {
+              "de": "+28 % gegenüber Vorjahr",
+              "en": "+28% year on year"
+            }
+          },
+          {
+            "label": {
+              "de": "Operatives Ergebnis",
+              "en": "Operating income"
+            },
+            "value": "23,9 Mrd. USD",
+            "note": {
+              "de": "Vorjahr 18,4 Mrd. USD",
+              "en": "$18.4bn prior year"
+            }
+          },
+          {
+            "label": {
+              "de": "Freier Cashflow TTM",
+              "en": "Trailing free cash flow"
+            },
+            "value": "1,2 Mrd. USD",
+            "note": {
+              "de": "stark durch AI-Investitionen belastet",
+              "en": "heavily affected by AI investment"
+            }
+          }
+        ],
+        "checklist": {
+          "identity": true,
+          "primarySources": true,
+          "fundamental": true,
+          "catalyst": true,
+          "risk": true,
+          "marketData": false,
+          "technical": false,
+          "setup": false,
+          "review": false
+        },
+        "blocker": {
+          "de": "Q2-2026-Unterlagen nachziehen und Kurs-/Volatilitätsdaten aktualisieren.",
+          "en": "Add Q2 2026 documents and refresh price/volatility data."
+        },
+        "sources": [
+          {
+            "publisher": "Amazon Investor Relations",
+            "type": "official_results",
+            "date": "2026-04-29",
+            "title": {
+              "de": "Ergebnisse Q1 2026",
+              "en": "Q1 2026 results"
+            },
+            "url": "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-First-Quarter-Results/"
+          },
+          {
+            "publisher": "Amazon Investor Relations",
+            "type": "official_event",
+            "date": "2026-07-30",
+            "title": {
+              "de": "Q2-2026-Earnings-Call",
+              "en": "Q2 2026 earnings call"
+            },
+            "url": "https://ir.aboutamazon.com/events/event-details/default.aspx"
+          }
+        ]
+      },
+      {
+        "ticker": "SAP",
+        "priority": 5,
+        "stage": "technical_pending",
+        "progress": 72,
+        "confidence": "high",
+        "lastVerified": "2026-08-02",
+        "thesis": {
+          "de": "Cloud-ERP, hoher Auftragsbestand und Business AI stützen planbares Wachstum. Die jüngsten Zukäufe erhöhen die strategische Option, verwässern aber kurzfristig den Ergebnis-Ausblick.",
+          "en": "Cloud ERP, strong backlog and Business AI support predictable growth. Recent acquisitions add strategic optionality but dilute the near-term profit outlook."
+        },
+        "catalyst": {
+          "de": "Cloud-ERP-Migration, Business AI, Integration von Dremio und Prior Labs sowie Q3-Ergebnisse am 21. Oktober 2026.",
+          "en": "Cloud ERP migration, Business AI, integration of Dremio and Prior Labs, and Q3 results on 21 October 2026."
+        },
+        "riskSummary": {
+          "de": "Hohe Bewertung, Integrationsrisiken, Währungseffekte und kurzfristige Ergebnisverwässerung durch Akquisitionen.",
+          "en": "Elevated valuation, integration risk, currency effects and near-term earnings dilution from acquisitions."
+        },
+        "facts": [
+          {
+            "label": {
+              "de": "Current Cloud Backlog",
+              "en": "Current cloud backlog"
+            },
+            "value": "22,9 Mrd. EUR",
+            "note": {
+              "de": "+27 %, währungsbereinigt +26 %",
+              "en": "+27%, +26% at constant currencies"
+            }
+          },
+          {
+            "label": {
+              "de": "Cloud-Umsatz",
+              "en": "Cloud revenue"
+            },
+            "value": "+22 %",
+            "note": {
+              "de": "währungsbereinigt +24 %",
+              "en": "+24% at constant currencies"
+            }
+          },
+          {
+            "label": {
+              "de": "Cloud ERP Suite",
+              "en": "Cloud ERP Suite"
+            },
+            "value": "+25 %",
+            "note": {
+              "de": "währungsbereinigt +27 %",
+              "en": "+27% at constant currencies"
+            }
+          },
+          {
+            "label": {
+              "de": "Operativer Ausblick 2026",
+              "en": "2026 operating-profit outlook"
+            },
+            "value": "11,8–12,2 Mrd. EUR",
+            "note": {
+              "de": "Non-IFRS, währungsbereinigt",
+              "en": "Non-IFRS, constant currencies"
+            }
+          }
+        ],
+        "checklist": {
+          "identity": true,
+          "primarySources": true,
+          "fundamental": true,
+          "catalyst": true,
+          "risk": true,
+          "marketData": true,
+          "technical": false,
+          "setup": false,
+          "review": false
+        },
+        "blocker": {
+          "de": "Technik-, Volatilitäts- und Handelssetup fehlen noch.",
+          "en": "Technical, volatility and trade setup remain incomplete."
+        },
+        "sources": [
+          {
+            "publisher": "SAP Investor Relations",
+            "type": "official_results",
+            "date": "2026-07-23",
+            "title": {
+              "de": "Q2- und Halbjahresergebnisse 2026",
+              "en": "Q2 and half-year 2026 results"
+            },
+            "url": "https://www.sap.com/investors/en/financial-documents-and-events/recent-results.html"
+          },
+          {
+            "publisher": "SAP Investor Relations",
+            "type": "official_event",
+            "date": "2026-10-21",
+            "title": {
+              "de": "Termin Q3 2026",
+              "en": "Q3 2026 event"
+            },
+            "url": "https://www.sap.com/investors/en/financial-documents-and-events/events.html"
+          }
+        ]
+      }
+    ],
+    "stageOrder": [
+      "market_refresh_required",
+      "technical_pending",
+      "ready_for_review",
+      "approved"
+    ]
+  }
+}

@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.6.1 – Foundation refactor
+
+### Changed
+- split the browser application into state, translations, scoring, strategy-ranking, portfolio-calculation, research-pipeline, universe, data-loader, and UI-view modules
+- split the monolithic data snapshot into logical core, portfolio, opportunity, universe, and research datasets without changing source values
+- reduced `app.js` to browser coordination, settings, persistence, and startup
+- retained static GitHub Pages deployment and all existing view/storage contracts
+- added explicit v0.6.1 cache-busting across styles, scripts, and datasets
+
+### Governance
+- added repository-wide development, data-integrity, bilingual, and investment rules in `AGENTS.md`
+- made research eligibility a ranking-level guard: a matching research record must be approved with a complete checklist
+- retained preliminary research exclusion from scores, ranking, automatic selection, and executable decisions
+
+### Tests and CI
+- added Node unit tests for Opportunity Score, Strategy Score, preset ranking changes, whole-share sizing, automatic candidate selection, and research-pending exclusion
+- added bilingual-pair and split-dataset integrity checks
+- moved the Playwright program into `tests/e2e/screenshots.mjs`
+- changed screenshot CI to test the checked-out pull-request commit on a local server instead of the previously deployed GitHub Pages version
+- retained browser-error, dynamic-ranking, Universe 50, pending-candidate, Research Pipeline, and screenshot coverage; added browser-persistence validation
+
 ## v0.6.0 – Research Pipeline
 
 ### Added

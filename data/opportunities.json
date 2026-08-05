@@ -1,0 +1,714 @@
+{
+  "opportunities": [
+    {
+      "rank": 1,
+      "previousRank": 1,
+      "ticker": "MSFT",
+      "isin": "US5949181045",
+      "name": "Microsoft",
+      "region": "USA",
+      "sector": "Technology",
+      "assetClass": "Aktie",
+      "price": 402.58,
+      "entryLow": 392.0,
+      "entryHigh": 399.0,
+      "stop": 370.0,
+      "target": 465.0,
+      "signal": "Hold",
+      "conviction": "A",
+      "score": 86,
+      "ras": 69,
+      "components": {
+        "fundamental": 92,
+        "technical": 88,
+        "catalyst": 90,
+        "risk": 82,
+        "macro": 78,
+        "diversification": 55
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Azure und Cloud bleiben strukturelle Wachstumstreiber; hohe Cashflow-Qualität.",
+          "en": "Azure and cloud remain structural growth engines with strong cash-flow quality."
+        },
+        "technical": {
+          "de": "Aufwärtstrend intakt; Kurs steht knapp vor Ziel 1.",
+          "en": "The uptrend remains intact and price is close to target 1."
+        },
+        "catalyst": {
+          "de": "AI-Monetarisierung und Cloud-Wachstum stützen die These.",
+          "en": "AI monetisation and cloud growth support the thesis."
+        },
+        "risk": {
+          "de": "Stop liegt oberhalb des Einstands; Bewertungsrisiko bleibt.",
+          "en": "The stop is above entry; valuation risk remains."
+        },
+        "macro": {
+          "de": "Qualitätswachstum wird bevorzugt, aber Zins- und Bewertungsrisiken bleiben.",
+          "en": "Quality growth is favoured, but rates and valuation remain risks."
+        },
+        "diversification": {
+          "de": "Bestehende Tech-Konzentration begrenzt den Zusatznutzen.",
+          "en": "Existing technology concentration limits incremental diversification."
+        }
+      },
+      "catalystText": {
+        "de": "AI- und Azure-Wachstum; bereits im Depot",
+        "en": "AI and Azure growth; already held in the portfolio"
+      },
+      "riskText": {
+        "de": "Technologie-Konzentration und Bewertungsrisiko",
+        "en": "Technology concentration and valuation risk"
+      },
+      "horizon": "4–8 Wochen",
+      "scoreHistory": [
+        82,
+        83,
+        84,
+        84,
+        85,
+        86,
+        86
+      ]
+    },
+    {
+      "rank": 2,
+      "previousRank": 4,
+      "ticker": "ASML",
+      "isin": "NL0010273215",
+      "name": "ASML",
+      "region": "Europe",
+      "sector": "Semiconductors",
+      "assetClass": "Aktie",
+      "price": 812.4,
+      "entryLow": 790.0,
+      "entryHigh": 805.0,
+      "stop": 742.0,
+      "target": 940.0,
+      "signal": "Watch",
+      "conviction": "A",
+      "score": 85,
+      "ras": 58,
+      "components": {
+        "fundamental": 90,
+        "technical": 84,
+        "catalyst": 86,
+        "risk": 80,
+        "macro": 76,
+        "diversification": 70
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Quasi-monopolistische EUV-Position und hohe strukturelle Nachfrage.",
+          "en": "Near-monopoly EUV position and strong structural demand."
+        },
+        "technical": {
+          "de": "Momentum verbessert sich; der Kurs liegt jedoch oberhalb der Einstiegszone.",
+          "en": "Momentum is improving, but price is above the entry zone."
+        },
+        "catalyst": {
+          "de": "Halbleiter-Capex und EUV-Nachfrage liefern klare mittelfristige Treiber.",
+          "en": "Semiconductor capex and EUV demand provide clear medium-term drivers."
+        },
+        "risk": {
+          "de": "Exportregeln und hoher Stückpreis erhöhen Ausführungs- und Ereignisrisiko.",
+          "en": "Export restrictions and the high share price increase execution and event risk."
+        },
+        "macro": {
+          "de": "Halbleiter profitieren vom Investitionszyklus, reagieren aber empfindlich auf Risikoabbau.",
+          "en": "Semiconductors benefit from the investment cycle but are sensitive to risk reduction."
+        },
+        "diversification": {
+          "de": "Europa und Halbleiter verbreitern das Depot, bleiben jedoch technologiebezogen.",
+          "en": "Europe broadens regional exposure, although the technology theme remains."
+        }
+      },
+      "catalystText": {
+        "de": "Halbleiter-Capex und EUV-Nachfrage",
+        "en": "Semiconductor capex and EUV demand"
+      },
+      "riskText": {
+        "de": "Hoher Stückpreis; geopolitische Exportregeln",
+        "en": "High share price and geopolitical export restrictions"
+      },
+      "horizon": "6–10 Wochen",
+      "scoreHistory": [
+        78,
+        79,
+        80,
+        82,
+        83,
+        84,
+        85
+      ]
+    },
+    {
+      "rank": 3,
+      "previousRank": 2,
+      "ticker": "BKNG",
+      "isin": "US09857L1089",
+      "name": "Booking Holdings",
+      "region": "USA",
+      "sector": "Consumer",
+      "assetClass": "Aktie",
+      "price": 3820.0,
+      "entryLow": 3740.0,
+      "entryHigh": 3790.0,
+      "stop": 3490.0,
+      "target": 4300.0,
+      "signal": "Watch",
+      "conviction": "B",
+      "score": 83,
+      "ras": 55,
+      "components": {
+        "fundamental": 88,
+        "technical": 82,
+        "catalyst": 78,
+        "risk": 84,
+        "macro": 75,
+        "diversification": 78
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Starke Cashflows und hohe Kapitalrenditen.",
+          "en": "Strong cash flows and high returns on capital."
+        },
+        "technical": {
+          "de": "Trend positiv, kurzfristig aber ohne frischen Ausbruch.",
+          "en": "The trend is positive but lacks a fresh breakout."
+        },
+        "catalyst": {
+          "de": "Reisenachfrage und Rückkäufe stützen.",
+          "en": "Travel demand and buybacks provide support."
+        },
+        "risk": {
+          "de": "Der Stückpreis verhindert eine angemessene Positionsgröße.",
+          "en": "The share price prevents an appropriately sized position."
+        },
+        "macro": {
+          "de": "Konsum- und Reisesensitivität bleiben.",
+          "en": "Consumer and travel sensitivity remain."
+        },
+        "diversification": {
+          "de": "Konsum würde die aktuelle Tech-Last reduzieren.",
+          "en": "Consumer exposure would reduce the current technology bias."
+        }
+      },
+      "catalystText": {
+        "de": "Reisenachfrage und starke Cashflows",
+        "en": "Travel demand and strong cash flows"
+      },
+      "riskText": {
+        "de": "Sehr hoher Stückpreis verhindert sinnvolle Positionsgröße",
+        "en": "Very high share price prevents efficient position sizing"
+      },
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        85,
+        85,
+        84,
+        84,
+        84,
+        83,
+        83
+      ]
+    },
+    {
+      "rank": 4,
+      "previousRank": 3,
+      "ticker": "NOVO-B",
+      "isin": "DK0062498333",
+      "name": "Novo Nordisk",
+      "region": "Europe",
+      "sector": "Healthcare",
+      "assetClass": "Aktie",
+      "price": 468.2,
+      "entryLow": 450.0,
+      "entryHigh": 462.0,
+      "stop": 418.0,
+      "target": 560.0,
+      "signal": "Watch",
+      "conviction": "B",
+      "score": 80,
+      "ras": 53,
+      "components": {
+        "fundamental": 86,
+        "technical": 72,
+        "catalyst": 80,
+        "risk": 78,
+        "macro": 74,
+        "diversification": 85
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Starke Marktposition und Wachstum, aber hohe Erwartungen.",
+          "en": "Strong market position and growth, offset by high expectations."
+        },
+        "technical": {
+          "de": "Momentum hat nachgelassen.",
+          "en": "Momentum has weakened."
+        },
+        "catalyst": {
+          "de": "Adipositas-Pipeline und Kapazitätsausbau.",
+          "en": "Obesity pipeline and capacity expansion."
+        },
+        "risk": {
+          "de": "Wettbewerb und Erwartungsprämie.",
+          "en": "Competition and the expectations premium."
+        },
+        "macro": {
+          "de": "Healthcare ist relativ defensiv.",
+          "en": "Healthcare is relatively defensive."
+        },
+        "diversification": {
+          "de": "Sehr guter Ausgleich zur Tech-Konzentration.",
+          "en": "A strong counterweight to technology concentration."
+        }
+      },
+      "catalystText": {
+        "de": "Adipositas-Pipeline und Kapazitätsausbau",
+        "en": "Obesity pipeline and capacity expansion"
+      },
+      "riskText": {
+        "de": "Wettbewerb und Erwartungsprämie",
+        "en": "Competition and elevated expectations"
+      },
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        82,
+        82,
+        81,
+        81,
+        81,
+        80,
+        80
+      ]
+    },
+    {
+      "rank": 5,
+      "previousRank": 7,
+      "ticker": "TSM",
+      "isin": "US8740391003",
+      "name": "TSMC ADR",
+      "region": "Asia",
+      "sector": "Semiconductors",
+      "assetClass": "ADR",
+      "price": 176.4,
+      "entryLow": 168.0,
+      "entryHigh": 173.0,
+      "stop": 155.0,
+      "target": 208.0,
+      "signal": "Watch",
+      "conviction": "B",
+      "score": 79,
+      "ras": 49,
+      "components": {
+        "fundamental": 91,
+        "technical": 68,
+        "catalyst": 84,
+        "risk": 68,
+        "macro": 72,
+        "diversification": 58
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Foundry-Führerschaft und AI-Nachfrage.",
+          "en": "Foundry leadership and strong AI demand."
+        },
+        "technical": {
+          "de": "Momentum erholt sich, aber noch kein belastbarer Wiedereinstieg.",
+          "en": "Momentum is recovering but a robust re-entry signal is still absent."
+        },
+        "catalyst": {
+          "de": "AI-Chip-Nachfrage.",
+          "en": "AI chip demand."
+        },
+        "risk": {
+          "de": "Taiwan-, USD- und Ereignisrisiko.",
+          "en": "Taiwan, currency and event risk."
+        },
+        "macro": {
+          "de": "Zyklische Halbleiterabhängigkeit.",
+          "en": "Cyclical semiconductor exposure."
+        },
+        "diversification": {
+          "de": "Asien diversifiziert regional, erhöht aber Tech-Korrelation.",
+          "en": "Asia improves regional diversity but raises technology correlation."
+        }
+      },
+      "catalystText": {
+        "de": "AI-Chip-Nachfrage und Foundry-Führerschaft",
+        "en": "AI chip demand and foundry leadership"
+      },
+      "riskText": {
+        "de": "Taiwan-Risiko, USD und Halbleiter-Konzentration",
+        "en": "Taiwan, USD and semiconductor concentration risk"
+      },
+      "horizon": "4–8 Wochen",
+      "scoreHistory": [
+        75,
+        76,
+        76,
+        77,
+        78,
+        79,
+        79
+      ]
+    },
+    {
+      "rank": 6,
+      "previousRank": 5,
+      "ticker": "ENEL",
+      "isin": "IT0003128367",
+      "name": "Enel",
+      "region": "Europe",
+      "sector": "Utilities",
+      "assetClass": "Aktie",
+      "price": 7.18,
+      "entryLow": 6.95,
+      "entryHigh": 7.1,
+      "stop": 6.45,
+      "target": 8.35,
+      "signal": "Watch",
+      "conviction": "B",
+      "score": 78,
+      "ras": 52,
+      "components": {
+        "fundamental": 76,
+        "technical": 70,
+        "catalyst": 74,
+        "risk": 88,
+        "macro": 82,
+        "diversification": 90
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Stabile Netze und Dividendenprofil.",
+          "en": "Stable grids and an attractive dividend profile."
+        },
+        "technical": {
+          "de": "Neutraler Trend.",
+          "en": "Neutral trend."
+        },
+        "catalyst": {
+          "de": "Zinsprofil und Entschuldung.",
+          "en": "Rates and deleveraging."
+        },
+        "risk": {
+          "de": "Relativ defensives Risikoprofil.",
+          "en": "Relatively defensive risk profile."
+        },
+        "macro": {
+          "de": "Sinkende Renditen würden unterstützen.",
+          "en": "Lower yields would be supportive."
+        },
+        "diversification": {
+          "de": "Sehr hoher Ausgleich zur Tech-Position.",
+          "en": "A strong counterweight to the technology holding."
+        }
+      },
+      "catalystText": {
+        "de": "Zinsprofil, Dividende und Netzgeschäft",
+        "en": "Rates, dividend profile and grid business"
+      },
+      "riskText": {
+        "de": "Regulatorik und hoher Kapitalbedarf",
+        "en": "Regulation and high capital requirements"
+      },
+      "horizon": "8–16 Wochen",
+      "scoreHistory": [
+        80,
+        80,
+        79,
+        79,
+        79,
+        78,
+        78
+      ]
+    },
+    {
+      "rank": 7,
+      "previousRank": 6,
+      "ticker": "HNR1",
+      "isin": "DE0008402215",
+      "name": "Hannover Rück",
+      "region": "Europe",
+      "sector": "Insurance",
+      "assetClass": "Aktie",
+      "price": 259.4,
+      "entryLow": 250.0,
+      "entryHigh": 256.0,
+      "stop": 232.0,
+      "target": 300.0,
+      "signal": "Hold",
+      "conviction": "B",
+      "score": 77,
+      "ras": 51,
+      "components": {
+        "fundamental": 84,
+        "technical": 72,
+        "catalyst": 70,
+        "risk": 86,
+        "macro": 72,
+        "diversification": 82
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Solide Prämien- und Ertragsqualität.",
+          "en": "Solid premium and earnings quality."
+        },
+        "technical": {
+          "de": "Stabil, aber ohne starkes Momentum.",
+          "en": "Stable but without strong momentum."
+        },
+        "catalyst": {
+          "de": "Prämienzyklus und Kapitalrückführung.",
+          "en": "Premium cycle and capital returns."
+        },
+        "risk": {
+          "de": "Großschadenrisiko bleibt.",
+          "en": "Large-loss risk remains."
+        },
+        "macro": {
+          "de": "Moderate Makroabhängigkeit.",
+          "en": "Moderate macro sensitivity."
+        },
+        "diversification": {
+          "de": "Versicherung ergänzt Tech gut.",
+          "en": "Insurance complements technology exposure."
+        }
+      },
+      "catalystText": {
+        "de": "Prämienzyklus und Kapitalrückführung",
+        "en": "Premium cycle and capital returns"
+      },
+      "riskText": {
+        "de": "Großschäden und Rückversicherungszyklus",
+        "en": "Large-loss events and the reinsurance cycle"
+      },
+      "horizon": "8–12 Wochen",
+      "scoreHistory": [
+        79,
+        79,
+        78,
+        78,
+        78,
+        77,
+        77
+      ]
+    },
+    {
+      "rank": 8,
+      "previousRank": 9,
+      "ticker": "JPM",
+      "isin": "US46625H1005",
+      "name": "JPMorgan Chase",
+      "region": "USA",
+      "sector": "Financials",
+      "assetClass": "Aktie",
+      "price": 304.72,
+      "entryLow": 292.0,
+      "entryHigh": 300.0,
+      "stop": 278.0,
+      "target": 350.0,
+      "signal": "Hold",
+      "conviction": "B",
+      "score": 76,
+      "ras": 49,
+      "components": {
+        "fundamental": 88,
+        "technical": 74,
+        "catalyst": 68,
+        "risk": 82,
+        "macro": 65,
+        "diversification": 76
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Robuste Bilanz und Kreditqualität.",
+          "en": "Strong balance sheet and credit quality."
+        },
+        "technical": {
+          "de": "Positiver, aber reifer Trend.",
+          "en": "Positive but mature trend."
+        },
+        "catalyst": {
+          "de": "Kapitalrückführung.",
+          "en": "Capital returns."
+        },
+        "risk": {
+          "de": "Zinskurve und Kreditzyklus.",
+          "en": "Yield curve and credit cycle."
+        },
+        "macro": {
+          "de": "Banken bleiben konjunktursensitiv.",
+          "en": "Banks remain economically sensitive."
+        },
+        "diversification": {
+          "de": "Finanzsektor ergänzt Tech.",
+          "en": "Financials complement technology exposure."
+        }
+      },
+      "catalystText": {
+        "de": "Kapitalrückführung und robuste Kreditqualität",
+        "en": "Capital returns and resilient credit quality"
+      },
+      "riskText": {
+        "de": "Zinskurve und Kreditzyklus",
+        "en": "Yield curve and credit cycle"
+      },
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        74,
+        74,
+        75,
+        75,
+        75,
+        76,
+        76
+      ]
+    },
+    {
+      "rank": 9,
+      "previousRank": 8,
+      "ticker": "DTE",
+      "isin": "DE0005557508",
+      "name": "Deutsche Telekom",
+      "region": "Europe",
+      "sector": "Telecom",
+      "assetClass": "Aktie",
+      "price": 26.86,
+      "entryLow": 26.0,
+      "entryHigh": 26.6,
+      "stop": 23.8,
+      "target": 31.7,
+      "signal": "Hold",
+      "conviction": "B",
+      "score": 75,
+      "ras": 48,
+      "components": {
+        "fundamental": 80,
+        "technical": 69,
+        "catalyst": 72,
+        "risk": 88,
+        "macro": 72,
+        "diversification": 74
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Defensiver Cashflow und T-Mobile-US-Wert.",
+          "en": "Defensive cash flow and T-Mobile US value."
+        },
+        "technical": {
+          "de": "Seitwärts bis leicht positiv.",
+          "en": "Sideways to mildly positive."
+        },
+        "catalyst": {
+          "de": "Cashflow und Rückkäufe.",
+          "en": "Cash flow and buybacks."
+        },
+        "risk": {
+          "de": "Defensives Profil.",
+          "en": "Defensive profile."
+        },
+        "macro": {
+          "de": "Zinssensitivität bleibt.",
+          "en": "Rate sensitivity remains."
+        },
+        "diversification": {
+          "de": "Telekom reduziert Konjunktur- und Tech-Risiko.",
+          "en": "Telecom reduces economic and technology risk."
+        }
+      },
+      "catalystText": {
+        "de": "T-Mobile-US-Wert und defensiver Cashflow",
+        "en": "T-Mobile US value and defensive cash flow"
+      },
+      "riskText": {
+        "de": "Zinsen und Regulierung",
+        "en": "Rates and regulation"
+      },
+      "horizon": "8–16 Wochen",
+      "scoreHistory": [
+        77,
+        77,
+        76,
+        76,
+        76,
+        75,
+        75
+      ]
+    },
+    {
+      "rank": 10,
+      "previousRank": null,
+      "ticker": "SHEL",
+      "isin": "GB00BP6MXD84",
+      "name": "Shell",
+      "region": "Europe",
+      "sector": "Energy",
+      "assetClass": "Aktie",
+      "price": 31.1,
+      "entryLow": 29.8,
+      "entryHigh": 30.6,
+      "stop": 27.8,
+      "target": 36.5,
+      "signal": "Watch",
+      "conviction": "C",
+      "score": 72,
+      "ras": 46,
+      "components": {
+        "fundamental": 78,
+        "technical": 66,
+        "catalyst": 65,
+        "risk": 82,
+        "macro": 70,
+        "diversification": 84
+      },
+      "componentReasons": {
+        "fundamental": {
+          "de": "Hoher Cashflow, aber Rohstoffabhängigkeit.",
+          "en": "Strong cash flow but commodity dependence."
+        },
+        "technical": {
+          "de": "Kein starkes Einstiegssignal.",
+          "en": "No strong entry signal."
+        },
+        "catalyst": {
+          "de": "Rückkäufe und LNG.",
+          "en": "Buybacks and LNG."
+        },
+        "risk": {
+          "de": "Ölpreis und Politik.",
+          "en": "Oil price and political exposure."
+        },
+        "macro": {
+          "de": "Zyklische Abhängigkeit.",
+          "en": "Cyclical dependence."
+        },
+        "diversification": {
+          "de": "Energie ergänzt Tech deutlich.",
+          "en": "Energy significantly complements technology exposure."
+        }
+      },
+      "catalystText": {
+        "de": "Cashflow, Rückkäufe und LNG",
+        "en": "Cash flow, buybacks and LNG"
+      },
+      "riskText": {
+        "de": "Ölpreis und politische Risiken",
+        "en": "Oil prices and political risks"
+      },
+      "horizon": "6–12 Wochen",
+      "scoreHistory": [
+        69,
+        69,
+        70,
+        70,
+        71,
+        71,
+        72
+      ]
+    }
+  ]
+}

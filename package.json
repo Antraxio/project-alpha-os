@@ -1,0 +1,12 @@
+{
+  "name": "project-alpha-os",
+  "version": "0.6.1",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/unit/*.test.js",
+    "test:screenshots": "node tests/e2e/screenshots.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.54.2"
+  }
+}
