@@ -1,0 +1,67 @@
+name: Codex task
+description: Define a development task that Codex can implement on a branch and submit as a draft PR.
+title: "[Codex] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Complete every section. Add `codex-ready` only after the task is safe, specific, and ready for implementation.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Ziel
+      description: Describe the concrete outcome.
+      placeholder: What should be true when this task is complete?
+    validations:
+      required: true
+  - type: textarea
+    id: background
+    attributes:
+      label: Hintergrund
+      description: Give the context needed to make sound implementation decisions.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: List the code, behavior, or documentation that may change.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Akzeptanzkriterien
+      description: Provide an objectively verifiable checklist.
+      placeholder: "- [ ] ..."
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Tests
+      description: Name the checks Codex must run and any manual verification required.
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Nicht-Ziele
+      description: State what must deliberately remain unchanged. Write "Keine" if there are none.
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Sicherheitsregeln
+      description: State data, access, deployment, financial, or operational constraints. Repository rules always remain binding.
+    validations:
+      required: true
+  - type: checkboxes
+    id: readiness
+    attributes:
+      label: Bereitschaft
+      options:
+        - label: I have removed secrets and personal data and confirmed that the task does not authorize automatic merging.
+          required: true

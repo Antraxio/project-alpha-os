@@ -1,0 +1,47 @@
+name: Validate Codex task
+
+on:
+  issues:
+    types: [opened, edited, labeled, reopened]
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  validate:
+    if: contains(github.event.issue.labels.*.name, 'codex-ready')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required task metadata
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import sys
+
+          body = os.environ.get("ISSUE_BODY", "")
+          headings = [
+              "Ziel",
+              "Hintergrund",
+              "Scope",
+              "Akzeptanzkriterien",
+              "Tests",
+              "Nicht-Ziele",
+              "Sicherheitsregeln",
+          ]
+          missing = []
+          for heading in headings:
+              pattern = rf"(?ms)^### {re.escape(heading)}\s*\n+(.+?)(?=^### |\Z)"
+              match = re.search(pattern, body)
+              if not match or not match.group(1).strip() or match.group(1).strip() == "_No response_":
+                  missing.append(heading)
+
+          if missing:
+              print("Missing or empty Codex task sections: " + ", ".join(missing))
+              sys.exit(1)
+
+          print("Codex task metadata is complete.")
+          PY

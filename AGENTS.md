@@ -2,6 +2,22 @@
 
 These rules apply to every change in this repository.
 
+## Codex task workflow
+
+When asked to take the next GitHub Issue task, Codex must:
+
+1. Select the newest open issue carrying `codex-ready`. Do not infer readiness from the title or body.
+2. Read the complete issue and stop for clarification if requirements, safety constraints, or acceptance criteria are ambiguous or contradictory.
+3. Replace `codex-ready` with `codex-working` before changing code. If the labels cannot be updated, stop and report the blocker.
+4. Create a separate `agent/<short-task-name>` branch from the current `main`; never implement directly on `main`.
+5. Keep the change within the issue's scope and non-goals, and follow every repository rule in this file.
+6. Run the relevant automated checks named in the issue plus any checks required by the affected code.
+7. Commit and push only task-related files, then open a draft pull request against `main`. Link the issue with `Closes #<issue>` in the PR body and report the tests and their results.
+8. Replace `codex-working` with `codex-review` after the draft PR is available. Use `blocked` instead if progress requires clarification or unavailable access, and explain the blocker on the issue or PR.
+9. Never merge the pull request, enable auto-merge, push directly to `main`, or mark the task `done`. A human reviewer owns approval, merge, and the final `done` status.
+
+Status definitions and transition rules are documented in [`.github/CODEX_WORKFLOW.md`](.github/CODEX_WORKFLOW.md).
+
 ## Development and architecture
 
 - Keep the application deployable as static files on GitHub Pages. Do not require a server-side runtime or a build step for production.
