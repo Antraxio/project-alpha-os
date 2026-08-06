@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080c16">
   <title>Project Alpha OS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=0.6.2">
+  <link rel="stylesheet" href="style.css?v=0.6.3">
 </head>
 <body>
 <div class="shell">
@@ -42,7 +42,7 @@
         <p><span data-i18n="osThreshold">OS-Schwelle</span><strong id="sideThreshold">85</strong></p>
         <p><span data-i18n="cashMargin">Cash-Marge</span><strong id="sideCashMargin">+5</strong></p>
       </div>
-      <div class="version">v0.6.2 · Watchlist</div>
+      <div class="version">v0.6.3 · Strategy Fit</div>
     </div>
   </aside>
 
@@ -167,6 +167,7 @@
             <div class="radar-wrap" id="decisionRadar"></div>
             <div class="score-breakdown" id="scoreBreakdown"></div>
           </div>
+          <div class="decision-strategy-fit" id="decisionStrategyFit"></div>
         </article>
         <article class="panel gates-panel">
           <div class="panel-head">
@@ -205,9 +206,10 @@
       <div class="ranking-method">
         <div>
           <span data-i18n="rankingBasis">RANKING-BASIS</span>
-          <b data-i18n="rankingFormula">Strategy Score = Opportunity Score + Portfolio-Fit</b>
+          <b data-i18n="rankingFormula">Strategy Score = Opportunity Score + Strategie-Fit</b>
+          <small id="rankingProfile">–</small>
         </div>
-        <p data-i18n="rankingExplanation">Gewichtung, CRV, Preiszone, Finanzierbarkeit, Zielpositionsgröße, Cashreserve sowie Sektor- und Regionenfit beeinflussen die Reihenfolge live.</p>
+        <p data-i18n="rankingExplanation">Komponentengewichtung, CRV, Preiszone, Finanzierbarkeit, Zielpositionsgröße, Cashreserve sowie Sektor- und Regionenfit beeinflussen die Reihenfolge live.</p>
       </div>
       <article class="scanner-list" id="scannerList"></article>
       <article class="panel candidate-detail" id="candidateDetail"></article>
@@ -343,7 +345,7 @@
 
       <div class="settings-grid">
         <article class="panel settings-panel">
-          <div class="panel-head"><div><small data-i18n="scoreWeights">SCORE-GEWICHTE</small><h2 data-i18n="whatMatters">Was zählt bei der Auswahl?</h2></div><span id="weightTotal" class="status-pill positive">100%</span></div>
+          <div class="panel-head"><div><small data-i18n="scoreWeights">STRATEGIE-FIT-GEWICHTE</small><h2 data-i18n="whatMatters">Was zählt für den Strategie-Fit?</h2></div><span id="weightTotal" class="status-pill positive">100%</span></div>
           <p class="settings-help" data-i18n="normalisedWeights">Die Regler werden automatisch auf 100 % normalisiert.</p>
           <div id="weightControls" class="slider-list"></div>
         </article>
@@ -367,6 +369,6 @@
   </main>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script type="module" src="app.js?v=0.6.2"></script>
+<script type="module" src="app.js?v=0.6.3"></script>
 </body>
 </html>
