@@ -6,7 +6,7 @@ import {I18N} from '../../src/translations.js';
 import {opportunityScore} from '../../src/scoring.js';
 import {computeSizing} from '../../src/portfolio-calculations.js';
 import {computeModel} from '../../src/strategy-ranking.js';
-import {activeDecisionSelection} from '../../src/universe.js';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js';
 import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js';
 
 const root=new URL('../../',import.meta.url);
@@ -45,6 +45,17 @@ test('presets retain established ranking changes',()=>{
   const orders={};
   for(const preset of ['balanced','defensive','offensive']){reset(preset);orders[preset]=computeModel().opportunities.slice(0,5).map(x=>x.ticker).join('|');}
   assert.deepEqual(orders,{balanced:'ASML|MSFT|NOVO-B|HNR1|ENEL',defensive:'NOVO-B|ENEL|HNR1|MSFT|DTE',offensive:'ASML|MSFT|NOVO-B|TSM|ENEL'});
+});
+
+test('watchlist exposes all 50 securities without changing ranked order or inventing scores',()=>{
+  const model=computeModel();
+  const watchlist=buildWatchlist(model);
+  assert.equal(watchlist.length,50);
+  assert.deepEqual(watchlist.slice(0,model.opportunities.length).map(item=>item.ticker),model.opportunities.map(item=>item.ticker));
+  assert.deepEqual(watchlist.slice(model.opportunities.length).map(item=>item.ticker),state.data.universe.filter(item=>!model.opportunities.some(ranked=>ranked.ticker===item.ticker)).sort((a,b)=>a.universeOrder-b.universeOrder).map(item=>item.ticker));
+  assert.ok(watchlist.every((item,index)=>item.position===index+1));
+  assert.ok(watchlist.slice(0,model.opportunities.length).every(item=>Number.isFinite(item.opportunityScore)&&item.conviction));
+  assert.ok(watchlist.slice(model.opportunities.length).every(item=>item.opportunityScore===null&&item.conviction===null));
 });
 
 test('whole-share sizing returns affordable integers',()=>{

@@ -2,7 +2,7 @@ import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js';
 import {movement,normalisedWeights,profileName,scoreClass} from '../scoring.js';
 import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js';
 import {computeModel} from '../strategy-ranking.js';
-import {activeDecisionSelection,universeEntry} from '../universe.js';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js';
 import {researchRecord} from '../research-pipeline.js';
 import {regionName,sectorName,t,wholeShareLabel} from '../translations.js';
 
@@ -21,6 +21,18 @@ function setResearchTicker(ticker,openPage=false){
   state.selectedResearchTicker=ticker;
   storage.setItem('alphaResearchTicker',ticker);
   if(openPage)navigateToView('research');else renderResearch();
+}
+function openUniverseSecurity(ticker){
+  const record=researchRecord(ticker);
+  if(record)setResearchTicker(record.ticker,true);
+  else setManualDecisionTicker(ticker,true);
+}
+function renderDashboardWatchlist(model){
+  const items=buildWatchlist(model);
+  $('rankingFocus').innerHTML=`<div class="watchlist-columns" aria-hidden="true"><span>${t('watchlistPosition')}</span><span>${t('security')}</span><span>OS</span><span>${t('conviction')}</span></div><div class="watchlist-ranking">${items.map(item=>`<button class="watchlist-row" type="button" data-watchlist-ticker="${item.ticker}" aria-label="${item.position}. ${item.name}, ${item.ticker}, OS ${item.opportunityScore??'–'}, ${t('conviction')} ${item.conviction??'–'}"><b class="watchlist-position">#${item.position}</b><span class="watchlist-company"><b>${item.name}</b><small>${item.ticker}</small></span><span class="watchlist-metric"><small>OS</small><b>${item.opportunityScore??'–'}</b></span><span class="watchlist-metric"><small>${t('conviction')}</small><b>${item.conviction??'–'}</b></span></button>`).join('')}</div><div class="watchlist-total">${items.length} ${t('securities')}</div>`;
+  document.querySelectorAll('[data-watchlist-ticker]').forEach(row=>{
+    row.onclick=()=>openUniverseSecurity(row.dataset.watchlistTicker);
+  });
 }
 
 export function applyStaticTranslations(){
@@ -71,7 +83,7 @@ export function renderExecutive(){
     $('execCandidate').textContent=t('noEligibleCandidate');$('execVerdict').textContent=t('wait');$('execOS').textContent='–';$('execRAS').textContent='–';$('execGates').textContent='0/0';
     $('triggerZone').textContent=t('noEligibleCandidate');$('triggerDistance').textContent='–';$('priceZoneProgress').style.width='0%';$('execWhy').innerHTML=`<div class="why-item"><i>×</i><span>${t('noEligibleCandidateText')}</span></div>`;
     $('regimeLabel').textContent=loc(d.marketRegime.label);$('regimeScore').textContent=d.marketRegime.score;$('regimeRing').style.setProperty('--score',d.marketRegime.score);$('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
-    $('microsoftFocus').innerHTML='';$('rankingFocus').innerHTML='';return;
+    $('microsoftFocus').innerHTML='';renderDashboardWatchlist(m);return;
   }
   const passed=m.gates.filter(g=>g.pass).length,dist=(m.candidate.price/m.candidate.entryHigh-1)*100,targetDist=(msft.target1/msft.current-1)*100;
   $('briefingSalutation').textContent=state.language==='de'?'Alex, heute zählt Disziplin – nicht Aktivität.':'Alex, today discipline matters more than activity.';
@@ -105,7 +117,7 @@ export function renderExecutive(){
   $('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
   const progress=clamp((msft.current-msft.entry)/(msft.target1-msft.entry)*100,0,100);
   $('microsoftFocus').innerHTML=`<div class="msft-progress"><div class="msft-line"><strong>${euro(msft.current)}</strong><span>${num(targetDist,2)} % ${state.language==='de'?'bis Ziel 1':'to target 1'}</span></div><div class="distance-bar"><i style="width:${progress}%"></i></div><div class="msft-labels"><span>${t('entry')} ${euro(msft.entry)}</span><span>${t('target')} 1 ${euro(msft.target1)}</span></div></div>`;
-  $('rankingFocus').innerHTML=m.opportunities.slice(0,4).map(o=>{const mv=movement(o,o.customRank);return`<div class="focus-rank"><b>#${o.customRank}</b><div><b>${o.name}</b><span>${o.ticker}</span></div><div class="score">${o.strategyScore}<small class="calculated-score-label">OS ${o.customScore}</small></div><div class="${mv.cls}">${mv.label}</div></div>`}).join('');
+  renderDashboardWatchlist(m);
 }
 
 export function setDecisionMode(mode){
@@ -292,11 +304,7 @@ export function renderUniverse(){
     </div>`;
   }).join('');
   document.querySelectorAll('[data-universe-ticker]').forEach(row=>{
-    row.onclick=()=>{
-      const record=researchRecord(row.dataset.universeTicker);
-      if(record) setResearchTicker(record.ticker,true);
-      else setManualDecisionTicker(row.dataset.universeTicker,true);
-    };
+    row.onclick=()=>openUniverseSecurity(row.dataset.universeTicker);
   });
 }
 

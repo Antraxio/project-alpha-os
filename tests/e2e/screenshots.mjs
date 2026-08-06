@@ -76,6 +76,59 @@ async function setLanguage(page, language) {
   await page.waitForTimeout(400);
 }
 
+async function assertCompleteWatchlist(page, language) {
+  const rows = page.locator("[data-watchlist-ticker]");
+  const count = await rows.count();
+  if (count !== 50) {
+    throw new Error(`Watchlist regression: expected 50 rows, received ${count}.`);
+  }
+
+  const order = await rows.evaluateAll(items => items.map(item => item.dataset.watchlistTicker));
+  const expectedTopTen = ["ASML", "MSFT", "NOVO-B", "HNR1", "ENEL", "TSM", "DTE", "JPM", "SHEL", "BKNG"];
+  if (order.slice(0, 10).join("|") !== expectedTopTen.join("|")) {
+    throw new Error(`Watchlist ranking regression: ${order.slice(0, 10).join("|")}`);
+  }
+
+  const fieldsComplete = await rows.evaluateAll(items => items.every((item, index) =>
+    item.querySelector(".watchlist-position")?.textContent === `#${index + 1}` &&
+    item.querySelector(".watchlist-company b")?.textContent?.trim() &&
+    item.querySelector(".watchlist-company small")?.textContent?.trim() &&
+    item.querySelectorAll(".watchlist-metric").length === 2
+  ));
+  if (!fieldsComplete) {
+    throw new Error("Watchlist rows do not expose rank, company, ticker, OS, and Conviction.");
+  }
+
+  const pendingText = await page.locator('[data-watchlist-ticker="AAPL"]').innerText();
+  if (!pendingText.includes("OS") || !pendingText.includes("–") || !pendingText.toLowerCase().includes("conviction")) {
+    throw new Error(`Pending Watchlist fields are incomplete: ${pendingText}`);
+  }
+
+  const heading = await page.locator('[data-i18n="completeRanking"]').innerText();
+  const expectedHeading = language === "de" ? "Vollständige Rangliste" : "Complete ranking";
+  if (heading !== expectedHeading) {
+    throw new Error(`Watchlist language regression: ${heading}`);
+  }
+
+  const scrollable = await page.locator(".watchlist-ranking").evaluate(element => element.scrollHeight > element.clientHeight);
+  if (!scrollable) {
+    throw new Error("The 50-security Watchlist is not scrollable.");
+  }
+}
+
+async function assertWatchlistNavigation() {
+  const { page, errors } = await openPage(1440, 1000);
+  await setLanguage(page, "de");
+  await page.locator('[data-watchlist-ticker="ASML"]').click();
+  await page.waitForSelector("#decision.active");
+  const candidate = await page.locator("#decisionCandidate").innerText();
+  if (!candidate.includes("ASML")) {
+    throw new Error(`Watchlist navigation regression: ${candidate}`);
+  }
+  if (errors.length) throw new Error(`Browser errors in Watchlist navigation: ${errors.join(" | ")}`);
+  await page.close();
+}
+
 
 async function assertDynamicRanking() {
   const { page, errors } = await openPage(1366, 1024);
@@ -267,6 +320,10 @@ async function capture(name, width, height, options = {}) {
     await page.waitForTimeout(400);
   }
 
+  if (options.assertWatchlist) {
+    await assertCompleteWatchlist(page, options.language || "de");
+  }
+
   await page.screenshot({
     path: `screenshots/${name}`,
     fullPage: true
@@ -286,14 +343,14 @@ await capture(
   "latest-dashboard-desktop-de.png",
   1440,
   1000,
-  { language: "de" }
+  { language: "de", assertWatchlist: true }
 );
 
 await capture(
   "latest-dashboard-ipad-de.png",
   1366,
   1024,
-  { language: "de" }
+  { language: "de", assertWatchlist: true }
 );
 
 await capture(
@@ -314,7 +371,7 @@ await capture(
   "latest-dashboard-desktop-en.png",
   1440,
   1000,
-  { language: "en" }
+  { language: "en", assertWatchlist: true }
 );
 
 await capture(
@@ -352,6 +409,8 @@ await capture(
 );
 
 await assertUniverseAndCandidateNavigation();
+
+await assertWatchlistNavigation();
 
 await assertResearchPipeline();
 
