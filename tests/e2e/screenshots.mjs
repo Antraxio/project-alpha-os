@@ -219,6 +219,10 @@ async function assertImmediateStrategySliderAndReset() {
   if (updatedRas === initialRas) {
     throw new Error("RAS did not update with the active strategy profile.");
   }
+  const previewText = await page.locator("#settingsPreview").innerText();
+  if (previewText.includes("NaN")) {
+    throw new Error(`Strategy Studio rendered a non-numeric model value: ${previewText}`);
+  }
   if (await page.locator("#customBadge.custom-indicator").count() !== 1) {
     throw new Error("Custom active strategy is not visible in Strategy Studio.");
   }

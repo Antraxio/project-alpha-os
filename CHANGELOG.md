@@ -7,6 +7,7 @@
 - exposed component-weight fit and portfolio/execution fit for every ranked candidate
 - made the active strategy visible in Scanner ranking, candidate details, and Decision Lab
 - retained the v0.6.2 Strategy Scores, preset rankings, selected candidates, RAS, CRV, and whole-share sizing
+- repaired the Strategy Studio CRV preview to use the calculated entry CRV instead of rendering `NaN`
 
 ### Tests
 - added a committed v0.6.2 strategy-results fixture for Balanced, Defensive, and Offensive
