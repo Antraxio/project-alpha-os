@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.2 adds a complete Universe-50 watchlist without changing investment calculations or results.
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.3 makes Strategy Studio changes immediately reproducible while keeping Opportunity Scores intrinsic and fixed.
 
 The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
@@ -54,8 +54,9 @@ All existing view IDs and navigation targets remain unchanged.
 
 ## Investment model boundaries
 
-- Opportunity Score is the weighted intrinsic assessment.
-- Strategy Score adds affordability, target-position fit, CRV, price-zone, concentration, sector, and region effects.
+- Opportunity Score is the intrinsic assessment calculated with the documented default component weights. It does not change with the active strategy profile.
+- Strategy Score adds the active profile's component-weight fit plus affordability, target-position fit, CRV, price-zone, concentration, sector, and region effects.
+- RAS is recalculated from the active component weighting, ranking gaps, price-zone state, and portfolio warnings; the v0.6.2 preset results remain unchanged.
 - Position and diversification settings are visible preferences/warnings, not hidden rigid caps.
 - Sizing uses whole shares only and respects the configured cash reserve.
 - Cash remains an active competitor.
@@ -87,9 +88,9 @@ npx playwright install chromium
 npm run test:screenshots
 ```
 
-The Node suite compares every scored security under Balanced, Defensive, and Offensive against the committed v0.6.0 model fixture. It also covers score formulae, rankings, gates, RAS, whole-share sizing, automatic selection, fail-closed research states, zero candidates, bilingual completeness, and both legacy resource schemas.
+The Node suite compares every scored security under Balanced, Defensive, and Offensive against committed v0.6.0 portfolio and v0.6.2 strategy fixtures. It also covers fixed Opportunity Scores, explicit component and portfolio fit, live custom-weight ranking changes, gates, RAS, whole-share sizing, automatic selection, fail-closed research states, zero candidates, bilingual completeness, and both legacy resource schemas.
 
-The Playwright workflow serves the checked-out commit locally, checks browser console/page errors, validates dynamic ranking, Universe 50 navigation, research locks, and browser persistence, and compares approved German/English desktop, tablet, and mobile baselines. A 1.5% pixel mismatch is the documented failure threshold. Pull-request validation is read-only. Baselines can only be replaced through the explicit `update_baselines` manual workflow input; screenshot publication on `main` is a separate write-enabled job.
+The Playwright workflow serves the checked-out commit locally, checks browser console/page errors, validates immediate slider-driven ranking and RAS updates, active-profile visibility, persistence and reset, Universe 50 navigation, research locks, and compares approved German/English desktop, tablet, and mobile baselines. A 1.5% pixel mismatch is the documented failure threshold. Pull-request validation is read-only. Baselines can only be replaced through the explicit `update_baselines` manual workflow input; screenshot publication on `main` is a separate write-enabled job.
 
 ## Data changes
 

@@ -1,16 +1,28 @@
 import {state} from './state.js';
 
-export function normalisedWeights(){
-  const w=state.settings.scoreWeights,total=Object.values(w).reduce((a,b)=>a+b,0)||1;
-  return Object.fromEntries(Object.entries(w).map(([k,v])=>[k,v/total]));
+export function normaliseWeights(weights){
+  const total=Object.values(weights).reduce((a,b)=>a+b,0)||1;
+  return Object.fromEntries(Object.entries(weights).map(([key,value])=>[key,value/total]));
 }
-export function opportunityScore(components,weights=normalisedWeights()){
+export function normalisedWeights(){
+  return normaliseWeights(state.settings.scoreWeights);
+}
+export function opportunityWeights(){
+  return normaliseWeights(state.data.strategyDefaults.scoreWeights);
+}
+export function weightedComponentScore(components,weights){
   return Math.round(
     Object.entries(components).reduce(
       (sum,[key,value])=>sum+value*(weights[key]||0),
       0
     )
   );
+}
+export function opportunityScore(components,weights=opportunityWeights()){
+  return weightedComponentScore(components,weights);
+}
+export function strategyComponentScore(components,weights=normalisedWeights()){
+  return weightedComponentScore(components,weights);
 }
 export function profileName(){
   const presets=state.data.strategyPresets;

@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.6.3 – Explainable Strategy Fit
+
+### Changed
+- separated the fixed intrinsic Opportunity Score from active strategy component weighting
+- exposed component-weight fit and portfolio/execution fit for every ranked candidate
+- made the active strategy visible in Scanner ranking, candidate details, and Decision Lab
+- retained the v0.6.2 Strategy Scores, preset rankings, selected candidates, RAS, CRV, and whole-share sizing
+
+### Tests
+- added a committed v0.6.2 strategy-results fixture for Balanced, Defensive, and Offensive
+- added unit coverage for invariant Opportunity Scores and custom Strategy Score/ranking/RAS changes
+- added Playwright coverage for immediate slider updates, browser persistence, active-profile visibility, and deterministic reset
+
 ## v0.6.2 – Complete Watchlist
 
 ### Added

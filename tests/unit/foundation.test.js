@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import test from 'node:test';
 import {clone,state} from '../../src/state.js';
 import {I18N} from '../../src/translations.js';
-import {opportunityScore} from '../../src/scoring.js';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js';
 import {computeSizing} from '../../src/portfolio-calculations.js';
 import {computeModel} from '../../src/strategy-ranking.js';
 import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js';
@@ -27,18 +27,60 @@ test('Opportunity and Strategy Scores reproduce the balanced calculation',()=>{
   assert.equal(computeModel().opportunities.find(x=>x.ticker==='ASML').strategyScore,84);
 });
 
-test('all scored securities across all presets match the committed v0.6.0 fixture',async()=>{
-  const fixture=await readJson('tests/fixtures/v0.6.0-model-results.json');
+test('all scored securities across all presets retain the committed v0.6.2 strategy results',async()=>{
+  const fixture=await readJson('tests/fixtures/v0.6.2-strategy-results.json');
   for(const preset of ['balanced','defensive','offensive']){
     reset(preset);
     const model=computeModel();
-    const actual={
-      securities:model.opportunities.map(item=>({ticker:item.ticker,opportunityScore:item.customScore,strategyScore:item.strategyScore,rank:item.customRank,fitAdjustment:item.fitAdjustment,crv:item.entryCrv,sizing:item.sizing})),
-      selectedCandidate:model.candidate?.ticker??null,ras:model.ras,gates:model.gates,
-      portfolioValue:state.data.portfolios.chatgpt.cash+state.data.portfolios.chatgpt.positions.reduce((sum,item)=>sum+item.current*item.shares,0)
-    };
-    assert.deepEqual(actual,fixture.presets[preset],preset);
+    const expected=fixture.presets[preset];
+    assert.deepEqual(model.opportunities.map(item=>[item.ticker,item.strategyComponentScore,item.strategyScore,item.customRank,item.portfolioFitAdjustment]),expected.securities,preset);
+    assert.equal(model.candidate?.ticker??null,expected.selectedCandidate,preset);
+    assert.equal(model.ras,expected.ras,preset);
+    assert.deepEqual(model.gates.map(gate=>[gate.key,gate.pass]),expected.gates,preset);
   }
+});
+
+test('portfolio sizing and CRV remain identical to the complete legacy differential fixture',async()=>{
+  const fixture=await readJson('tests/fixtures/v0.6.0-model-results.json');
+  for(const preset of ['balanced','defensive','offensive']){
+    reset(preset);
+    const actual=computeModel().opportunities.map(item=>({ticker:item.ticker,crv:item.entryCrv,sizing:item.sizing}));
+    const expected=fixture.presets[preset].securities.map(item=>({ticker:item.ticker,crv:item.crv,sizing:item.sizing}));
+    assert.deepEqual(actual,expected,preset);
+  }
+});
+
+test('Opportunity Scores stay intrinsic and unchanged across all strategy presets',()=>{
+  reset('balanced');
+  const baseline=Object.fromEntries(computeModel().opportunities.map(item=>[item.ticker,item.customScore]));
+  for(const preset of ['defensive','offensive']){
+    reset(preset);
+    assert.deepEqual(Object.fromEntries(computeModel().opportunities.map(item=>[item.ticker,item.customScore])),baseline,preset);
+  }
+});
+
+test('Strategy Score exposes component and portfolio fit without changing its result',()=>{
+  reset('defensive');
+  const novo=computeModel().opportunities.find(item=>item.ticker==='NOVO-B');
+  assert.equal(opportunityScore(novo.components),79);
+  assert.equal(strategyComponentScore(novo.components),80);
+  assert.equal(novo.componentWeightAdjustment,1);
+  assert.equal(novo.portfolioFitAdjustment,-1.762570039819563);
+  assert.equal(novo.fitAdjustment,novo.componentWeightAdjustment+novo.portfolioFitAdjustment);
+  assert.equal(novo.strategyScore,Math.round(novo.customScore+novo.fitAdjustment));
+  assert.deepEqual(novo.fitReasons.map(reason=>reason.key),['componentWeightFit','affordability','positionFit','crvFit','priceFit','diversificationFit']);
+});
+
+test('a custom component-weight change updates Strategy Score, ranking and RAS but not Opportunity Score',()=>{
+  const before=computeModel();
+  const opportunityScores=Object.fromEntries(before.opportunities.map(item=>[item.ticker,item.customScore]));
+  state.settings.scoreWeights.technical=0;
+  const after=computeModel();
+  assert.deepEqual(Object.fromEntries(after.opportunities.map(item=>[item.ticker,item.customScore])),opportunityScores);
+  assert.notDeepEqual(after.opportunities.map(item=>item.ticker),before.opportunities.map(item=>item.ticker));
+  assert.notEqual(after.opportunities.find(item=>item.ticker==='NOVO-B').strategyScore,before.opportunities.find(item=>item.ticker==='NOVO-B').strategyScore);
+  assert.notEqual(after.ras,before.ras);
+  assert.equal(after.candidate.ticker,after.opportunities.find(item=>!state.data.portfolios.chatgpt.positions.some(position=>position.ticker===item.ticker)).ticker);
 });
 
 test('presets retain established ranking changes',()=>{

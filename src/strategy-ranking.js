@@ -1,10 +1,10 @@
 import {clamp,euro,num,state} from './state.js';
-import {opportunityScore,normalisedWeights} from './scoring.js';
+import {opportunityScore,strategyComponentScore} from './scoring.js';
 import {computeSizing,valueOf} from './portfolio-calculations.js';
 import {isRankingEligible} from './research-pipeline.js';
 import {wholeShareLabel} from './translations.js';
 
-export function strategyFitFor(o,customScore,held){
+export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
   const p=state.data.portfolios.chatgpt;
   const portfolioValue=valueOf(p);
   const isHeld=held.has(o.ticker);
@@ -55,12 +55,15 @@ export function strategyFitFor(o,customScore,held){
     4,
     Math.max(0,regionPct-state.settings.maxRegionExposurePct)*0.15
   );
-  const adjustment=
+  const portfolioFitAdjustment=
     affordabilityAdj+positionAdj+crvAdj+priceAdj+
     concentrationAdj+sectorAdj+regionAdj;
-  const strategyScore=clamp(Math.round(customScore+adjustment),0,100);
+  const componentWeightAdjustment=activeComponentScore-intrinsicScore;
+  const adjustment=componentWeightAdjustment+portfolioFitAdjustment;
+  const strategyScore=clamp(Math.round(intrinsicScore+adjustment),0,100);
 
   const reasons=[
+    {key:'componentWeightFit',value:componentWeightAdjustment},
     {key:'affordability',value:affordabilityAdj},
     {key:'positionFit',value:positionAdj},
     {key:'crvFit',value:crvAdj},
@@ -71,6 +74,9 @@ export function strategyFitFor(o,customScore,held){
   return{
     strategyScore,
     fitAdjustment:adjustment,
+    componentWeightAdjustment,
+    portfolioFitAdjustment,
+    strategyComponentScore:activeComponentScore,
     fitReasons:reasons,
     entryCrv,
     inZone,
@@ -82,19 +88,20 @@ export function strategyFitFor(o,customScore,held){
   };
 }
 export function computeModel(){
-  const weights=normalisedWeights();
   const held=new Set(
     state.data.portfolios.chatgpt.positions.map(x=>x.ticker)
   );
 
   const opportunities=state.data.opportunities.filter(o=>isRankingEligible(o)).map(o=>{
-    const customScore=opportunityScore(o.components,weights);
-    const fit=strategyFitFor(o,customScore,held);
-    return{...o,customScore,...fit};
+    const customScore=opportunityScore(o.components);
+    const activeComponentScore=strategyComponentScore(o.components);
+    const fit=strategyFitFor(o,customScore,activeComponentScore,held);
+    return{...o,opportunityScore:customScore,customScore,...fit};
   }).sort((a,b)=>
     b.strategyScore-a.strategyScore ||
-    b.customScore-a.customScore ||
-    b.ras-a.ras
+    b.strategyComponentScore-a.strategyComponentScore ||
+    b.ras-a.ras ||
+    b.customScore-a.customScore
   ).map((o,index)=>({...o,customRank:index+1}));
 
   const newCandidates=opportunities.filter(o=>!held.has(o.ticker));
@@ -113,7 +120,7 @@ export function computeModel(){
   }
 
   const sizing=candidate.sizing;
-  const cashAdv=candidate.customScore-state.settings.cashHurdle;
+  const cashAdv=candidate.strategyComponentScore-state.settings.cashHurdle;
   const secondGap=
     candidate.strategyScore-(second?.strategyScore??candidate.strategyScore);
   const heldGap=

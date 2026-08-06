@@ -176,6 +176,101 @@ async function assertDynamicRanking() {
   await page.close();
 }
 
+async function assertImmediateStrategySliderAndReset() {
+  const { page, errors } = await openPage(1366, 1024);
+  await setLanguage(page, "de");
+  await switchView(page, "settings");
+  await page.locator('[data-preset="balanced"]').click();
+
+  const rows = page.locator("[data-settings-rank-ticker]");
+  const initial = await rows.evaluateAll(items => items.map(item => ({
+    ticker: item.dataset.settingsRankTicker,
+    rank: item.dataset.rank,
+    opportunityScore: item.dataset.opportunityScore,
+    strategyScore: item.dataset.strategyScore
+  })));
+  const initialNovo = initial.find(item => item.ticker === "NOVO-B");
+  const initialRas = await page.locator("#settingsPreview .preview-grid > div").first().locator("b").innerText();
+
+  await page.locator('input[data-setting="technical"]').evaluate(input => {
+    input.value = "0";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await page.waitForFunction(() => document.querySelector('[data-settings-rank-ticker="NOVO-B"]')?.dataset.strategyScore === "80");
+
+  const updated = await rows.evaluateAll(items => items.map(item => ({
+    ticker: item.dataset.settingsRankTicker,
+    rank: item.dataset.rank,
+    opportunityScore: item.dataset.opportunityScore,
+    strategyScore: item.dataset.strategyScore
+  })));
+  const updatedNovo = updated.find(item => item.ticker === "NOVO-B");
+  const osChanged = initial.some(before => updated.find(after => after.ticker === before.ticker)?.opportunityScore !== before.opportunityScore);
+  if (osChanged) {
+    throw new Error(`Opportunity Score changed with a strategy slider: ${JSON.stringify({ initial, updated })}`);
+  }
+  if (updated.map(item => item.ticker).join("|") === initial.map(item => item.ticker).join("|")) {
+    throw new Error("Strategy slider did not update the visible ranking immediately.");
+  }
+  if (updatedNovo?.strategyScore === initialNovo?.strategyScore) {
+    throw new Error("Strategy slider did not update the candidate Strategy Score.");
+  }
+  const updatedRas = await page.locator("#settingsPreview .preview-grid > div").first().locator("b").innerText();
+  if (updatedRas === initialRas) {
+    throw new Error("RAS did not update with the active strategy profile.");
+  }
+  if (await page.locator("#customBadge.custom-indicator").count() !== 1) {
+    throw new Error("Custom active strategy is not visible in Strategy Studio.");
+  }
+  await page.screenshot({
+    path: "screenshots/latest-strategy-studio-custom-de.png",
+    fullPage: true
+  });
+  compareScreenshot("latest-strategy-studio-custom-de.png");
+
+  await switchView(page, "scanner");
+  const scannerOrder = await page.locator(".scanner-row").evaluateAll(items => items.slice(0, 5).map(item => item.dataset.ticker));
+  if (scannerOrder.join("|") !== updated.map(item => item.ticker).join("|")) {
+    throw new Error("Scanner ranking did not use the immediately updated Strategy Studio order.");
+  }
+  if (!(await page.locator("#rankingProfile").innerText()).includes("INDIVIDUELL")) {
+    throw new Error("Active strategy is missing from the ranking view.");
+  }
+
+  await switchView(page, "decision");
+  await page.locator('[data-decision-mode="auto"]').click();
+  if (!(await page.locator("#decisionCandidate").innerText()).includes("INDIVIDUELL")) {
+    throw new Error("Active strategy is missing from Decision Lab.");
+  }
+  const fitText = await page.locator("#decisionStrategyFit").innerText();
+  if (!fitText.includes("Komponenten-Fit") || !fitText.includes("Portfolio- & Ausführungs-Fit")) {
+    throw new Error(`Decision Lab strategy-fit explanation is incomplete: ${fitText}`);
+  }
+
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForSelector("#dashboard.active");
+  await switchView(page, "settings");
+  if (await page.locator('input[data-setting="technical"]').inputValue() !== "0") {
+    throw new Error("Custom strategy slider did not persist after reload.");
+  }
+  await page.locator("#resetSettings").click();
+  if (await page.locator('input[data-setting="technical"]').inputValue() !== "25") {
+    throw new Error("Strategy reset did not restore the documented default.");
+  }
+  if (await page.locator('[data-preset="balanced"].active').count() !== 1) {
+    throw new Error("Strategy reset did not restore the Balanced profile.");
+  }
+  if (await page.evaluate(() => localStorage.getItem("alphaStrategySettings")) !== null) {
+    throw new Error("Strategy reset left stale browser persistence behind.");
+  }
+  const resetOrder = await rows.evaluateAll(items => items.map(item => item.dataset.settingsRankTicker));
+  if (resetOrder.join("|") !== initial.map(item => item.ticker).join("|")) {
+    throw new Error("Strategy reset did not restore the original ranking.");
+  }
+  if (errors.length) throw new Error(`Browser errors in slider/reset test: ${errors.join(" | ")}`);
+  await page.close();
+}
+
 
 async function assertUniverseAndCandidateNavigation() {
   const { page, errors } = await openPage(1366, 1024);
@@ -415,5 +510,7 @@ await assertWatchlistNavigation();
 await assertResearchPipeline();
 
 await assertBrowserPersistence();
+
+await assertImmediateStrategySliderAndReset();
 
 await browser.close();

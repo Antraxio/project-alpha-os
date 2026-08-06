@@ -1,5 +1,5 @@
 import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js';
-import {movement,normalisedWeights,profileName,scoreClass} from '../scoring.js';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js';
 import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js';
 import {computeModel} from '../strategy-ranking.js';
 import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js';
@@ -50,6 +50,13 @@ export function applyStaticTranslations(){
 }
 export function profileLabel(name){
   return t({defensive:'profileDefensive',balanced:'profileBalanced',offensive:'profileOffensive',custom:'profileCustom'}[name]);
+}
+function signedFit(value){return`${value>=0?'+':''}${num(value,1)}`;}
+function fitReasonRows(x){
+  return x.fitReasons.map(reason=>`<div class="fit-reason"><b class="${reason.value>0?'fit-positive':reason.value<0?'fit-negative':'fit-neutral'}">${signedFit(reason.value)}</b><span>${t(reason.key)}</span></div>`).join('');
+}
+function strategyFitPanel(x){
+  return`<div class="strategy-context-head"><span>${t('activeStrategy')}</span><b>${profileLabel(profileName())}</b></div><div class="strategy-equation"><span><small>${t('intrinsicOS')}</small><b>${x.customScore}</b></span><i>+</i><span><small>${t('componentWeightFit')}</small><b class="${x.componentWeightAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.componentWeightAdjustment)}</b></span><i>+</i><span><small>${t('portfolioExecutionFit')}</small><b class="${x.portfolioFitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.portfolioFitAdjustment)}</b></span><i>=</i><span><small>${t('strategyScore')}</small><b>${x.strategyScore}</b></span></div><div class="fit-reasons">${fitReasonRows(x)}</div>`;
 }
 export function showToast(message){
   $('toast').textContent=message;$('toast').classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>$('toast').classList.remove('show'),2200);
@@ -170,6 +177,7 @@ function renderPendingDecision(entry){
   $('decisionRas').textContent='–';
   $('decisionRadar').innerHTML=`<div class="pending-score"><div><strong>${t('noDecisionAvailable')}</strong><span>${t('researchRequiredText')}</span></div></div>`;
   $('scoreBreakdown').innerHTML=`<div class="pending-score"><div><strong>${t('researchRequired')}</strong><span>${state.language==='de'?'Der Titel ist Teil des Universe 50, aber noch nicht Teil des bewerteten Rankings.':'The security belongs to Universe 50 but is not yet part of the scored ranking.'}</span></div></div>`;
+  $('decisionStrategyFit').innerHTML='';
   const labels=[t('scoreGate'),t('priceGate'),t('crvGate'),t('sizingGate')];
   $('decisionGates').innerHTML=labels.map(label=>`<div class="gate"><div class="gate-icon fail">…</div><div><b>${label}</b><span>${t('researchRequired')}</span></div><small>${t('open')}</small></div>`).join('');
   $('decisionVerdict').textContent=t('researchRequiredText');
@@ -195,7 +203,7 @@ export function renderDecision(){
     $('decisionCoverageNotice').classList.add('show');$('decisionCoverageNotice').textContent=t('noEligibleCandidateText');
     $('decisionCandidate').textContent=t('noEligibleCandidate');$('decisionMeta').textContent='';$('decisionScore').textContent='–';$('decisionRas').textContent='–';
     $('decisionRadar').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;
-    $('scoreBreakdown').innerHTML='';$('decisionGates').innerHTML='';$('decisionVerdict').textContent=t('noEligibleCandidateText');$('actionLadder').innerHTML='';$('evidenceGrid').innerHTML='';return;
+    $('scoreBreakdown').innerHTML='';$('decisionStrategyFit').innerHTML='';$('decisionGates').innerHTML='';$('decisionVerdict').textContent=t('noEligibleCandidateText');$('actionLadder').innerHTML='';$('evidenceGrid').innerHTML='';return;
   }
   if(!selection.scored){
     renderPendingDecision(selection.universe);
@@ -204,14 +212,15 @@ export function renderDecision(){
 
   $('decisionCoverageNotice').classList.remove('show');
   const x=selection.scored;
-  const w=normalisedWeights();
+  const w=opportunityWeights();
   const automatic=selection.mode==='auto';
-  $('decisionCandidate').innerHTML=`${x.name} (${x.ticker})<span class="calculated-score-label">${t('strategyScore')} ${x.strategyScore} · OS ${x.customScore}</span>`;
+  $('decisionCandidate').innerHTML=`${x.name} (${x.ticker})<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} ${x.strategyScore} · OS ${x.customScore}</span>`;
   $('decisionMeta').textContent=`${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)} · ${t('conviction')} ${x.conviction}`;
   $('decisionScore').textContent=x.customScore;
   $('decisionRas').textContent=automatic?m.ras:x.ras;
   $('decisionRadar').innerHTML=radarSvg(x);
   $('scoreBreakdown').innerHTML=Object.entries(x.components).map(([key,value])=>`<div class="score-row"><span>${t(key)}</span><div class="score-meter"><i style="width:${value}%"></i></div><b>${value}</b><small>${num(value*w[key],1)} P.</small></div>`).join('');
+  $('decisionStrategyFit').innerHTML=strategyFitPanel(x);
 
   const gates=automatic?m.gates:[
     {key:'scoreGate',pass:x.customScore>=state.settings.opportunityThreshold,detail:`${x.customScore} ≥ ${state.settings.opportunityThreshold}`},
@@ -234,16 +243,17 @@ export function renderDecision(){
 
 export function renderScanner(){
   const m=computeModel(),q=$('search').value.trim().toLowerCase(),r=$('region').value,s=$('sector').value,c=$('conviction').value;
+  $('rankingProfile').textContent=`${t('activeStrategy')}: ${profileLabel(profileName())}`;
   const items=m.opportunities.filter(x=>(!q||[x.name,x.ticker,x.isin].some(v=>v.toLowerCase().includes(q)))&&(r==='all'||x.region===r)&&(s==='all'||x.sector===s)&&(c==='all'||x.conviction===c));
   $('resultCount').textContent=`${items.length} ${t('candidates')}`;
-  $('scannerList').innerHTML=items.map(x=>{const mv=movement(x,x.customRank);return`<div class="scanner-row ${x.ticker===state.selectedTicker?'selected':''}" data-ticker="${x.ticker}"><div class="rank">#${x.customRank}</div><div class="scanner-company"><b>${x.name}</b><span>${x.ticker} · ${x.isin}</span></div><span>${regionName(x.region)}</span><span>${sectorName(x.sector)}</span><div class="strategy-score ${scoreClass(x.strategyScore)}"><b>${x.strategyScore}</b><small>${t('strategyScore')}</small><em>OS ${x.customScore}</em></div>${sparkline(x.scoreHistory)}<span class="${mv.cls}">${mv.label}</span></div>`}).join('');
+  $('scannerList').innerHTML=items.map(x=>{const mv=movement(x,x.customRank);return`<div class="scanner-row ${x.ticker===state.selectedTicker?'selected':''}" data-ticker="${x.ticker}" data-rank="${x.customRank}" data-opportunity-score="${x.customScore}" data-strategy-score="${x.strategyScore}"><div class="rank">#${x.customRank}</div><div class="scanner-company"><b>${x.name}</b><span>${x.ticker} · ${x.isin}</span></div><span>${regionName(x.region)}</span><span>${sectorName(x.sector)}</span><div class="strategy-score ${scoreClass(x.strategyScore)}"><b>${x.strategyScore}</b><small>${t('strategyScore')}</small><em>OS ${x.customScore}</em></div>${sparkline(x.scoreHistory)}<span class="${mv.cls}">${mv.label}</span></div>`}).join('');
   document.querySelectorAll('.scanner-row').forEach(row=>row.onclick=()=>{state.selectedTicker=row.dataset.ticker;renderScanner()});renderCandidateDetail();
 }
 function renderCandidateDetail(){
   const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0];
   if(!x){$('candidateDetail').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;}
   const sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${x.fitAdjustment>=0?'+':''}${num(x.fitAdjustment,1)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${x.fitReasons.map(r=>`<div class="fit-reason"><b class="${r.value>0?'fit-positive':r.value<0?'fit-negative':'fit-neutral'}">${r.value>=0?'+':''}${num(r.value,1)}</b><span>${t(r.key)}</span></div>`).join('')}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
   document.querySelectorAll('[data-open-decision]').forEach(button=>{
     button.onclick=()=>setManualDecisionTicker(button.dataset.openDecision,true);
   });
@@ -439,7 +449,7 @@ export function renderJournal(){
   $('journalFeed').innerHTML=items.map(x=>`<div class="journal-entry"><time>${x[0]}</time><div><b>${x[1]}</b><p>${x[2]}</p></div><span class="status-pill neutral">${x[3]}</span></div>`).join('');
 }
 export function renderMethod(){
-  const d=state.data,w=normalisedWeights();
+  const d=state.data,w=opportunityWeights();
   $('weightList').innerHTML=Object.entries(w).map(([k,v])=>`<div class="weight-row"><span>${t(k)}</span><div class="weight-track"><i style="width:${v*100/0.35}%"></i></div><b>${num(v*100,1)}%</b></div>`).join('');
   $('formulaList').innerHTML=[t('formulaOS'),t('formulaCash'),t('formulaSwitch'),t('formulaPrice')].map(x=>`<span>${x}</span>`).join('');
   $('ruleGrid').innerHTML=[
