@@ -5,6 +5,10 @@ export const REQUIRED_RESEARCH_CHECKLIST=Object.freeze([
   'marketData','technical','setup','review'
 ]);
 
+export const LEGACY_V060_SCORED_TICKERS=Object.freeze([
+  'MSFT','ASML','BKNG','NOVO-B','TSM','ENEL','HNR1','JPM','DTE','SHEL'
+]);
+
 export function researchRecord(ticker,data=state.data){
   return data.researchPipeline?.records?.find(record=>record.ticker===ticker)||null;
 }
@@ -37,9 +41,10 @@ export function isRankingEligible(opportunity,data=state.data){
   const dossier=researchRecord(opportunity.ticker,data);
   if(dossier)return isResearchRecordComplete(dossier);
 
-  // v0.6.0 scored records predate dossiers. They remain eligible only when
-  // their complete governed score and execution fields are present.
-  return isCompleteLegacyScoredOpportunity(opportunity);
+  // Only the scored records inherited from the v0.6.0 snapshot may use the
+  // compatibility path. Every new security must have an approved dossier.
+  return LEGACY_V060_SCORED_TICKERS.includes(opportunity.ticker)&&
+    isCompleteLegacyScoredOpportunity(opportunity);
 }
 
 export function isResearchPending(ticker,data=state.data){

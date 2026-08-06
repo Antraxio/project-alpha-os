@@ -7,7 +7,7 @@ import {opportunityScore} from '../../src/scoring.js';
 import {computeSizing} from '../../src/portfolio-calculations.js';
 import {computeModel} from '../../src/strategy-ranking.js';
 import {activeDecisionSelection} from '../../src/universe.js';
-import {isRankingEligible,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -68,6 +68,18 @@ test('Universe-only pending security without a dossier is fail-closed',()=>{
   const item=addSyntheticOpportunity('PEND');
   state.data.universe.push({...clone(state.data.universe[0]),ticker:'PEND',coverageStatus:'research_pending',portfolioStatus:'not_held'});
   assert.equal(isRankingEligible(item),false);assert.equal(computeModel().opportunities.some(x=>x.ticker==='PEND'),false);
+});
+
+test('new scored security without a dossier is fail-closed',()=>{
+  const item=addSyntheticOpportunity('NEW');
+  state.data.universe.push({...clone(state.data.universe[0]),ticker:'NEW',coverageStatus:'scored',portfolioStatus:'not_held'});
+  assert.equal(isRankingEligible(item),false);
+  assert.equal(computeModel().opportunities.some(x=>x.ticker==='NEW'),false);
+});
+
+test('only the explicitly inherited v0.6.0 scored securities use the legacy path',()=>{
+  assert.deepEqual(state.data.opportunities.map(item=>item.ticker),LEGACY_V060_SCORED_TICKERS);
+  assert.ok(state.data.opportunities.every(item=>isRankingEligible(item)));
 });
 
 test('research_active coverage is fail-closed even with an approved dossier',()=>{
