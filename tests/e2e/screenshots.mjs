@@ -143,6 +143,12 @@ async function assertUniverseAndCandidateNavigation() {
   await page.waitForSelector("#research.active");
   await page.locator('[data-research-open-lab="AAPL"]').click();
   await page.waitForSelector("#decision.active");
+  // The Research dossier button is below the fold. Opening Decision Lab starts
+  // the app's smooth scroll back to the top; stop that animation before taking
+  // the full-page baseline so fixed shell elements are captured deterministically.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  await page.waitForFunction(() => window.scrollY === 0);
+  await page.waitForTimeout(250);
 
   const candidateText = await page
     .locator("#decisionCandidate")
