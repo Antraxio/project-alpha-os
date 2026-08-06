@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.6.1 – Foundation refactor
+
+### Changed
+- split the browser application into state, translations, scoring, strategy-ranking, portfolio-calculation, research-pipeline, universe, data-loader, and UI-view modules
+- split the monolithic data snapshot into logical core, portfolio, opportunity, universe, and research datasets without changing source values
+- reduced `app.js` to browser coordination, settings, persistence, and startup
+- retained static GitHub Pages deployment and all existing view/storage contracts
+- added explicit v0.6.1 cache-busting across styles, scripts, and datasets
+- converted browser source files to native ES modules with explicit imports and exports
+- restored the complete `alpha-data.json` payload and the legacy `opportunities.json` resource
+
+### Governance
+- added repository-wide development, data-integrity, bilingual, and investment rules in `AGENTS.md`
+- made research eligibility fail-closed across Universe coverage and the explicit nine-key dossier checklist
+- retained preliminary research exclusion from scores, ranking, automatic selection, and executable decisions
+- added bilingual zero-eligible-candidate states without synthesising a fallback candidate
+
+### Tests and CI
+- added Node unit tests for Opportunity Score, Strategy Score, preset ranking changes, whole-share sizing, automatic candidate selection, and research-pending exclusion
+- added bilingual-pair and split-dataset integrity checks
+- moved the Playwright program into `tests/e2e/screenshots.mjs`
+- changed screenshot CI to test the checked-out pull-request commit on a local server instead of the previously deployed GitHub Pages version
+- retained browser-error, dynamic-ranking, Universe 50, pending-candidate, Research Pipeline, and screenshot coverage; added browser-persistence validation
+- added all-security/all-preset v0.6.0 differential fixtures, legacy resource compatibility tests, and empty-candidate tests
+- added approved visual baselines with a 1.5% threshold and a manual-only baseline update workflow
+- reduced pull-request workflow permissions to read-only and isolated screenshot publication in write-enabled jobs
+
 ## v0.6.0 – Research Pipeline
 
 ### Added

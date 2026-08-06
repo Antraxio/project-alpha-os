@@ -1,0 +1,17 @@
+{
+  "name": "project-alpha-os",
+  "version": "0.6.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/unit/*.test.js",
+    "test:syntax": "node scripts/check-syntax.mjs",
+    "test:screenshots": "node tests/e2e/screenshots.mjs",
+    "build:data": "node scripts/build-compat-data.mjs"
+  },
+  "devDependencies": {
+    "pixelmatch": "7.1.0",
+    "playwright": "1.54.2",
+    "pngjs": "7.0.0"
+  }
+}

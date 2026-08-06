@@ -1,0 +1,282 @@
+{
+  "version": "0.6.1",
+  "snapshotDate": "2026-08-02T21:27:00+02:00",
+  "dataMode": {
+    "de": "Manueller Modell-Snapshot · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",
+    "en": "Manual model snapshot · 10 scored · 5 in active research · 35 queued"
+  },
+  "dailyBriefing": {
+    "salutation": {
+      "de": "Alex, heute zählt Disziplin – nicht Aktivität.",
+      "en": "Alex, today discipline matters more than activity."
+    },
+    "headline": {
+      "de": "Keine neue Position eröffnen.",
+      "en": "Do not open a new position."
+    },
+    "summary": {
+      "de": "ASML ist die beste neue Chance, erfüllt aber nicht alle Ausführungsgates. Microsoft bleibt der stärkste absolute Kandidat und steht unmittelbar vor Ziel 1.",
+      "en": "ASML is the best new opportunity but does not pass every execution gate. Microsoft remains the strongest absolute candidate and is close to target 1."
+    },
+    "keyPoints": [
+      {
+        "de": "Microsoft liegt nur 0,50 % unter dem ersten Teilgewinnziel.",
+        "en": "Microsoft is only 0.50% below the first partial-profit target."
+      },
+      {
+        "de": "ASML notiert oberhalb der definierten Einstiegszone.",
+        "en": "ASML trades above the defined entry zone."
+      },
+      {
+        "de": "Cash behält seinen Optionalitätswert, solange der relative Vorsprung zu klein ist.",
+        "en": "Cash retains its option value while the relative advantage remains too small."
+      }
+    ],
+    "nextTrigger": {
+      "de": "ASML erreicht die Einstiegszone und alle relativen Hürden – oder Microsoft erreicht 404,60 €.",
+      "en": "ASML reaches the entry zone and passes every relative hurdle — or Microsoft reaches €404.60."
+    },
+    "priority": {
+      "de": "Microsoft-Teilgewinn vorbereiten; ASML nur beobachten.",
+      "en": "Prepare Microsoft's partial profit; monitor ASML only."
+    }
+  },
+  "marketRegime": {
+    "label": {
+      "de": "Selektives Risk-on",
+      "en": "Selective risk-on"
+    },
+    "score": 66,
+    "trend": {
+      "de": "Positiv, aber schmal",
+      "en": "Positive but narrow"
+    },
+    "volatility": {
+      "de": "Erhöht",
+      "en": "Elevated"
+    },
+    "breadth": {
+      "de": "Begrenzt",
+      "en": "Limited"
+    },
+    "stance": {
+      "de": "Qualität vor Aktivität",
+      "en": "Quality over activity"
+    },
+    "explanation": {
+      "de": "Das Regime unterstützt Qualitätsaktien, rechtfertigt aber keine aggressiven Neueinstiege oberhalb definierter Preiszonen.",
+      "en": "The regime supports quality equities but does not justify aggressive entries above predefined price zones."
+    }
+  },
+  "rules": {
+    "crvMinimum": 2.0,
+    "opportunityThreshold": 85,
+    "cashHurdle": 82,
+    "cashSafetyMargin": 5,
+    "switchMargin": 5,
+    "positionCaps": {
+      "de": "Keine starren Caps; Konzentration muss explizit begründet werden.",
+      "en": "No rigid caps; concentration must be explicitly justified."
+    },
+    "stopPolicy": {
+      "de": "Thesen-, Struktur- und volatilitätsbasiert.",
+      "en": "Based on thesis, market structure and volatility."
+    },
+    "sharePolicy": {
+      "de": "Nur volle Aktien.",
+      "en": "Whole shares only."
+    },
+    "defaultAction": {
+      "de": "Im Regelfall null oder eine neue Position.",
+      "en": "Normally zero or one new position."
+    }
+  },
+  "scoreWeights": {
+    "fundamental": 30,
+    "technical": 25,
+    "catalyst": 15,
+    "risk": 15,
+    "macro": 10,
+    "diversification": 5
+  },
+  "decision": {
+    "candidateTicker": "ASML",
+    "whyNotBuy": [
+      {
+        "de": "Der Kandidat ist absolut gut, aber relativ nicht dominant.",
+        "en": "The candidate is good in absolute terms but not dominant on a relative basis."
+      },
+      {
+        "de": "Der Preis liegt oberhalb der vorab definierten Einstiegszone.",
+        "en": "Price is above the predefined entry zone."
+      },
+      {
+        "de": "Cash bietet weiterhin Optionalität und Schutz vor Ereignisrisiken.",
+        "en": "Cash continues to provide optionality and protection from event risk."
+      },
+      {
+        "de": "Microsoft benötigt heute mehr Aufmerksamkeit als eine neue Position.",
+        "en": "Microsoft requires more attention today than a new position."
+      }
+    ]
+  },
+  "timeline": {
+    "dates": [
+      "26.07.",
+      "27.07.",
+      "28.07.",
+      "29.07.",
+      "30.07.",
+      "31.07.",
+      "01.08."
+    ],
+    "events": [
+      {
+        "date": "01.08.",
+        "ticker": "ASML",
+        "type": {
+          "de": "Aufsteiger",
+          "en": "Riser"
+        },
+        "text": {
+          "de": "Score 84 → 85; absolute Schwelle erreicht.",
+          "en": "Score 84 → 85; absolute threshold reached."
+        }
+      },
+      {
+        "date": "01.08.",
+        "ticker": "MSFT",
+        "type": {
+          "de": "Zielnähe",
+          "en": "Near target"
+        },
+        "text": {
+          "de": "Nur noch 0,50 % bis zum Teilgewinnziel.",
+          "en": "Only 0.50% to the partial-profit target."
+        }
+      },
+      {
+        "date": "31.07.",
+        "ticker": "TSM",
+        "type": {
+          "de": "Erholung",
+          "en": "Recovery"
+        },
+        "text": {
+          "de": "Score 78 → 79; technisches Bild verbessert.",
+          "en": "Score 78 → 79; technical picture improved."
+        }
+      },
+      {
+        "date": "29.07.",
+        "ticker": "META / TSM",
+        "type": {
+          "de": "Risikoregel",
+          "en": "Risk rule"
+        },
+        "text": {
+          "de": "Beide Stops ausgeführt; Verluste realisiert und dokumentiert.",
+          "en": "Both stops executed; losses realised and documented."
+        }
+      },
+      {
+        "date": "27.07.",
+        "ticker": "BKNG",
+        "type": {
+          "de": "Absteiger",
+          "en": "Faller"
+        },
+        "text": {
+          "de": "Relative Attraktivität sinkt wegen fehlender Positionsgröße.",
+          "en": "Relative appeal falls because efficient position sizing is not possible."
+        }
+      }
+    ]
+  },
+  "strategyDefaults": {
+    "scoreWeights": {
+      "fundamental": 30,
+      "technical": 25,
+      "catalyst": 15,
+      "risk": 15,
+      "macro": 10,
+      "diversification": 5
+    },
+    "opportunityThreshold": 85,
+    "cashHurdle": 82,
+    "cashSafetyMargin": 5,
+    "switchMargin": 5,
+    "minCrv": 2.0,
+    "targetPositionPct": 35,
+    "concentrationWarningPct": 45,
+    "cashReservePct": 25,
+    "maxSectorExposurePct": 60,
+    "maxRegionExposurePct": 75
+  },
+  "strategyPresets": {
+    "defensive": {
+      "scoreWeights": {
+        "fundamental": 35,
+        "technical": 15,
+        "catalyst": 10,
+        "risk": 20,
+        "macro": 15,
+        "diversification": 5
+      },
+      "opportunityThreshold": 88,
+      "cashHurdle": 84,
+      "cashSafetyMargin": 7,
+      "switchMargin": 6,
+      "minCrv": 2.5,
+      "targetPositionPct": 25,
+      "concentrationWarningPct": 35,
+      "cashReservePct": 40,
+      "maxSectorExposurePct": 50,
+      "maxRegionExposurePct": 65
+    },
+    "balanced": {
+      "scoreWeights": {
+        "fundamental": 30,
+        "technical": 25,
+        "catalyst": 15,
+        "risk": 15,
+        "macro": 10,
+        "diversification": 5
+      },
+      "opportunityThreshold": 85,
+      "cashHurdle": 82,
+      "cashSafetyMargin": 5,
+      "switchMargin": 5,
+      "minCrv": 2.0,
+      "targetPositionPct": 35,
+      "concentrationWarningPct": 45,
+      "cashReservePct": 25,
+      "maxSectorExposurePct": 60,
+      "maxRegionExposurePct": 75
+    },
+    "offensive": {
+      "scoreWeights": {
+        "fundamental": 25,
+        "technical": 30,
+        "catalyst": 20,
+        "risk": 10,
+        "macro": 10,
+        "diversification": 5
+      },
+      "opportunityThreshold": 82,
+      "cashHurdle": 78,
+      "cashSafetyMargin": 3,
+      "switchMargin": 3,
+      "minCrv": 1.7,
+      "targetPositionPct": 45,
+      "concentrationWarningPct": 55,
+      "cashReservePct": 15,
+      "maxSectorExposurePct": 75,
+      "maxRegionExposurePct": 85
+    }
+  },
+  "universeMethodology": {
+    "de": "Global Liquid 50 ist eine manuell kuratierte Startauswahl großer, liquider Unternehmen aus Nordamerika, Europa und Asien. Sie ist kein offizieller Index und keine Kaufempfehlung. Nur vollständig recherchierte Titel erhalten Scores und können automatisch ausgewählt werden.",
+    "en": "Global Liquid 50 is a manually curated starting universe of large, liquid companies from North America, Europe and Asia. It is not an official index or a recommendation. Only fully researched securities receive scores and can be selected automatically."
+  }
+}

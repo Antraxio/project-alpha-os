@@ -1,144 +1,83 @@
 # Project Alpha OS
 
-## v0.5.0 – Strategy Studio & Bilingual UI
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.1 is a foundation refactor of the v0.6.0 behavior; it does not add investment features or change investment results.
 
-### Neue Kernfunktionen
+The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
-1. **Strategy Studio mit Schiebereglern**
-   - Gewichtung von Fundamental, Technik, Katalysator, Risiko, Makro und Diversifikation
-   - Opportunity-Schwelle
-   - Cash-Hürde und Sicherheitsmarge
-   - Wechselschwelle
-   - Mindest-CRV
-   - Zielgröße einer Erstposition
-   - Konzentrationswarnung
-   - gewünschte Cashreserve
-   - Warnschwellen für Sektor- und Regionenexponierung
+## Run locally
 
-2. **Live-Neuberechnung**
-   - Ranking und Opportunity Scores
-   - Relative Advantage Score
-   - Kaufgates
-   - CRV
-   - Stückzahl bei ausschließlich vollen Aktien
-   - projizierte Sektor- und Regionenexponierung
-   - Executive Briefing und Entscheidung
+Serve the repository root with any static HTTP server, then open the shown URL. Opening `index.html` directly is not supported because browsers restrict JSON loading from `file://` pages.
 
-3. **Strategie-Presets**
-   - Defensiv
-   - Ausgewogen
-   - Offensiv
-   - individuelles Profil
+```bash
+python3 -m http.server 4173
+```
 
-4. **Deutsch / Englisch**
-   - Umschaltung oben rechts
-   - statische und dynamische Inhalte werden übersetzt
-   - Sprache und Strategieprofil werden lokal im Browser gespeichert
+The production files require no compilation and remain directly deployable to GitHub Pages.
 
-### Wichtige Governance
+## Architecture
 
-Positions- und Diversifikationsregler sind Präferenzen und Warnschwellen, keine automatisch erzwungenen starren Caps. Das entspricht Alpha 2.0: Freiraum bleibt erlaubt, Konzentration benötigt aber eine sichtbare Begründung.
+```text
+index.html / style.css        Static shell and presentation
+app.js                       Browser coordination, persistence, event binding
+src/
+  state.js                   Runtime state and formatting helpers
+  translations.js            Complete German/English UI dictionary
+  scoring.js                 Opportunity Score and score helpers
+  strategy-ranking.js        Portfolio-aware Strategy Score, gates, ranking
+  portfolio-calculations.js  Portfolio value and whole-share sizing
+  research-pipeline.js       Research records, stages, eligibility guard
+  universe.js                Universe lookup and candidate selection
+  data-loader.js             Split-data loading and assembly
+  version.js                 Single browser build/cache version
+  ui/views.js                Existing DOM view renderers
+data/
+  core.json                  Snapshot, rules, presets, timeline, decision copy
+  portfolios.json            Portfolios, positions, and closed trades
+  opportunities.json         Fully scored opportunities only
+  universe.json              Global Liquid 50 universe
+  research.json              Research pipeline and source-backed dossiers
+```
 
-### Datenstatus
+`data/manifest.json` describes the modular resources. The public `alpha-data.json` remains a complete v0.6-compatible payload, and the historic `opportunities.json` endpoint retains its v0.1.1 schema for existing consumers. Run `npm run build:data` after changing modular data; CI verifies that the compatibility payload is current. Static assets and datasets use the release version as a cache-busting query parameter.
 
-Das Tool arbeitet weiterhin mit einem manuellen Modell-Snapshot und nicht mit Live-Marktdaten.
+## Persistence compatibility
 
+The refactor preserves the existing browser storage contract:
 
-## v0.4.1 QA-Korrekturen
+- `alphaLanguage`
+- `alphaStrategySettings`
+- `alphaDecisionMode`
+- `alphaManualCandidate`
+- `alphaResearchTicker`
 
-- mobile Trennlinien in der Entscheidungskarte korrigiert
-- Ticker in Rankings optisch vom Unternehmensnamen getrennt
-- deutsche Stückzahl exakt:
-  - 1 ganze Akte
-  - 2 ganze Aktien
-- englische Stückzahl:
-  - 1 whole share
-  - 2 whole shares
-- Radar-Beschriftungen verkürzt und gegen Abschneiden geschützt
-- dynamisch berechnete Scores als „Berechneter OS“ beziehungsweise „Calculated OS“ gekennzeichnet
-- Screenshot-Workflow um Deutsch, Englisch, Strategy Studio und Offensiv-Preset erweitert
-- Screenshot-Workflow prüft Browser-Konsole und JavaScript-Laufzeitfehler
+All existing view IDs and navigation targets remain unchanged.
 
+## Investment model boundaries
 
-## v0.4.2 – Dynamic Ranking
+- Opportunity Score is the weighted intrinsic assessment.
+- Strategy Score adds affordability, target-position fit, CRV, price-zone, concentration, sector, and region effects.
+- Position and diversification settings are visible preferences/warnings, not hidden rigid caps.
+- Sizing uses whole shares only and respects the configured cash reserve.
+- Cash remains an active competitor.
+- `research_pending` and `research_active` Universe records are always excluded. A dossier, when present, must be `approved` and contain every required checklist key set to literal `true`. Complete v0.6.0 `scored` records without dossiers retain their governed legacy approval.
+- Preliminary research never creates scores, trade setups, or buy decisions.
 
-Das Scanner-Ranking verwendet jetzt zwei getrennte Ebenen:
+See [AGENTS.md](AGENTS.md) for the binding development, bilingual, data-integrity, and investment rules.
 
-1. **Opportunity Score (OS)**  
-   Bewertet die intrinsische Chance aus Fundamental, Technik, Katalysator, Risiko, Makro und Diversifikation.
+## Tests
 
-2. **Strategy Score**  
-   Verwendet den OS als Ausgangspunkt und berücksichtigt zusätzlich:
-   - Finanzierbarkeit mit ganzen Aktien
-   - gewünschte Zielpositionsgröße
-   - Cashreserve
-   - Mindest-CRV
-   - Einstiegszone
-   - Konzentrationswarnung
-   - Sektorgrenze
-   - Regionsgrenze
+```bash
+npm test
+npm ci
+npm run test:syntax
+npx playwright install chromium
+npm run test:screenshots
+```
 
-Der Scanner wird nach dem Strategy Score sortiert. Dadurch verändern auch Positions- und Diversifikationseinstellungen tatsächlich die Reihenfolge.
+The Node suite compares every scored security under Balanced, Defensive, and Offensive against the committed v0.6.0 model fixture. It also covers score formulae, rankings, gates, RAS, whole-share sizing, automatic selection, fail-closed research states, zero candidates, bilingual completeness, and both legacy resource schemas.
 
-Der Screenshot-Workflow enthält nun einen funktionalen Regressionstest: Das defensive und das ausgewogene Profil müssen unterschiedliche Top-5-Rankings erzeugen.
+The Playwright workflow serves the checked-out commit locally, checks browser console/page errors, validates dynamic ranking, Universe 50 navigation, research locks, and browser persistence, and compares approved German/English desktop, tablet, and mobile baselines. A 1.5% pixel mismatch is the documented failure threshold. Pull-request validation is read-only. Baselines can only be replaced through the explicit `update_baselines` manual workflow input; screenshot publication on `main` is a separate write-enabled job.
 
+## Data changes
 
-## v0.5.0 – Universe 50 & Candidate Navigation
-
-- 50 sichtbar dokumentierte Titel
-- 10 vollständig bewertete Kandidaten
-- 40 Research-Kandidaten ohne erfundene Scores
-- automatische oder manuelle Kandidatenauswahl
-- transparente Begründung der automatischen Auswahl
-- Research-Pending-Ansicht im Decision Lab
-- Universe-Filter nach Region, Sektor und Abdeckung
-- Ranking-Diagnostik gegenüber dem ausgewogenen Standardprofil
-- Cache-Busting für CSS, JavaScript und Daten
-- Tests für exakt 50 Titel und Universe-to-Decision-Lab-Navigation
-
-
-## v0.5.0.1 – Navigation Hotfix
-
-- Universe-50-Klick rendert den gewählten Titel vor dem Öffnen des Decision Labs.
-- Scanner-Button „Im Decision Lab öffnen“ zeigt jetzt ebenfalls sofort den gewählten Titel.
-- Der automatische Workflow-Test Apple → Decision Lab kann dadurch erfolgreich abgeschlossen werden.
-
-
-## v0.6.0 – Research Pipeline
-
-### Neue Research-Governance
-
-Ein Titel wird nicht allein aufgrund interessanter Nachrichten in das Ranking aufgenommen. Die Freigabe erfordert:
-
-- Identität und Listing
-- überprüfte Primärquellen
-- Fundamentalbild
-- Katalysator
-- dokumentierte Risiken
-- aktuellen Markt-Snapshot
-- technische Analyse
-- Einstiegszone, Stop und Ziel
-- finales Review
-
-### Batch 1
-
-Aktives Research für:
-
-- Apple
-- NVIDIA
-- Alphabet
-- Amazon
-- SAP
-
-Die Unternehmensfakten und Quellen sind hinterlegt. Da Markt-/Technik- und Handelssetup noch nicht für alle Titel vollständig validiert sind, erzeugen diese fünf Titel bewusst noch keinen Opportunity Score und keine automatische Kaufentscheidung.
-
-### UI
-
-- neuer Menüpunkt Research Pipeline
-- Research-Stufen und Fortschritt
-- Dossiers mit These, Katalysator, Risiko und Fakten
-- vollständige Freigabe-Checkliste
-- klickbare Primärquellen
-- sichtbarer Blocker
-- gesperrte Ranking-Freigabe
-- Universe 50 unterscheidet bewertet, aktives Research und Warteschlange
+Do not invent data. Any change to prices, components, scores, sources, portfolio records, research state, or snapshot freshness must be documented and traceable. Production data is authoritative only in the logical files under `data/`. The duplicated top-level `scoreWeights` field is retained solely for v0.6 compatibility; `strategyDefaults.scoreWeights` remains authoritative.

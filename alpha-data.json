@@ -1,5 +1,5 @@
 {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "snapshotDate": "2026-08-02T21:27:00+02:00",
   "dataMode": {
     "de": "Manueller Modell-Snapshot · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",
@@ -69,7 +69,7 @@
     }
   },
   "rules": {
-    "crvMinimum": 2.0,
+    "crvMinimum": 2,
     "opportunityThreshold": 85,
     "cashHurdle": 82,
     "cashSafetyMargin": 5,
@@ -99,10 +99,190 @@
     "macro": 10,
     "diversification": 5
   },
+  "decision": {
+    "candidateTicker": "ASML",
+    "whyNotBuy": [
+      {
+        "de": "Der Kandidat ist absolut gut, aber relativ nicht dominant.",
+        "en": "The candidate is good in absolute terms but not dominant on a relative basis."
+      },
+      {
+        "de": "Der Preis liegt oberhalb der vorab definierten Einstiegszone.",
+        "en": "Price is above the predefined entry zone."
+      },
+      {
+        "de": "Cash bietet weiterhin Optionalität und Schutz vor Ereignisrisiken.",
+        "en": "Cash continues to provide optionality and protection from event risk."
+      },
+      {
+        "de": "Microsoft benötigt heute mehr Aufmerksamkeit als eine neue Position.",
+        "en": "Microsoft requires more attention today than a new position."
+      }
+    ]
+  },
+  "timeline": {
+    "dates": [
+      "26.07.",
+      "27.07.",
+      "28.07.",
+      "29.07.",
+      "30.07.",
+      "31.07.",
+      "01.08."
+    ],
+    "events": [
+      {
+        "date": "01.08.",
+        "ticker": "ASML",
+        "type": {
+          "de": "Aufsteiger",
+          "en": "Riser"
+        },
+        "text": {
+          "de": "Score 84 → 85; absolute Schwelle erreicht.",
+          "en": "Score 84 → 85; absolute threshold reached."
+        }
+      },
+      {
+        "date": "01.08.",
+        "ticker": "MSFT",
+        "type": {
+          "de": "Zielnähe",
+          "en": "Near target"
+        },
+        "text": {
+          "de": "Nur noch 0,50 % bis zum Teilgewinnziel.",
+          "en": "Only 0.50% to the partial-profit target."
+        }
+      },
+      {
+        "date": "31.07.",
+        "ticker": "TSM",
+        "type": {
+          "de": "Erholung",
+          "en": "Recovery"
+        },
+        "text": {
+          "de": "Score 78 → 79; technisches Bild verbessert.",
+          "en": "Score 78 → 79; technical picture improved."
+        }
+      },
+      {
+        "date": "29.07.",
+        "ticker": "META / TSM",
+        "type": {
+          "de": "Risikoregel",
+          "en": "Risk rule"
+        },
+        "text": {
+          "de": "Beide Stops ausgeführt; Verluste realisiert und dokumentiert.",
+          "en": "Both stops executed; losses realised and documented."
+        }
+      },
+      {
+        "date": "27.07.",
+        "ticker": "BKNG",
+        "type": {
+          "de": "Absteiger",
+          "en": "Faller"
+        },
+        "text": {
+          "de": "Relative Attraktivität sinkt wegen fehlender Positionsgröße.",
+          "en": "Relative appeal falls because efficient position sizing is not possible."
+        }
+      }
+    ]
+  },
+  "strategyDefaults": {
+    "scoreWeights": {
+      "fundamental": 30,
+      "technical": 25,
+      "catalyst": 15,
+      "risk": 15,
+      "macro": 10,
+      "diversification": 5
+    },
+    "opportunityThreshold": 85,
+    "cashHurdle": 82,
+    "cashSafetyMargin": 5,
+    "switchMargin": 5,
+    "minCrv": 2,
+    "targetPositionPct": 35,
+    "concentrationWarningPct": 45,
+    "cashReservePct": 25,
+    "maxSectorExposurePct": 60,
+    "maxRegionExposurePct": 75
+  },
+  "strategyPresets": {
+    "defensive": {
+      "scoreWeights": {
+        "fundamental": 35,
+        "technical": 15,
+        "catalyst": 10,
+        "risk": 20,
+        "macro": 15,
+        "diversification": 5
+      },
+      "opportunityThreshold": 88,
+      "cashHurdle": 84,
+      "cashSafetyMargin": 7,
+      "switchMargin": 6,
+      "minCrv": 2.5,
+      "targetPositionPct": 25,
+      "concentrationWarningPct": 35,
+      "cashReservePct": 40,
+      "maxSectorExposurePct": 50,
+      "maxRegionExposurePct": 65
+    },
+    "balanced": {
+      "scoreWeights": {
+        "fundamental": 30,
+        "technical": 25,
+        "catalyst": 15,
+        "risk": 15,
+        "macro": 10,
+        "diversification": 5
+      },
+      "opportunityThreshold": 85,
+      "cashHurdle": 82,
+      "cashSafetyMargin": 5,
+      "switchMargin": 5,
+      "minCrv": 2,
+      "targetPositionPct": 35,
+      "concentrationWarningPct": 45,
+      "cashReservePct": 25,
+      "maxSectorExposurePct": 60,
+      "maxRegionExposurePct": 75
+    },
+    "offensive": {
+      "scoreWeights": {
+        "fundamental": 25,
+        "technical": 30,
+        "catalyst": 20,
+        "risk": 10,
+        "macro": 10,
+        "diversification": 5
+      },
+      "opportunityThreshold": 82,
+      "cashHurdle": 78,
+      "cashSafetyMargin": 3,
+      "switchMargin": 3,
+      "minCrv": 1.7,
+      "targetPositionPct": 45,
+      "concentrationWarningPct": 55,
+      "cashReservePct": 15,
+      "maxSectorExposurePct": 75,
+      "maxRegionExposurePct": 85
+    }
+  },
+  "universeMethodology": {
+    "de": "Global Liquid 50 ist eine manuell kuratierte Startauswahl großer, liquider Unternehmen aus Nordamerika, Europa und Asien. Sie ist kein offizieller Index und keine Kaufempfehlung. Nur vollständig recherchierte Titel erhalten Scores und können automatisch ausgewählt werden.",
+    "en": "Global Liquid 50 is a manually curated starting universe of large, liquid companies from North America, Europe and Asia. It is not an official index or a recommendation. Only fully researched securities receive scores and can be selected automatically."
+  },
   "portfolios": {
     "chatgpt": {
       "name": "ChatGPT",
-      "startCapital": 2500.0,
+      "startCapital": 2500,
       "cash": 1654.1,
       "positions": [
         {
@@ -112,7 +292,7 @@
           "shares": 2,
           "entry": 337.15,
           "current": 402.58,
-          "stop": 370.0,
+          "stop": 370,
           "target1": 404.6,
           "trailingStopPct": 5,
           "strategy": {
@@ -142,7 +322,7 @@
           "date": "2026-07-29",
           "ticker": "TSM",
           "name": "TSMC ADR",
-          "result": -88.0,
+          "result": -88,
           "resultPct": -11.76,
           "days": 14,
           "reason": "Stop-Loss"
@@ -151,7 +331,7 @@
     },
     "claude": {
       "name": "Claude Benchmark",
-      "startCapital": 2500.0,
+      "startCapital": 2500,
       "cash": 1855.28,
       "positions": [
         {
@@ -174,7 +354,7 @@
           "shares": 1,
           "entry": 300.3,
           "current": 304.72,
-          "stop": 287.0,
+          "stop": 287,
           "target1": 360.36,
           "sector": "Financials",
           "country": "USA",
@@ -214,10 +394,10 @@
       "sector": "Technology",
       "assetClass": "Aktie",
       "price": 402.58,
-      "entryLow": 392.0,
-      "entryHigh": 399.0,
-      "stop": 370.0,
-      "target": 465.0,
+      "entryLow": 392,
+      "entryHigh": 399,
+      "stop": 370,
+      "target": 465,
       "signal": "Hold",
       "conviction": "A",
       "score": 86,
@@ -285,10 +465,10 @@
       "sector": "Semiconductors",
       "assetClass": "Aktie",
       "price": 812.4,
-      "entryLow": 790.0,
-      "entryHigh": 805.0,
-      "stop": 742.0,
-      "target": 940.0,
+      "entryLow": 790,
+      "entryHigh": 805,
+      "stop": 742,
+      "target": 940,
       "signal": "Watch",
       "conviction": "A",
       "score": 85,
@@ -355,11 +535,11 @@
       "region": "USA",
       "sector": "Consumer",
       "assetClass": "Aktie",
-      "price": 3820.0,
-      "entryLow": 3740.0,
-      "entryHigh": 3790.0,
-      "stop": 3490.0,
-      "target": 4300.0,
+      "price": 3820,
+      "entryLow": 3740,
+      "entryHigh": 3790,
+      "stop": 3490,
+      "target": 4300,
       "signal": "Watch",
       "conviction": "B",
       "score": 83,
@@ -427,10 +607,10 @@
       "sector": "Healthcare",
       "assetClass": "Aktie",
       "price": 468.2,
-      "entryLow": 450.0,
-      "entryHigh": 462.0,
-      "stop": 418.0,
-      "target": 560.0,
+      "entryLow": 450,
+      "entryHigh": 462,
+      "stop": 418,
+      "target": 560,
       "signal": "Watch",
       "conviction": "B",
       "score": 80,
@@ -498,10 +678,10 @@
       "sector": "Semiconductors",
       "assetClass": "ADR",
       "price": 176.4,
-      "entryLow": 168.0,
-      "entryHigh": 173.0,
-      "stop": 155.0,
-      "target": 208.0,
+      "entryLow": 168,
+      "entryHigh": 173,
+      "stop": 155,
+      "target": 208,
       "signal": "Watch",
       "conviction": "B",
       "score": 79,
@@ -640,10 +820,10 @@
       "sector": "Insurance",
       "assetClass": "Aktie",
       "price": 259.4,
-      "entryLow": 250.0,
-      "entryHigh": 256.0,
-      "stop": 232.0,
-      "target": 300.0,
+      "entryLow": 250,
+      "entryHigh": 256,
+      "stop": 232,
+      "target": 300,
       "signal": "Hold",
       "conviction": "B",
       "score": 77,
@@ -711,10 +891,10 @@
       "sector": "Financials",
       "assetClass": "Aktie",
       "price": 304.72,
-      "entryLow": 292.0,
-      "entryHigh": 300.0,
-      "stop": 278.0,
-      "target": 350.0,
+      "entryLow": 292,
+      "entryHigh": 300,
+      "stop": 278,
+      "target": 350,
       "signal": "Hold",
       "conviction": "B",
       "score": 76,
@@ -782,7 +962,7 @@
       "sector": "Telecom",
       "assetClass": "Aktie",
       "price": 26.86,
-      "entryLow": 26.0,
+      "entryLow": 26,
       "entryHigh": 26.6,
       "stop": 23.8,
       "target": 31.7,
@@ -915,186 +1095,6 @@
       ]
     }
   ],
-  "decision": {
-    "candidateTicker": "ASML",
-    "whyNotBuy": [
-      {
-        "de": "Der Kandidat ist absolut gut, aber relativ nicht dominant.",
-        "en": "The candidate is good in absolute terms but not dominant on a relative basis."
-      },
-      {
-        "de": "Der Preis liegt oberhalb der vorab definierten Einstiegszone.",
-        "en": "Price is above the predefined entry zone."
-      },
-      {
-        "de": "Cash bietet weiterhin Optionalität und Schutz vor Ereignisrisiken.",
-        "en": "Cash continues to provide optionality and protection from event risk."
-      },
-      {
-        "de": "Microsoft benötigt heute mehr Aufmerksamkeit als eine neue Position.",
-        "en": "Microsoft requires more attention today than a new position."
-      }
-    ]
-  },
-  "timeline": {
-    "dates": [
-      "26.07.",
-      "27.07.",
-      "28.07.",
-      "29.07.",
-      "30.07.",
-      "31.07.",
-      "01.08."
-    ],
-    "events": [
-      {
-        "date": "01.08.",
-        "ticker": "ASML",
-        "type": {
-          "de": "Aufsteiger",
-          "en": "Riser"
-        },
-        "text": {
-          "de": "Score 84 → 85; absolute Schwelle erreicht.",
-          "en": "Score 84 → 85; absolute threshold reached."
-        }
-      },
-      {
-        "date": "01.08.",
-        "ticker": "MSFT",
-        "type": {
-          "de": "Zielnähe",
-          "en": "Near target"
-        },
-        "text": {
-          "de": "Nur noch 0,50 % bis zum Teilgewinnziel.",
-          "en": "Only 0.50% to the partial-profit target."
-        }
-      },
-      {
-        "date": "31.07.",
-        "ticker": "TSM",
-        "type": {
-          "de": "Erholung",
-          "en": "Recovery"
-        },
-        "text": {
-          "de": "Score 78 → 79; technisches Bild verbessert.",
-          "en": "Score 78 → 79; technical picture improved."
-        }
-      },
-      {
-        "date": "29.07.",
-        "ticker": "META / TSM",
-        "type": {
-          "de": "Risikoregel",
-          "en": "Risk rule"
-        },
-        "text": {
-          "de": "Beide Stops ausgeführt; Verluste realisiert und dokumentiert.",
-          "en": "Both stops executed; losses realised and documented."
-        }
-      },
-      {
-        "date": "27.07.",
-        "ticker": "BKNG",
-        "type": {
-          "de": "Absteiger",
-          "en": "Faller"
-        },
-        "text": {
-          "de": "Relative Attraktivität sinkt wegen fehlender Positionsgröße.",
-          "en": "Relative appeal falls because efficient position sizing is not possible."
-        }
-      }
-    ]
-  },
-  "strategyDefaults": {
-    "scoreWeights": {
-      "fundamental": 30,
-      "technical": 25,
-      "catalyst": 15,
-      "risk": 15,
-      "macro": 10,
-      "diversification": 5
-    },
-    "opportunityThreshold": 85,
-    "cashHurdle": 82,
-    "cashSafetyMargin": 5,
-    "switchMargin": 5,
-    "minCrv": 2.0,
-    "targetPositionPct": 35,
-    "concentrationWarningPct": 45,
-    "cashReservePct": 25,
-    "maxSectorExposurePct": 60,
-    "maxRegionExposurePct": 75
-  },
-  "strategyPresets": {
-    "defensive": {
-      "scoreWeights": {
-        "fundamental": 35,
-        "technical": 15,
-        "catalyst": 10,
-        "risk": 20,
-        "macro": 15,
-        "diversification": 5
-      },
-      "opportunityThreshold": 88,
-      "cashHurdle": 84,
-      "cashSafetyMargin": 7,
-      "switchMargin": 6,
-      "minCrv": 2.5,
-      "targetPositionPct": 25,
-      "concentrationWarningPct": 35,
-      "cashReservePct": 40,
-      "maxSectorExposurePct": 50,
-      "maxRegionExposurePct": 65
-    },
-    "balanced": {
-      "scoreWeights": {
-        "fundamental": 30,
-        "technical": 25,
-        "catalyst": 15,
-        "risk": 15,
-        "macro": 10,
-        "diversification": 5
-      },
-      "opportunityThreshold": 85,
-      "cashHurdle": 82,
-      "cashSafetyMargin": 5,
-      "switchMargin": 5,
-      "minCrv": 2.0,
-      "targetPositionPct": 35,
-      "concentrationWarningPct": 45,
-      "cashReservePct": 25,
-      "maxSectorExposurePct": 60,
-      "maxRegionExposurePct": 75
-    },
-    "offensive": {
-      "scoreWeights": {
-        "fundamental": 25,
-        "technical": 30,
-        "catalyst": 20,
-        "risk": 10,
-        "macro": 10,
-        "diversification": 5
-      },
-      "opportunityThreshold": 82,
-      "cashHurdle": 78,
-      "cashSafetyMargin": 3,
-      "switchMargin": 3,
-      "minCrv": 1.7,
-      "targetPositionPct": 45,
-      "concentrationWarningPct": 55,
-      "cashReservePct": 15,
-      "maxSectorExposurePct": 75,
-      "maxRegionExposurePct": 85
-    }
-  },
-  "universeMethodology": {
-    "de": "Global Liquid 50 ist eine manuell kuratierte Startauswahl großer, liquider Unternehmen aus Nordamerika, Europa und Asien. Sie ist kein offizieller Index und keine Kaufempfehlung. Nur vollständig recherchierte Titel erhalten Scores und können automatisch ausgewählt werden.",
-    "en": "Global Liquid 50 is a manually curated starting universe of large, liquid companies from North America, Europe and Asia. It is not an official index or a recommendation. Only fully researched securities receive scores and can be selected automatically."
-  },
   "universe": [
     {
       "universeOrder": 1,
