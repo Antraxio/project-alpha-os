@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.6.2 – Complete Watchlist
+
+### Added
+- expanded the Executive watchlist to all 50 governed Universe securities
+- added explicit rank, company, ticker, Opportunity Score, and Conviction columns
+- added direct Watchlist navigation to Decision Lab or Research Pipeline
+- added desktop/iPad Playwright coverage and a 50-entry order/integrity unit test
+
+### Preserved
+- retained the existing model order for scored securities and `universeOrder` for remaining coverage
+- retained all Opportunity Scores, Strategy Scores, ranking calculations, sizing, gates, RAS, research eligibility, and portfolio results
+- represented unavailable Opportunity Score and Conviction values as `–` without inventing data
+
 ## v0.6.1 – Foundation refactor
 
 ### Changed

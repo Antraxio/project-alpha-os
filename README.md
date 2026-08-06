@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.1 is a foundation refactor of the v0.6.0 behavior; it does not add investment features or change investment results.
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.2 adds a complete Universe-50 watchlist without changing investment calculations or results.
 
 The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
@@ -61,6 +61,10 @@ All existing view IDs and navigation targets remain unchanged.
 - Cash remains an active competitor.
 - `research_pending` and `research_active` Universe records are always excluded. A dossier, when present, must be `approved` and contain every required checklist key set to literal `true`. Complete v0.6.0 `scored` records without dossiers retain their governed legacy approval.
 - Preliminary research never creates scores, trade setups, or buy decisions.
+
+## Watchlist
+
+The Executive watchlist displays up to 50 securities. Fully scored securities retain the active model order; the remaining Universe entries follow their governed `universeOrder`. Pending entries display `–` for Opportunity Score and Conviction rather than inferred values. Rows open the same Decision Lab or Research Pipeline destination as Universe 50.
 
 See [AGENTS.md](AGENTS.md) for the binding development, bilingual, data-integrity, and investment rules.
 
