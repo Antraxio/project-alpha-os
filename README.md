@@ -64,6 +64,15 @@ All existing view IDs and navigation targets remain unchanged.
 
 See [AGENTS.md](AGENTS.md) for the binding development, bilingual, data-integrity, and investment rules.
 
+## Codex Task Workflow
+
+1. Open a new issue with the **Codex task** template and complete every required field.
+2. Add `codex-ready` when the task is unambiguous and ready to start.
+3. Ask Codex to process the newest open `codex-ready` issue.
+4. Review the resulting draft PR; Codex never merges it automatically.
+
+The labels and allowed status transitions are described in [`.github/CODEX_WORKFLOW.md`](.github/CODEX_WORKFLOW.md).
+
 ## Tests
 
 ```bash
