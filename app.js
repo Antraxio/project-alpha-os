@@ -1,9 +1,9 @@
-import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js';
-import {profileName} from './src/scoring.js';
-import {computeModel} from './src/strategy-ranking.js';
-import {regionName,sectorName,t} from './src/translations.js';
-import {loadAlphaData} from './src/data-loader.js';
-import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js';
+import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.6.4';
+import {profileName} from './src/scoring.js?v=0.6.4';
+import {computeModel} from './src/strategy-ranking.js?v=0.6.4';
+import {regionName,sectorName,t} from './src/translations.js?v=0.6.4';
+import {loadAlphaData} from './src/data-loader.js?v=0.6.4';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.6.4';
 
 const controlDefs={
   weights:[

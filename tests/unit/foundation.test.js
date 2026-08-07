@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js';
-import {I18N} from '../../src/translations.js';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js';
-import {computeSizing} from '../../src/portfolio-calculations.js';
-import {computeModel} from '../../src/strategy-ranking.js';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js';
+import {clone,state} from '../../src/state.js?v=0.6.4';
+import {I18N} from '../../src/translations.js?v=0.6.4';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.4';
+import {computeSizing} from '../../src/portfolio-calculations.js?v=0.6.4';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.6.4';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.4';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.4';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));

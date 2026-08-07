@@ -1,8 +1,8 @@
-import {clamp,euro,num,state} from './state.js';
-import {opportunityScore,strategyComponentScore} from './scoring.js';
-import {computeSizing,valueOf} from './portfolio-calculations.js';
-import {isRankingEligible} from './research-pipeline.js';
-import {wholeShareLabel} from './translations.js';
+import {clamp,euro,num,state} from './state.js?v=0.6.4';
+import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.6.4';
+import {computeSizing,valueOf} from './portfolio-calculations.js?v=0.6.4';
+import {isRankingEligible} from './research-pipeline.js?v=0.6.4';
+import {wholeShareLabel} from './translations.js?v=0.6.4';
 
 export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
   const p=state.data.portfolios.chatgpt;
