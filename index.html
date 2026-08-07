@@ -22,17 +22,11 @@
     </div>
 
     <nav>
-      <button class="nav active" data-view="dashboard">◫ <span data-i18n="navExecutive">Executive</span></button>
-      <button class="nav" data-view="decision">✦ <span data-i18n="navDecision">Decision Lab</span></button>
-      <button class="nav" data-view="scanner">⌁ <span data-i18n="navScanner">Scanner</span></button>
-      <button class="nav" data-view="universe">◉ <span data-i18n="navUniverse">Universe 50</span></button>
-      <button class="nav" data-view="research">◌ <span data-i18n="navResearch">Research Pipeline</span></button>
-      <button class="nav" data-view="timeline">↗ <span data-i18n="navTimeline">Alpha Timeline</span></button>
-      <button class="nav" data-view="portfolio">◈ <span data-i18n="navPortfolio">Portfolio</span></button>
-      <button class="nav" data-view="competition">⇄ <span data-i18n="navCompetition">Competition</span></button>
-      <button class="nav" data-view="journal">≡ <span data-i18n="navJournal">Journal</span></button>
-      <button class="nav" data-view="methodology">◎ <span data-i18n="navMethodology">Methodik</span></button>
-      <button class="nav" data-view="settings">⚙ <span data-i18n="navSettings">Strategy Studio</span></button>
+      <button class="nav active" data-view="dashboard" data-group="dashboard">◫ <span data-i18n="navDashboard">Dashboard</span></button>
+      <button class="nav" data-view="portfolio" data-group="portfolio">◈ <span data-i18n="navDepot">Depot</span></button>
+      <button class="nav" data-view="scanner" data-group="opportunities">⌁ <span data-i18n="navOpportunities">Chancen</span></button>
+      <button class="nav" data-view="decision" data-group="analysis">✦ <span data-i18n="navAnalysis">Analyse</span></button>
+      <button class="nav" data-view="settings" data-group="model">⚙ <span data-i18n="navModelSettings">Modell & Einstellungen</span></button>
     </nav>
 
     <div class="side-bottom">
@@ -70,6 +64,8 @@
       <b id="profileBadge">BALANCED</b>
     </div>
 
+    <nav class="section-nav" id="sectionNav" aria-label="Bereichsnavigation"></nav>
+
     <section class="view active" id="dashboard">
       <article class="briefing">
         <div class="briefing-copy">
@@ -102,7 +98,7 @@
           </div>
           <div class="decision-columns">
             <div><span>OS</span><b id="execOS">–</b><small data-i18n="absoluteQuality">absolute Qualität</small></div>
-            <div><span>RAS</span><b id="execRAS">–</b><small data-i18n="relativeUse">relative Verwendung</small></div>
+            <div><span data-i18n="relativeAttractiveness">Relative Attraktivität</span><b id="execRAS">–</b><small data-i18n="relativeUse">relative Verwendung</small></div>
             <div><span data-i18n="gates">Gates</span><b id="execGates">–</b><small data-i18n="executionPassed">Ausführung erfüllt</small></div>
           </div>
           <div class="why-list" id="execWhy"></div>
@@ -172,7 +168,7 @@
         <article class="panel gates-panel">
           <div class="panel-head">
             <div><small>DECISION ENGINE</small><h2 data-i18n="whyNotBuy">Warum heute nicht kaufen?</h2></div>
-            <div class="ras-badge"><span id="decisionRas">–</span><small>RAS</small></div>
+            <div class="ras-badge"><span id="decisionRas">–</span><small data-i18n="relativeAttractivenessShort">RELATIV</small></div>
           </div>
           <div class="gate-list" id="decisionGates"></div>
           <div class="decision-verdict" id="decisionVerdict">–</div>

@@ -66,7 +66,21 @@ async function openPage(width, height) {
 }
 
 async function switchView(page, view) {
-  await page.locator(`button[data-view="${view}"]`).click();
+  const primary = page.locator(`button[data-view="${view}"]`);
+  if (await primary.count()) {
+    await primary.click();
+  } else {
+    const groups = {
+      universe: "opportunities",
+      research: "opportunities",
+      timeline: "opportunities",
+      competition: "portfolio",
+      journal: "portfolio",
+      methodology: "model"
+    };
+    await page.locator(`button[data-group="${groups[view]}"]`).click();
+    await page.locator(`button[data-subview="${view}"]`).click();
+  }
   await page.waitForSelector(`#${view}.active`);
   await page.waitForTimeout(500);
 }
@@ -76,17 +90,17 @@ async function setLanguage(page, language) {
   await page.waitForTimeout(400);
 }
 
-async function assertCompleteWatchlist(page, language) {
+async function assertDashboardOpportunities(page, language) {
   const rows = page.locator("[data-watchlist-ticker]");
   const count = await rows.count();
-  if (count !== 50) {
-    throw new Error(`Watchlist regression: expected 50 rows, received ${count}.`);
+  if (count !== 3) {
+    throw new Error(`Dashboard opportunities regression: expected 3 rows, received ${count}.`);
   }
 
   const order = await rows.evaluateAll(items => items.map(item => item.dataset.watchlistTicker));
-  const expectedTopTen = ["ASML", "MSFT", "NOVO-B", "HNR1", "ENEL", "TSM", "DTE", "JPM", "SHEL", "BKNG"];
-  if (order.slice(0, 10).join("|") !== expectedTopTen.join("|")) {
-    throw new Error(`Watchlist ranking regression: ${order.slice(0, 10).join("|")}`);
+  const expectedTopThree = ["ASML", "MSFT", "NOVO-B"];
+  if (order.join("|") !== expectedTopThree.join("|")) {
+    throw new Error(`Dashboard opportunities ranking regression: ${order.join("|")}`);
   }
 
   const fieldsComplete = await rows.evaluateAll(items => items.every((item, index) =>
@@ -99,20 +113,10 @@ async function assertCompleteWatchlist(page, language) {
     throw new Error("Watchlist rows do not expose rank, company, ticker, OS, and Conviction.");
   }
 
-  const pendingText = await page.locator('[data-watchlist-ticker="AAPL"]').innerText();
-  if (!pendingText.includes("OS") || !pendingText.includes("–") || !pendingText.toLowerCase().includes("conviction")) {
-    throw new Error(`Pending Watchlist fields are incomplete: ${pendingText}`);
-  }
-
   const heading = await page.locator('[data-i18n="completeRanking"]').innerText();
-  const expectedHeading = language === "de" ? "Vollständige Rangliste" : "Complete ranking";
+  const expectedHeading = language === "de" ? "Top 3 Chancen" : "Top 3 opportunities";
   if (heading !== expectedHeading) {
-    throw new Error(`Watchlist language regression: ${heading}`);
-  }
-
-  const scrollable = await page.locator(".watchlist-ranking").evaluate(element => element.scrollHeight > element.clientHeight);
-  if (!scrollable) {
-    throw new Error("The 50-security Watchlist is not scrollable.");
+    throw new Error(`Dashboard opportunities language regression: ${heading}`);
   }
 }
 
@@ -420,7 +424,7 @@ async function capture(name, width, height, options = {}) {
   }
 
   if (options.assertWatchlist) {
-    await assertCompleteWatchlist(page, options.language || "de");
+    await assertDashboardOpportunities(page, options.language || "de");
   }
 
   await page.screenshot({

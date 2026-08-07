@@ -51,6 +51,25 @@ main{min-width:0;padding:0 34px 44px}.top-actions{display:flex;align-items:cente
 .avatar{width:42px;height:42px;font-weight:800}.menu{display:none;padding:9px 11px}
 .mode-banner{display:flex;align-items:center;gap:12px;margin:-4px 0 18px;padding:10px 13px;border-bottom:1px solid rgba(247,185,85,.22)}
 .mode-banner span{font-size:9px;letter-spacing:1.2px;font-weight:900;color:var(--amber)}.mode-banner p{margin:0;font-size:11px;color:var(--muted)}
+.section-nav{
+  display:none;
+  gap:6px;
+  margin:0 0 22px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+}
+.section-nav.show{display:flex}
+.section-nav button{
+  padding:8px 12px;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:var(--muted);
+  font-size:11px;
+  cursor:pointer;
+}
+.section-nav button:hover{color:var(--text);background:rgba(255,255,255,.025)}
+.section-nav button.active{color:var(--text);border-color:var(--line);background:var(--panel)}
 .view{display:none;animation:fade .25s ease}.view.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .panel{background:linear-gradient(145deg,rgba(20,28,48,.92),rgba(13,19,34,.94));border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
 .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.panel h2{margin:7px 0 0;font-size:21px}
@@ -111,6 +130,17 @@ main{min-width:0;padding:0 34px 44px}.top-actions{display:flex;align-items:cente
 
 .scanner-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}.filters{display:flex;gap:9px;flex-wrap:wrap}.result-count{font-size:11px;color:var(--muted)}
 input,select{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:11px;padding:10px 12px;font-size:12px}input{min-width:245px}
+select{
+  appearance:none;
+  -webkit-appearance:none;
+  padding-right:32px;
+  background-color:var(--panel);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%238f99b1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 11px center;
+  box-shadow:none;
+  text-shadow:none;
+}
 .scanner-list{border-top:1px solid var(--line)}.scanner-row{display:grid;grid-template-columns:52px 1.25fr .7fr .65fr 55px 60px 60px;gap:12px;align-items:center;padding:14px 8px;border-bottom:1px solid var(--line);cursor:pointer;transition:.18s}
 .scanner-row:hover,.scanner-row.selected{background:rgba(124,92,255,.055)}.scanner-row .rank{font-size:15px;font-weight:900;color:var(--muted)}
 .scanner-company b,.scanner-company span{display:block}.scanner-company b{font-size:12px}.scanner-company span{font-size:9px;color:var(--muted);margin-top:3px}.scanner-row>span{font-size:10px;color:var(--muted)}
@@ -161,6 +191,8 @@ input,select{border:1px solid var(--line);background:var(--panel);color:var(--te
   .focus-grid,.timeline-grid{grid-template-columns:1fr}.score-visual-grid{grid-template-columns:.8fr 1.2fr}.candidate-detail-grid{grid-template-columns:1fr 1fr}.candidate-rationale{grid-column:1/-1}
 }
 @media(max-width:780px){
+  .section-nav{overflow-x:auto;white-space:nowrap;padding-bottom:10px}
+  .section-nav button{flex:0 0 auto}
   .shell{display:block}main{padding:0 16px 30px}.sidebar{position:fixed;left:0;top:0;width:270px;transform:translateX(-105%);transition:.25s;box-shadow:var(--shadow)}
   .sidebar.open{transform:none}.brand>div:last-child,.nav span,.governance-mini,.version{display:block}.nav{justify-content:flex-start}.menu{display:block}.system{display:none}.topbar{min-height:90px}
   .briefing h2,.timeline-hero h2{font-size:25px}.executive-grid,.decision-lab-grid,.score-visual-grid,.timeline-hero,.timeline-grid,.portfolio-grid,.position-strategy,.risk-scenario,.journal-grid,.method-grid,.competition-cards,.candidate-detail-grid{grid-template-columns:1fr}

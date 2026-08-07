@@ -29,6 +29,14 @@ const controlDefs={
     ['maxRegionExposurePct',20,100,1,'Warning level for regional exposure','Warnschwelle für Regionenexponierung']
   ]
 };
+const viewGroups={
+  dashboard:{root:'dashboard',items:[]},
+  portfolio:{root:'portfolio',items:[['portfolio','subnavOverview'],['competition','subnavComparison'],['journal','subnavHistory']]},
+  opportunities:{root:'scanner',items:[['scanner','subnavRanking'],['universe','subnavUniverse'],['research','subnavResearch'],['timeline','subnavTimeline']]},
+  analysis:{root:'decision',items:[]},
+  model:{root:'settings',items:[['settings','subnavStrategy'],['methodology','subnavMethodology']]}
+};
+const groupByView=Object.fromEntries(Object.entries(viewGroups).flatMap(([group,config])=>[[config.root,group],...config.items.map(([view])=>[view,group])]));
 function controlLabel(def){return state.language==='de'?def[5]:def[4]}
 function renderControl(def,path){
   const[key,min,max,step]=def,value=path==='scoreWeights'?state.settings.scoreWeights[key]:state.settings[key],unit=key==='minCrv'?':1':key.includes('Pct')?'%':'';
@@ -83,7 +91,7 @@ function renderSettingsPreview(){
   if(m.sizing.sectorWarning||m.sizing.regionWarning)warnings.push(t('fitWarning'));
   $('customBadge').textContent=profileLabel(p);$('customBadge').classList.toggle('custom-indicator',p==='custom');
   $('weightTotal').textContent='100%';
-  $('settingsPreview').innerHTML=`<div class="preview-decision" data-settings-candidate="${m.candidate.ticker}"><span>${t('settingsCandidate')} · ${t('activeStrategy')} ${profileLabel(p)}</span><strong>${m.candidate.name} · ${m.candidate.strategyScore}</strong><small>${t('strategyScore')} · OS ${m.candidate.customScore} · ${t('fitAdjustment')} ${m.candidate.fitAdjustment>=0?'+':''}${num(m.candidate.fitAdjustment,1)} · ${m.allPassed?t('buyReview'):t('noNewPosition')}</small></div><div class="preview-grid"><div><span>RAS</span><b>${m.ras}</b><small>${m.cashAdv>=0?'+':''}${m.cashAdv} vs. Cash</small></div><div><span>${t('crv')}</span><b>${num(m.candidate.entryCrv,2)}</b><small>Min. ${num(state.settings.minCrv,1)}</small></div><div><span>${t('suggestedShares')}</span><b>${m.sizing.shares}</b><small>${num(m.sizing.allocationPct,1)} %</small></div><div><span>${t('sectorExposure')}</span><b>${num(m.sizing.sectorPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('regionExposure')}</span><b>${num(m.sizing.regionPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('gates')}</span><b>${m.gates.filter(g=>g.pass).length}/${m.gates.length}</b><small>${m.allPassed?t('passed'):t('open')}</small></div></div>${warnings.map(w=>`<div class="preview-warning">${w}</div>`).join('')}<div class="settings-ranking">${m.opportunities.slice(0,5).map(o=>`<div class="settings-rank-row" data-settings-rank-ticker="${o.ticker}" data-rank="${o.customRank}" data-opportunity-score="${o.customScore}" data-strategy-score="${o.strategyScore}"><b>#${o.customRank}</b><span>${o.name}<small class="calculated-score-label">OS ${o.customScore} · ${t('fitAdjustment')} ${o.fitAdjustment>=0?'+':''}${num(o.fitAdjustment,1)}</small></span><strong>${o.strategyScore}</strong></div>`).join('')}</div>
+  $('settingsPreview').innerHTML=`<div class="preview-decision" data-settings-candidate="${m.candidate.ticker}"><span>${t('settingsCandidate')} · ${t('activeStrategy')} ${profileLabel(p)}</span><strong>${m.candidate.name} · ${m.candidate.strategyScore}</strong><small>${t('strategyScore')} · OS ${m.candidate.customScore} · ${t('fitAdjustment')} ${m.candidate.fitAdjustment>=0?'+':''}${num(m.candidate.fitAdjustment,1)} · ${m.allPassed?t('buyReview'):t('noNewPosition')}</small></div><div class="preview-grid"><div><span>${t('relativeAttractiveness')}</span><b>${m.ras}</b><small>${m.cashAdv>=0?'+':''}${m.cashAdv} vs. Cash</small></div><div><span>${t('crv')}</span><b>${num(m.candidate.entryCrv,2)}</b><small>Min. ${num(state.settings.minCrv,1)}</small></div><div><span>${t('suggestedShares')}</span><b>${m.sizing.shares}</b><small>${num(m.sizing.allocationPct,1)} %</small></div><div><span>${t('sectorExposure')}</span><b>${num(m.sizing.sectorPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('regionExposure')}</span><b>${num(m.sizing.regionPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('gates')}</span><b>${m.gates.filter(g=>g.pass).length}/${m.gates.length}</b><small>${m.allPassed?t('passed'):t('open')}</small></div></div>${warnings.map(w=>`<div class="preview-warning">${w}</div>`).join('')}<div class="settings-ranking">${m.opportunities.slice(0,5).map(o=>`<div class="settings-rank-row" data-settings-rank-ticker="${o.ticker}" data-rank="${o.customRank}" data-opportunity-score="${o.customScore}" data-strategy-score="${o.strategyScore}"><b>#${o.customRank}</b><span>${o.name}<small class="calculated-score-label">OS ${o.customScore} · ${t('fitAdjustment')} ${o.fitAdjustment>=0?'+':''}${num(o.fitAdjustment,1)}</small></span><strong>${o.strategyScore}</strong></div>`).join('')}</div>
   <div class="ranking-diagnostic">
     <div class="diagnostic-head"><b>${t('rankingDiagnostics')}</b><span>${t('versusBalanced')}</span></div>
     ${rankingDiagnostics(m).map(item=>{
@@ -101,7 +109,12 @@ function renderModelViews(){
   renderExecutive();renderDecision();renderScanner();renderUniverse();renderResearch();renderTimeline();renderPortfolio();renderCompetition();renderJournal();renderMethod();
 }
 function switchView(id){
-  state.view=id;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));
+  const group=groupByView[id]||'dashboard';
+  state.view=id;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.group===group));
+  const items=viewGroups[group].items;
+  $('sectionNav').innerHTML=items.map(([view,label])=>`<button type="button" class="${view===id?'active':''}" data-subview="${view}">${t(label)}</button>`).join('');
+  $('sectionNav').classList.toggle('show',items.length>0);
+  document.querySelectorAll('[data-subview]').forEach(button=>button.onclick=()=>switchView(button.dataset.subview));
   applyStaticTranslations();$('sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});
 }
 setViewNavigator(switchView);
@@ -115,7 +128,7 @@ function populateFilters(){
   [...new Set(state.data.opportunities.map(x=>x.sector))].sort().forEach(v=>s.insertAdjacentHTML('beforeend',`<option value="${v}">${sectorName(v)}</option>`));  populateUniverseFilters();
 }
 function renderAll(){
-  applyStaticTranslations();populateFilters();renderModelViews();renderSettings();updateProfileUI();
+  applyStaticTranslations();populateFilters();renderModelViews();renderSettings();updateProfileUI();switchView(state.view);
   $('freshness').textContent=`${t('dataStand')}: ${dateFmt(state.data.snapshotDate)} · ${loc(state.data.dataMode)}`;$('systemLabel').textContent=t('modelLoaded');
   state.lastRanking=computeModel().opportunities.map(o=>o.ticker).join('|');
 }
