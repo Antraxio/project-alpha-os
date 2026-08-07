@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.6.6 – Portfolio Ledger
+
+### Changed
+- made confirmed portfolio transactions the source for cash, open positions, and realised results
+- removed manually duplicated portfolio aggregates from the modular portfolio data
+- retained the public compatibility snapshot with derived legacy fields for existing consumers
+- preserved every displayed portfolio value, score, ranking, and sizing result
+
+### Tests
+- added exact ledger reconciliation tests for both competition portfolios
+- added fail-closed validation for duplicate, incomplete, and unsupported transactions
+
 ## v0.6.5 – Clear History
 
 ### Changed

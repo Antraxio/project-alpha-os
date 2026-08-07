@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.5 separates confirmed portfolio transactions from product and methodology changes while preserving the complete model, research, portfolio, and benchmark functionality.
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.6 derives cash, open positions, and realised results from a validated portfolio transaction ledger while preserving the complete model, research, portfolio, and benchmark functionality.
 
 The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
