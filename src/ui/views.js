@@ -1,10 +1,10 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.4';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.4';
-import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.4';
-import {computeModel} from '../strategy-ranking.js?v=0.6.4';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.4';
-import {researchRecord} from '../research-pipeline.js?v=0.6.4';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.4';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.5';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.5';
+import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.5';
+import {computeModel} from '../strategy-ranking.js?v=0.6.5';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.5';
+import {researchRecord} from '../research-pipeline.js?v=0.6.5';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.5';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
@@ -44,7 +44,7 @@ export function applyStaticTranslations(){
     dashboard:['dashboardEyebrow','dashboardTitle'],decision:['analysisEyebrow','analysisTitle'],scanner:['opportunitiesEyebrow','rankingTitle'],
     universe:['opportunitiesEyebrow','universeSimpleTitle'],research:['opportunitiesEyebrow','researchStatusTitle'],
     timeline:['opportunitiesEyebrow','historyTitle'],portfolio:['depotEyebrow','depotTitle'],competition:['depotEyebrow','comparisonTitle'],
-    journal:['depotEyebrow','journalTitle'],methodology:['modelEyebrow','methodologyTitle'],settings:['modelEyebrow','modelSettingsTitle']
+    journal:['depotEyebrow','journalTitle'],methodology:['modelEyebrow','methodologyTitle'],settings:['modelEyebrow','modelSettingsTitle'],'model-history':['modelHistoryEyebrow','modelChangeHistory']
   };
   $('eyebrow').textContent=t(titles[state.view][0]);$('title').textContent=t(titles[state.view][1]);
 }
@@ -426,8 +426,6 @@ export function renderPortfolio(){
   $('allocationVisuals').innerHTML=`<div class="donut-row"><div class="donut" style="background:${donutGradient([{value:cashPct,color:'var(--violet)'},{value:invPct,color:'var(--green)'}])}"><div class="donut-center"><b>${num(cashPct,0)}%</b><span>CASH</span></div></div><div class="legend-list"><div class="allocation-legend"><i style="background:var(--violet)"></i><span>${t('cash')}</span><b>${num(cashPct,1)} %</b></div><div class="allocation-legend"><i style="background:var(--green)"></i><span>Microsoft</span><b>${num(invPct,1)} %</b></div></div></div><div class="donut-row"><div class="donut" style="background:conic-gradient(var(--blue) 0 100%)"><div class="donut-center"><b>100%</b><span>USA</span></div></div><div class="legend-list"><div class="allocation-legend"><i style="background:var(--blue)"></i><span>${state.language==='de'?'Land, nur investiert':'Country, invested only'}</span><b>USA 100 %</b></div><div class="allocation-legend"><i style="background:var(--cyan)"></i><span>${state.language==='de'?'Sektor, nur investiert':'Sector, invested only'}</span><b>${sectorName('Technology')} 100 %</b></div></div></div>`;
   const marker=clamp((x.stop-x.entry)/(x.current-x.entry)*100,0,100);
   $('riskScenario').innerHTML=`<div class="risk-bar-wrap"><div class="risk-scale"><i class="risk-marker" style="left:${marker}%"></i></div><div class="risk-labels"><span>${t('entry')} ${euro(x.entry)}</span><span>${t('stop')} ${euro(x.stop)}</span><span>${t('current')} ${euro(x.current)}</span></div></div><div class="risk-numbers"><div class="risk-number"><span>${t('resultAtStop').toUpperCase()}</span><b class="positive">+${euro(ifStop)}</b><small>${state.language==='de'?'gegenüber Einstand':'versus entry'}</small></div><div class="risk-number"><span>${t('profitGiveback').toUpperCase()}</span><b class="warning-text">-${euro(giveback)}</b><small>${state.language==='de'?'vom aktuellen Kurs':'from current price'}</small></div><div class="risk-number"><span>${t('portfolioAtStop').toUpperCase()}</span><b>${euro(p.cash+x.stop*x.shares)}</b><small>${state.language==='de'?'ohne Kosten':'before costs'}</small></div><div class="risk-number"><span>${t('stopRisk').toUpperCase()}</span><b>${num(giveback/value*100,2)} %</b><small>${state.language==='de'?'des Depotwerts':'of portfolio value'}</small></div></div>`;
-  const max=Math.max(...p.closedTrades.map(v=>Math.abs(v.result)));
-  $('closedTrades').innerHTML=p.closedTrades.map(v=>`<div class="trade-row"><span>${new Intl.DateTimeFormat(locale()).format(new Date(v.date+'T12:00:00'))}</span><b>${v.name}</b><div class="trade-bar"><i style="width:${Math.abs(v.result)/max*100}%;background:${v.result>=0?'var(--green)':'var(--red)'}"></i></div><b class="${v.result>=0?'positive':'negative'}">${v.result>=0?'+':''}${euro(v.result)}</b><span>${v.days} ${t('days')}</span><span>${v.reason}</span></div>`).join('');
 }
 export function renderCompetition(){
   const arr=[state.data.portfolios.chatgpt,state.data.portfolios.claude],max=Math.max(...arr.map(valueOf));
@@ -435,18 +433,15 @@ export function renderCompetition(){
   $('comparisonBars').innerHTML=arr.map(p=>`<div class="comparison-row"><b>${p.name.replace(' Benchmark','')}</b><div class="comparison-track"><i style="width:${valueOf(p)/max*100}%"></i></div><b>${euro(valueOf(p))}</b></div>`).join('');
 }
 export function renderJournal(){
-  const items=state.language==='de'?[
-    ['01.08.2026','Strategy Studio eingeführt','Score-Gewichte, Ausführungsschwellen und Portfolio-Präferenzen sind jetzt live anpassbar.','Methodik'],
-    ['01.08.2026','Zweisprachige Oberfläche','Deutsch und Englisch werden vollständig im Browser gespeichert.','Review'],
-    ['29.07.2026','Meta und TSMC geschlossen','Stop-Loss-Regeln ausgeführt; Verluste getrennt dokumentiert.','Verkauf'],
-    ['15.07.2026','Microsoft gekauft','2 Aktien zu 337,15 €; Teilgewinnziel und Trailing-Logik definiert.','Kauf']
-  ]:[
-    ['01/08/2026','Strategy Studio introduced','Score weights, execution thresholds and portfolio preferences are now configurable live.','Methodology'],
-    ['01/08/2026','Bilingual interface','German and English are stored persistently in the browser.','Review'],
-    ['29/07/2026','Meta and TSMC closed','Stop-loss rules executed; losses documented separately.','Sale'],
-    ['15/07/2026','Microsoft purchased','2 shares at €337.15; partial-profit target and trailing logic defined.','Buy']
-  ];
-  $('journalFeed').innerHTML=items.map(x=>`<div class="journal-entry"><time>${x[0]}</time><div><b>${x[1]}</b><p>${x[2]}</p></div><span class="status-pill neutral">${x[3]}</span></div>`).join('');
+  const p=state.data.portfolios.chatgpt,realised=realisedOf(p);
+  $('historySummary').innerHTML=[[t('transactions'),p.positions.length+p.closedTrades.length],[t('openPositions'),p.positions.length],[t('realisedResult'),`${realised>=0?'+':''}${euro(realised)}`]].map((item,index)=>`<div class="history-summary-card"><span>${item[0]}</span><b class="${index===2?(realised>=0?'positive':'negative'):''}">${item[1]}</b></div>`).join('');
+  const open=p.positions.map(position=>({date:position.openedAt,title:position.name,detail:`${wholeShareLabel(position.shares)} · ${t('entry')} ${euro(position.entry)}`,label:t('statusOpen'),result:''}));
+  const closed=p.closedTrades.map(trade=>({date:trade.date,title:trade.name,detail:`${trade.ticker} · ${trade.days} ${t('days')} · ${trade.reason}`,label:t('sale'),result:`${trade.result>=0?'+':''}${euro(trade.result)}`}));
+  const entries=[...open,...closed].sort((a,b)=>b.date.localeCompare(a.date));
+  $('journalFeed').innerHTML=entries.map(entry=>`<div class="journal-entry"><time>${new Intl.DateTimeFormat(locale()).format(new Date(entry.date+'T12:00:00'))}</time><div><b>${entry.title}</b><p>${entry.detail}</p></div>${entry.result?`<strong class="${entry.result.startsWith('+')?'positive':'negative'}">${entry.result}</strong>`:''}<span class="status-pill neutral">${entry.label}</span></div>`).join('');
+}
+export function renderModelHistory(){
+  $('modelHistoryFeed').innerHTML=state.data.modelChanges.map(entry=>`<div class="journal-entry"><time>${new Intl.DateTimeFormat(locale()).format(new Date(entry.date+'T12:00:00'))}</time><div><b>${loc(entry.title)}</b><p>${loc(entry.detail)}</p></div><span class="status-pill neutral">${loc(entry.category)}</span></div>`).join('');
 }
 export function renderMethod(){
   const d=state.data,w=opportunityWeights();

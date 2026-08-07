@@ -9,6 +9,7 @@
           "ticker": "MSFT",
           "isin": "US5949181045",
           "name": "Microsoft",
+          "openedAt": "2026-07-15",
           "shares": 2,
           "entry": 337.15,
           "current": 402.58,
