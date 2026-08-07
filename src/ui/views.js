@@ -28,7 +28,7 @@ function openUniverseSecurity(ticker){
   else setManualDecisionTicker(ticker,true);
 }
 function renderDashboardWatchlist(model){
-  const items=buildWatchlist(model);
+  const items=buildWatchlist(model).slice(0,3);
   $('rankingFocus').innerHTML=`<div class="watchlist-columns" aria-hidden="true"><span>${t('watchlistPosition')}</span><span>${t('security')}</span><span>OS</span><span>${t('conviction')}</span></div><div class="watchlist-ranking">${items.map(item=>`<button class="watchlist-row" type="button" data-watchlist-ticker="${item.ticker}" aria-label="${item.position}. ${item.name}, ${item.ticker}, OS ${item.opportunityScore??'–'}, ${t('conviction')} ${item.conviction??'–'}"><b class="watchlist-position">#${item.position}</b><span class="watchlist-company"><b>${item.name}</b><small>${item.ticker}</small></span><span class="watchlist-metric"><small>OS</small><b>${item.opportunityScore??'–'}</b></span><span class="watchlist-metric"><small>${t('conviction')}</small><b>${item.conviction??'–'}</b></span></button>`).join('')}</div><div class="watchlist-total">${items.length} ${t('securities')}</div>`;
   document.querySelectorAll('[data-watchlist-ticker]').forEach(row=>{
     row.onclick=()=>openUniverseSecurity(row.dataset.watchlistTicker);
@@ -41,10 +41,10 @@ export function applyStaticTranslations(){
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
   document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===state.language));
   const titles={
-    dashboard:['executiveEyebrow','projectAlpha'],decision:['decisionEyebrow','decisionLab'],scanner:['scannerEyebrow','scannerTitle'],
-    universe:['universeEyebrow','universeTitle'],research:['researchEyebrow','researchTitle'],
-    timeline:['timelineEyebrow','timelineTitle'],portfolio:['portfolioEyebrow','portfolioTitle'],competition:['competitionEyebrow','competitionTitle'],
-    journal:['journalEyebrow','journalTitle'],methodology:['methodologyEyebrow','methodologyTitle'],settings:['settingsEyebrow','settingsTitle']
+    dashboard:['dashboardEyebrow','dashboardTitle'],decision:['analysisEyebrow','analysisTitle'],scanner:['opportunitiesEyebrow','rankingTitle'],
+    universe:['opportunitiesEyebrow','universeSimpleTitle'],research:['opportunitiesEyebrow','researchStatusTitle'],
+    timeline:['opportunitiesEyebrow','historyTitle'],portfolio:['depotEyebrow','depotTitle'],competition:['depotEyebrow','comparisonTitle'],
+    journal:['depotEyebrow','journalTitle'],methodology:['modelEyebrow','methodologyTitle'],settings:['modelEyebrow','modelSettingsTitle']
   };
   $('eyebrow').textContent=t(titles[state.view][0]);$('title').textContent=t(titles[state.view][1]);
 }
@@ -105,8 +105,8 @@ export function renderExecutive(){
   ];
   $('briefingPoints').innerHTML=points.map(x=>`<div class="briefing-point">${x}</div>`).join('');
   $('briefingTrigger').textContent=state.language==='de'
-    ?`${m.candidate.name} in Preiszone, RAS höher und alle Gates erfüllt – oder Microsoft erreicht ${euro(msft.target1)}.`
-    :`${m.candidate.name} enters the price zone, RAS improves and all gates pass — or Microsoft reaches ${euro(msft.target1)}.`;
+    ?`${m.candidate.name} in Preiszone, relative Attraktivität höher und alle Gates erfüllt – oder Microsoft erreicht ${euro(msft.target1)}.`
+    :`${m.candidate.name} enters the price zone, relative attractiveness improves and all gates pass — or Microsoft reaches ${euro(msft.target1)}.`;
   $('executiveMetrics').innerHTML=[
     [t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100)],
     [t('activeCash'),euro(c.cash),`${num(c.cash/cv*100,1)} % ${t('cashQuote')}`],
@@ -253,7 +253,7 @@ function renderCandidateDetail(){
   const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0];
   if(!x){$('candidateDetail').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;}
   const sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>RAS</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>${t('relativeAttractiveness').toUpperCase()}</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
   document.querySelectorAll('[data-open-decision]').forEach(button=>{
     button.onclick=()=>setManualDecisionTicker(button.dataset.openDecision,true);
   });
