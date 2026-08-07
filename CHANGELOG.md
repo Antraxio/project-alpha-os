@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.6.4 – Simplified Navigation
+
+### Changed
+- reduced the primary navigation to Dashboard, Portfolio, Opportunities, Analysis, and Model & Settings
+- grouped the complete specialist views into contextual subnavigation without removing functionality
+- reduced the Dashboard list to the three highest-priority opportunities
+- replaced user-facing RAS labels with Relative Attractiveness
+- restored flat select controls
+
+### Fixed
+- advanced the browser cache version for the new HTML, CSS, JavaScript module graph, and data snapshot so GitHub Pages cannot combine the new navigation shell with stale application modules
+
 ## v0.6.3 – Explainable Strategy Fit
 
 ### Changed

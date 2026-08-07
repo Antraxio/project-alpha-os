@@ -1,4 +1,4 @@
-import {APP_VERSION} from './version.js';
+import {APP_VERSION} from './version.js?v=0.6.4';
 
 export async function loadAlphaData(){
   const files=['core','portfolios','opportunities','universe','research'];

@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.3 makes Strategy Studio changes immediately reproducible while keeping Opportunity Scores intrinsic and fixed.
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.4 simplifies navigation while preserving the complete model, research, portfolio, and benchmark functionality.
 
 The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
