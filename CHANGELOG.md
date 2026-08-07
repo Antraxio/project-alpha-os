@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.6.5 – Clear History
+
+### Changed
+- replaced the mixed decision journal with a portfolio transaction history derived from confirmed portfolio data
+- moved product, methodology, and strategy changes into a dedicated change log under Model & Settings
+- removed the unexplained discipline score and the duplicate realised-trades panel from the portfolio overview
+- added bilingual labels, responsive history layouts, and navigation for both histories
+
+### Tests
+- added browser coverage that prevents portfolio transactions and model changes from being mixed again
+
 ## v0.6.4 – Simplified Navigation
 
 ### Changed

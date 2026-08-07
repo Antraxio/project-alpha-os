@@ -1,5 +1,31 @@
 {
-  "version": "0.6.4",
+  "version": "0.6.5",
+  "modelChanges": [
+    {
+      "date": "2026-08-07",
+      "title": {"de": "Navigation vereinfacht", "en": "Navigation simplified"},
+      "detail": {"de": "Fünf Hauptbereiche bündeln die bestehenden Spezialansichten in einer klaren Unternavigation.", "en": "Five primary areas group the existing specialist views in clear subnavigation."},
+      "category": {"de": "Produkt", "en": "Product"}
+    },
+    {
+      "date": "2026-08-07",
+      "title": {"de": "Cache-sichere Veröffentlichung", "en": "Cache-safe release"},
+      "detail": {"de": "Die Versionskennung gilt für die vollständige Modulstruktur und verhindert gemischte Releases.", "en": "The version key covers the complete module graph and prevents mixed releases."},
+      "category": {"de": "Qualität", "en": "Quality"}
+    },
+    {
+      "date": "2026-08-01",
+      "title": {"de": "Strategy Studio eingeführt", "en": "Strategy Studio introduced"},
+      "detail": {"de": "Score-Gewichte, Ausführungsschwellen und Portfolio-Präferenzen sind transparent anpassbar.", "en": "Score weights, execution thresholds and portfolio preferences are transparently configurable."},
+      "category": {"de": "Methodik", "en": "Methodology"}
+    },
+    {
+      "date": "2026-08-01",
+      "title": {"de": "Zweisprachige Oberfläche", "en": "Bilingual interface"},
+      "detail": {"de": "Deutsch und Englisch sind vollständig verfügbar; die Auswahl bleibt im Browser gespeichert.", "en": "German and English are fully available; the selection persists in the browser."},
+      "category": {"de": "Produkt", "en": "Product"}
+    }
+  ],
   "snapshotDate": "2026-08-02T21:27:00+02:00",
   "dataMode": {
     "de": "Manueller Modell-Snapshot · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",

@@ -1,9 +1,9 @@
-import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.6.4';
-import {profileName} from './src/scoring.js?v=0.6.4';
-import {computeModel} from './src/strategy-ranking.js?v=0.6.4';
-import {regionName,sectorName,t} from './src/translations.js?v=0.6.4';
-import {loadAlphaData} from './src/data-loader.js?v=0.6.4';
-import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.6.4';
+import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.6.5';
+import {profileName} from './src/scoring.js?v=0.6.5';
+import {computeModel} from './src/strategy-ranking.js?v=0.6.5';
+import {regionName,sectorName,t} from './src/translations.js?v=0.6.5';
+import {loadAlphaData} from './src/data-loader.js?v=0.6.5';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.6.5';
 
 const controlDefs={
   weights:[
@@ -34,7 +34,7 @@ const viewGroups={
   portfolio:{root:'portfolio',items:[['portfolio','subnavOverview'],['competition','subnavComparison'],['journal','subnavHistory']]},
   opportunities:{root:'scanner',items:[['scanner','subnavRanking'],['universe','subnavUniverse'],['research','subnavResearch'],['timeline','subnavTimeline']]},
   analysis:{root:'decision',items:[]},
-  model:{root:'settings',items:[['settings','subnavStrategy'],['methodology','subnavMethodology']]}
+  model:{root:'settings',items:[['settings','subnavStrategy'],['methodology','subnavMethodology'],['model-history','subnavModelHistory']]}
 };
 const groupByView=Object.fromEntries(Object.entries(viewGroups).flatMap(([group,config])=>[[config.root,group],...config.items.map(([view])=>[view,group])]));
 function controlLabel(def){return state.language==='de'?def[5]:def[4]}
@@ -106,7 +106,7 @@ function updateProfileUI(){
   document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===p));
 }
 function renderModelViews(){
-  renderExecutive();renderDecision();renderScanner();renderUniverse();renderResearch();renderTimeline();renderPortfolio();renderCompetition();renderJournal();renderMethod();
+  renderExecutive();renderDecision();renderScanner();renderUniverse();renderResearch();renderTimeline();renderPortfolio();renderCompetition();renderJournal();renderMethod();renderModelHistory();
 }
 function switchView(id){
   const group=groupByView[id]||'dashboard';

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080c16">
   <title>Project Alpha OS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=0.6.4">
+  <link rel="stylesheet" href="style.css?v=0.6.5">
 </head>
 <body>
 <div class="shell">
@@ -36,7 +36,7 @@
         <p><span data-i18n="osThreshold">OS-Schwelle</span><strong id="sideThreshold">85</strong></p>
         <p><span data-i18n="cashMargin">Cash-Marge</span><strong id="sideCashMargin">+5</strong></p>
       </div>
-      <div class="version">v0.6.4 · Simplified Navigation</div>
+      <div class="version">v0.6.5 · Clear History</div>
     </div>
   </aside>
 
@@ -299,7 +299,6 @@
         <article class="panel allocation-panel"><div class="panel-head"><div><small data-i18n="allocation">ALLOKATION</small><h2 data-i18n="whereCapital">Wo liegt das Kapital?</h2></div></div><div id="allocationVisuals" class="allocation-visuals"></div></article>
       </div>
       <article class="panel risk-panel"><div class="panel-head"><div><small data-i18n="riskPicture">RISIKOBILD</small><h2 data-i18n="stopScenario">Was passiert bei Auslösen des Stops?</h2></div></div><div id="riskScenario" class="risk-scenario"></div></article>
-      <article class="panel closed-trades"><div class="panel-head"><div><small data-i18n="realised">REALISIERT</small><h2 data-i18n="profitsLosses">Gewinne und Verluste</h2></div></div><div id="closedTrades"></div></article>
     </section>
 
     <section class="view" id="competition">
@@ -309,11 +308,9 @@
     </section>
 
     <section class="view" id="journal">
-      <div class="section-head"><div><small>DECISION QUALITY</small><h2 data-i18n="decisionJournal">Entscheidungsjournal</h2></div></div>
-      <div class="journal-grid">
-        <article class="journal-score"><small data-i18n="disciplineScore">DISZIPLIN-SCORE</small><div class="discipline">86<span>/100</span></div><p data-i18n="disciplineText">Die Trennung zwischen „gute Aktie“ und „beste Kapitalverwendung“ ist fest in der Methodik verankert.</p></article>
-        <article class="panel pad" id="journalFeed"></article>
-      </div>
+      <div class="section-head"><div><small data-i18n="journalEyebrow">DEPOT</small><h2 data-i18n="transactionHistory">Transaktionshistorie</h2><p class="history-intro" data-i18n="transactionHistoryIntro">Nur bestätigte Käufe, offene Positionen und abgeschlossene Trades.</p></div></div>
+      <div id="historySummary" class="history-summary"></div>
+      <article class="panel pad history-feed" id="journalFeed"></article>
     </section>
 
     <section class="view" id="methodology">
@@ -322,6 +319,11 @@
         <article class="panel pad"><small>RELATIVE ADVANTAGE</small><h2 data-i18n="cashCompetitor">Cash ist ein Wettbewerber</h2><p class="muted" data-i18n="cashCompetitorText">Eine neue Position muss Cash, Alternativen und das bestehende Portfolio mit Sicherheitsmarge schlagen.</p><div class="formula-list" id="formulaList"></div></article>
         <article class="panel pad full-width"><small>ALPHA 2.0</small><h2 data-i18n="governanceNotCaps">Governance statt starre Caps</h2><div id="ruleGrid" class="rule-grid"></div></article>
       </div>
+    </section>
+
+    <section class="view" id="model-history">
+      <div class="section-head"><div><small data-i18n="modelHistoryEyebrow">MODELL &amp; EINSTELLUNGEN</small><h2 data-i18n="modelChangeHistory">Änderungsverlauf</h2><p class="history-intro" data-i18n="modelChangeHistoryIntro">Änderungen an Produkt, Methodik und Strategie – getrennt vom Depot.</p></div></div>
+      <article class="panel pad history-feed" id="modelHistoryFeed"></article>
     </section>
 
     <section class="view" id="settings">
@@ -365,6 +367,6 @@
   </main>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script type="module" src="app.js?v=0.6.4"></script>
+<script type="module" src="app.js?v=0.6.5"></script>
 </body>
 </html>
