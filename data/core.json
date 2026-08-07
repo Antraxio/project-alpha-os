@@ -1,6 +1,12 @@
 {
-  "version": "0.6.5",
+  "version": "0.6.6",
   "modelChanges": [
+    {
+      "date": "2026-08-07",
+      "title": {"de": "Portfolio-Ledger eingeführt", "en": "Portfolio ledger introduced"},
+      "detail": {"de": "Cash, offene Positionen und realisierte Ergebnisse werden aus bestätigten Transaktionen abgeleitet und nicht mehr doppelt gepflegt.", "en": "Cash, open positions and realised results are derived from confirmed transactions instead of being maintained twice."},
+      "category": {"de": "Datenqualität", "en": "Data quality"}
+    },
     {
       "date": "2026-08-07",
       "title": {"de": "Navigation vereinfacht", "en": "Navigation simplified"},

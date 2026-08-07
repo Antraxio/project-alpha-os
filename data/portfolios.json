@@ -3,15 +3,16 @@
     "chatgpt": {
       "name": "ChatGPT",
       "startCapital": 2500.0,
-      "cash": 1654.1,
-      "positions": [
+      "transactions": [
         {
+          "id": "chatgpt-msft-buy-2026-07-15",
+          "type": "BUY",
+          "date": "2026-07-15",
           "ticker": "MSFT",
           "isin": "US5949181045",
           "name": "Microsoft",
-          "openedAt": "2026-07-15",
           "shares": 2,
-          "entry": 337.15,
+          "price": 337.15,
           "current": 402.58,
           "stop": 370.0,
           "target1": 404.6,
@@ -27,10 +28,10 @@
           "sector": "Technology",
           "country": "USA",
           "currency": "USD"
-        }
-      ],
-      "closedTrades": [
+        },
         {
+          "id": "chatgpt-meta-close-2026-07-29",
+          "type": "CLOSE",
           "date": "2026-07-29",
           "ticker": "META",
           "name": "Meta Platforms A",
@@ -40,6 +41,8 @@
           "reason": "Stop-Loss"
         },
         {
+          "id": "chatgpt-tsm-close-2026-07-29",
+          "type": "CLOSE",
           "date": "2026-07-29",
           "ticker": "TSM",
           "name": "TSMC ADR",
@@ -53,14 +56,16 @@
     "claude": {
       "name": "Claude Benchmark",
       "startCapital": 2500.0,
-      "cash": 1855.28,
-      "positions": [
+      "transactions": [
         {
+          "id": "claude-dte-buy-date-unconfirmed",
+          "type": "BUY",
+          "date": null,
           "ticker": "DTE",
           "isin": "DE0005557508",
           "name": "Deutsche Telekom",
           "shares": 14,
-          "entry": 26.42,
+          "price": 26.42,
           "current": 26.86,
           "stop": 23.78,
           "target1": 31.7,
@@ -69,21 +74,24 @@
           "currency": "EUR"
         },
         {
+          "id": "claude-jpm-buy-date-unconfirmed",
+          "type": "BUY",
+          "date": null,
           "ticker": "JPM",
           "isin": "US46625H1005",
           "name": "JPMorgan Chase",
           "shares": 1,
-          "entry": 300.3,
+          "price": 300.3,
           "current": 304.72,
           "stop": 287.0,
           "target1": 360.36,
           "sector": "Financials",
           "country": "USA",
           "currency": "USD"
-        }
-      ],
-      "closedTrades": [
+        },
         {
+          "id": "claude-tte-close-2026-07-27",
+          "type": "CLOSE",
           "date": "2026-07-27",
           "ticker": "TTE",
           "name": "TotalEnergies",
@@ -93,6 +101,8 @@
           "reason": "Trailing-Stop"
         },
         {
+          "id": "claude-shel-close-2026-07-27",
+          "type": "CLOSE",
           "date": "2026-07-27",
           "ticker": "SHEL",
           "name": "Shell",

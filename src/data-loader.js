@@ -1,4 +1,5 @@
-import {APP_VERSION} from './version.js?v=0.6.5';
+import {APP_VERSION} from './version.js?v=0.6.6';
+import {derivePortfolioData} from './portfolio-ledger.js?v=0.6.6';
 
 export async function loadAlphaData(){
   const files=['core','portfolios','opportunities','universe','research'];
@@ -7,5 +8,5 @@ export async function loadAlphaData(){
     if(!response.ok)throw new Error(`data/${name}.json`);
     return response.json();
   }));
-  return Object.assign({},...responses);
+  return derivePortfolioData(Object.assign({},...responses));
 }

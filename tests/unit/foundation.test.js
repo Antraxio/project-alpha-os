@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.6.5';
-import {I18N} from '../../src/translations.js?v=0.6.5';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.5';
-import {computeSizing} from '../../src/portfolio-calculations.js?v=0.6.5';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.6.5';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.5';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.5';
+import {clone,state} from '../../src/state.js?v=0.6.6';
+import {I18N} from '../../src/translations.js?v=0.6.6';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.6';
+import {computeSizing} from '../../src/portfolio-calculations.js?v=0.6.6';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.6.6';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.6';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.6';
+import {derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.6.6';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -107,6 +108,26 @@ test('whole-share sizing returns affordable integers',()=>{
   assert.equal(computeSizing({...candidate,price:999999}).shares,0);
 });
 
+test('portfolio ledger reproduces every confirmed portfolio value without stored aggregates',async()=>{
+  const source=await readJson('data/portfolios.json');
+  assert.ok(Object.values(source.portfolios).every(portfolio=>!('cash' in portfolio)&&!('positions' in portfolio)&&!('closedTrades' in portfolio)));
+  const derived=derivePortfolioData(source).portfolios;
+  assert.equal(derived.chatgpt.cash,1654.1);
+  assert.equal(derived.claude.cash,1855.28);
+  assert.deepEqual(derived.chatgpt.positions.map(item=>[item.ticker,item.openedAt,item.shares,item.entry]),[['MSFT','2026-07-15',2,337.15]]);
+  assert.deepEqual(derived.chatgpt.closedTrades.map(item=>[item.ticker,item.result]),[['META',-83.6],['TSM',-88]]);
+  const ledgerAssets=derived.chatgpt.cash+derived.chatgpt.positions.reduce((sum,item)=>sum+item.entry*item.shares,0);
+  const ledgerCapital=derived.chatgpt.startCapital+derived.chatgpt.closedTrades.reduce((sum,item)=>sum+item.result,0);
+  assert.equal(Math.round(ledgerAssets*100),Math.round(ledgerCapital*100));
+});
+
+test('portfolio ledger rejects duplicate, incomplete, and unsupported transactions',()=>{
+  const base={name:'Test',startCapital:1000,transactions:[{id:'buy-1',type:'BUY',date:null,ticker:'TEST',shares:1,price:100,current:100}]};
+  assert.throws(()=>derivePortfolio({...base,transactions:[...base.transactions,{...base.transactions[0]}]}),/transaction id/);
+  assert.throws(()=>derivePortfolio({...base,transactions:[{id:'bad',type:'BUY',shares:0,price:100}]}),/shares/);
+  assert.throws(()=>derivePortfolio({...base,transactions:[{id:'bad',type:'DIVIDEND',result:10}]}),/ledger type/);
+});
+
 test('automatic candidate is the highest eligible non-held security',()=>{
   assert.equal(activeDecisionSelection().scored.ticker,'ASML');
   assert.equal(state.data.portfolios.chatgpt.positions.some(x=>x.ticker===activeDecisionSelection().scored.ticker),false);
@@ -188,7 +209,7 @@ test('German and English translation and data pairs are complete',()=>{
 
 test('legacy resources retain their public schemas',async()=>{
   const modular=Object.assign({},...await Promise.all(['core','portfolios','opportunities','universe','research'].map(name=>readJson(`data/${name}.json`))));
-  assert.deepEqual(await readJson('alpha-data.json'),modular);
+  assert.deepEqual(await readJson('alpha-data.json'),derivePortfolioData(modular));
   const legacy=await readJson('opportunities.json');
   assert.equal(legacy.version,'0.1.1');assert.ok(Array.isArray(legacy.opportunities));assert.ok(legacy.opportunities.length>0);
   assert.equal(state.data.universe.length,50);assert.equal(state.data.opportunities.length,10);assert.equal(state.data.researchPipeline.records.length,5);

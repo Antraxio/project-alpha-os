@@ -1,10 +1,10 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.5';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.5';
-import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.5';
-import {computeModel} from '../strategy-ranking.js?v=0.6.5';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.5';
-import {researchRecord} from '../research-pipeline.js?v=0.6.5';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.5';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.6';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.6';
+import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.6';
+import {computeModel} from '../strategy-ranking.js?v=0.6.6';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.6';
+import {researchRecord} from '../research-pipeline.js?v=0.6.6';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.6';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
