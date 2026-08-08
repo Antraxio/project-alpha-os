@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.7.2';
-import {I18N} from '../../src/translations.js?v=0.7.2';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.2';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.2';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.7.2';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.2';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.2';
-import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.2';
-import {snapshotFreshness} from '../../src/freshness.js?v=0.7.2';
+import {clone,state} from '../../src/state.js?v=0.7.3';
+import {I18N} from '../../src/translations.js?v=0.7.3';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.3';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.3';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.7.3';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.3';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.3';
+import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.3';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.7.3';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -103,16 +103,51 @@ test('watchlist exposes all 50 securities without changing ranked order or inven
   assert.ok(watchlist.slice(model.opportunities.length).every(item=>item.opportunityScore===null&&item.conviction===null));
 });
 
-test('whole-share sizing returns affordable integers and respects the cash reserve',()=>{
+test('position size follows the risk budget, capped by position size and spendable cash',()=>{
   const candidate=state.data.opportunities.find(x=>x.ticker==='ASML');
   const sizing=computeSizing(candidate);
   assert.equal(Number.isInteger(sizing.shares),true);
   assert.ok(sizing.amount<=sizing.spendable);
-  assert.equal(sizing.shares,0,'ASML costs more than the spendable cash above the reserve');
-  const affordable=computeSizing({...candidate,price:100});
-  assert.ok(affordable.shares>=1);
-  assert.ok(affordable.amount<=affordable.spendable);
-  assert.equal(computeSizing({...candidate,price:999999}).shares,0);
+  assert.equal(sizing.cappedByCash,true,'the cash reserve currently binds before the risk budget');
+
+  // With ample cash the risk budget is what limits the size, and the loss taken at the
+  // stop stays at the budget regardless of how far away the stop sits.
+  state.data.portfolio.cash=60000;
+  const budget=state.settings.riskBudgetPct;
+  for(const stopDistance of [0.05,0.1,0.2,0.3]){
+    const probe={...candidate,price:100,stop:100*(1-stopDistance)};
+    const result=computeSizing(probe);
+    const portfolio=state.data.portfolio.cash+state.data.portfolio.positions.reduce((sum,item)=>sum+item.current*item.shares,0);
+    const allowed=portfolio*budget/100;
+    assert.ok(result.riskAmount<=allowed+1e-9,`stop ${stopDistance}`);
+    assert.ok(result.riskAmount>allowed-result.riskPerShare,`stop ${stopDistance} should use the budget`);
+    assert.ok(result.allocationPct<=state.settings.maxPositionPct+1e-9,`stop ${stopDistance} must respect the cap`);
+  }
+
+  // A wider stop must never produce a larger position than a tighter one.
+  const tight=computeSizing({...candidate,price:100,stop:95});
+  const wide=computeSizing({...candidate,price:100,stop:70});
+  assert.ok(wide.shares<tight.shares,'a distant stop must reduce the position');
+});
+
+test('sizing fails closed when the stop cannot bound the loss',()=>{
+  state.data.portfolio.cash=60000;
+  const candidate=state.data.opportunities.find(x=>x.ticker==='ASML');
+  for(const stop of [candidate.price,candidate.price+10]){
+    const sizing=computeSizing({...candidate,stop});
+    assert.equal(sizing.shares,0,'a stop at or above the entry yields no size');
+    assert.equal(sizing.riskAmount,0);
+    assert.equal(sizing.aboveRiskBudget,false);
+  }
+});
+
+test('the maximum position caps a very tight stop before the risk budget does',()=>{
+  state.data.portfolio.cash=60000;
+  const candidate=state.data.opportunities.find(x=>x.ticker==='ASML');
+  const sizing=computeSizing({...candidate,price:100,stop:99.5});
+  assert.equal(sizing.cappedByPosition,true);
+  assert.ok(sizing.allocationPct<=state.settings.maxPositionPct+1e-9);
+  assert.ok(sizing.riskAmount<state.settings.riskBudgetPct/100*(state.data.portfolio.cash+state.data.portfolio.positions.reduce((s,i)=>s+i.current*i.shares,0)));
 });
 
 test('portfolio ledger reproduces the documented Scalable positions and cash',async()=>{

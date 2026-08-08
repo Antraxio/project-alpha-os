@@ -1,9 +1,9 @@
-import {clamp,euro,num,state} from './state.js?v=0.7.2';
-import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.2';
-import {computeSizing,regionOf,valueOf} from './portfolio-calculations.js?v=0.7.2';
-import {isRankingEligible} from './research-pipeline.js?v=0.7.2';
-import {snapshotFreshness} from './freshness.js?v=0.7.2';
-import {t,wholeShareLabel} from './translations.js?v=0.7.2';
+import {clamp,euro,num,state} from './state.js?v=0.7.3';
+import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.3';
+import {computeSizing,regionOf,valueOf} from './portfolio-calculations.js?v=0.7.3';
+import {isRankingEligible} from './research-pipeline.js?v=0.7.3';
+import {snapshotFreshness} from './freshness.js?v=0.7.3';
+import {t,wholeShareLabel} from './translations.js?v=0.7.3';
 
 export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
   const p=state.data.portfolio;

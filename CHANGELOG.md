@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.3 – Risk-based position sizing
+
+### Changed
+- position size now follows the risk budget instead of a fixed share of the portfolio: the loss taken if the stop triggers is held constant, so a volatile security with a distant stop receives a smaller position
+- three limits apply and the strictest wins: risk budget, maximum position size, spendable cash above the reserve
+- a stop at or above the entry price yields no size at all rather than an unbounded one
+- a single share that would breach the risk budget is reported, never silently proposed
+
+### Added
+- `riskBudgetPct` (1.5 % balanced, 1.0 defensive, 2.0 offensive) and `maxPositionPct` (33 / 25 / 40) as adjustable settings
+- risk per trade, stop distance and the binding limit are shown in the Decision Lab and the settings preview
+
 ## v0.7.2 – Research governance made visible
 
 ### Added
