@@ -1,5 +1,5 @@
 {
-  "version": "0.7.3",
+  "version": "0.7.4",
   "modelChanges": [
     {
       "date": "2026-08-08",
@@ -178,8 +178,8 @@
   "rules": {
     "maxSnapshotAgeHours": 24,
     "crvMinimum": 2,
-    "opportunityThreshold": 85,
-    "cashHurdle": 82,
+    "opportunityThreshold": 80,
+    "cashHurdle": 78,
     "cashSafetyMargin": 5,
     "switchMargin": 5,
     "positionCaps": {
@@ -311,8 +311,8 @@
       "macro": 10,
       "diversification": 5
     },
-    "opportunityThreshold": 85,
-    "cashHurdle": 82,
+    "opportunityThreshold": 80,
+    "cashHurdle": 78,
     "cashSafetyMargin": 5,
     "switchMargin": 5,
     "minCrv": 2,
@@ -334,8 +334,8 @@
         "macro": 15,
         "diversification": 5
       },
-      "opportunityThreshold": 88,
-      "cashHurdle": 84,
+      "opportunityThreshold": 83,
+      "cashHurdle": 80,
       "cashSafetyMargin": 7,
       "switchMargin": 6,
       "minCrv": 2.5,
@@ -356,8 +356,8 @@
         "macro": 10,
         "diversification": 5
       },
-      "opportunityThreshold": 85,
-      "cashHurdle": 82,
+      "opportunityThreshold": 80,
+      "cashHurdle": 78,
       "cashSafetyMargin": 5,
       "switchMargin": 5,
       "minCrv": 2,
@@ -378,8 +378,8 @@
         "macro": 10,
         "diversification": 5
       },
-      "opportunityThreshold": 82,
-      "cashHurdle": 78,
+      "opportunityThreshold": 77,
+      "cashHurdle": 75,
       "cashSafetyMargin": 3,
       "switchMargin": 3,
       "minCrv": 1.7,

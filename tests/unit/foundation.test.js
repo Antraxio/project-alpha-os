@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.7.3';
-import {I18N} from '../../src/translations.js?v=0.7.3';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.3';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.3';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.7.3';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.3';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.3';
-import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.3';
-import {snapshotFreshness} from '../../src/freshness.js?v=0.7.3';
+import {clone,state} from '../../src/state.js?v=0.7.4';
+import {I18N} from '../../src/translations.js?v=0.7.4';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.4';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.4';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.7.4';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.4';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.4';
+import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.4';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.7.4';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -83,7 +83,8 @@ test('a custom component-weight change updates Strategy Score, ranking and RAS b
   assert.notDeepEqual(after.opportunities.map(item=>item.ticker),before.opportunities.map(item=>item.ticker));
   assert.notEqual(after.opportunities.find(item=>item.ticker==='NOVO-B').strategyScore,before.opportunities.find(item=>item.ticker==='NOVO-B').strategyScore);
   assert.notEqual(after.ras,before.ras);
-  assert.equal(after.candidate.ticker,after.opportunities.find(item=>!state.data.portfolio.positions.some(position=>position.ticker===item.ticker)).ticker);
+  const eligible=after.opportunities.filter(item=>!state.data.portfolio.positions.some(position=>position.ticker===item.ticker)&&item.customScore>=state.settings.opportunityThreshold);
+  assert.equal(after.candidate.ticker,eligible[0].ticker);
 });
 
 test('presets retain established ranking changes',()=>{
@@ -211,9 +212,43 @@ test('cash is tracked only from the configured date and reconciled against the b
   assert.equal(reconciliation.reconciled,false);
 });
 
-test('automatic candidate is the highest eligible non-held security',()=>{
-  assert.equal(activeDecisionSelection().scored.ticker,'NOVO-B');
-  assert.equal(state.data.portfolio.positions.some(x=>x.ticker===activeDecisionSelection().scored.ticker),false);
+test('automatic candidate is the best fit among securities that clear the quality threshold',()=>{
+  const selection=activeDecisionSelection().scored;
+  assert.equal(selection.ticker,'ASML');
+  assert.equal(state.data.portfolio.positions.some(x=>x.ticker===selection.ticker),false);
+  assert.ok(selection.customScore>=state.settings.opportunityThreshold,'the candidate must clear the intrinsic bar it is judged by');
+
+  // Novo Nordisk carries the better portfolio fit but misses the quality bar, so selecting
+  // purely by Strategy Score would nominate a candidate its own score gate rejects.
+  const model=computeModel();
+  const novo=model.opportunities.find(item=>item.ticker==='NOVO-B');
+  const asml=model.opportunities.find(item=>item.ticker==='ASML');
+  assert.ok(novo.strategyScore>asml.strategyScore,'the rejected security still ranks higher on fit');
+  assert.ok(novo.customScore<state.settings.opportunityThreshold);
+});
+
+test('with nothing above the quality bar the ranking is used unchanged and the gate reports it',()=>{
+  state.settings.opportunityThreshold=99;
+  const model=computeModel();
+  assert.ok(model.candidate,'a candidate is still nominated so the shortfall stays visible');
+  assert.equal(model.gates.find(gate=>gate.key==='scoreGate').pass,false);
+  assert.equal(model.allPassed,false);
+});
+
+test('the switch gate applies only when capital has to be moved',()=>{
+  const withoutCash=computeModel();
+  const gate=withoutCash.gates.find(item=>item.key==='switchGate');
+  assert.equal(gate.pass,false,'with too little free cash the candidate must beat the incumbent');
+  assert.ok(/\d/.test(gate.detail));
+
+  // Free cash above the reserve funds the position outright, so nothing is displaced and
+  // the question the gate asks does not arise.
+  state.data.portfolio.cash=60000;
+  const funded=computeModel();
+  const open=funded.gates.find(item=>item.key==='switchGate');
+  assert.equal(open.pass,true);
+  assert.ok(!/\d/.test(open.detail),'the detail states the reason instead of a numeric margin');
+  assert.ok(funded.sizing.amount<=funded.sizing.spendable);
 });
 
 function addSyntheticOpportunity(ticker){

@@ -1,6 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
-import {state,clone} from '../src/state.js?v=0.7.3';
-import {computeModel} from '../src/strategy-ranking.js?v=0.7.3';
+import {state,clone} from '../src/state.js?v=0.7.4';
+import {computeModel} from '../src/strategy-ranking.js?v=0.7.4';
 
 const data=JSON.parse(await readFile(new URL('../alpha-data.json',import.meta.url),'utf8'));
 state.data=data;

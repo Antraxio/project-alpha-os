@@ -1,9 +1,9 @@
-import {clamp,euro,num,state} from './state.js?v=0.7.3';
-import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.3';
-import {computeSizing,regionOf,valueOf} from './portfolio-calculations.js?v=0.7.3';
-import {isRankingEligible} from './research-pipeline.js?v=0.7.3';
-import {snapshotFreshness} from './freshness.js?v=0.7.3';
-import {t,wholeShareLabel} from './translations.js?v=0.7.3';
+import {clamp,euro,num,state} from './state.js?v=0.7.4';
+import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.4';
+import {computeSizing,regionOf,valueOf} from './portfolio-calculations.js?v=0.7.4';
+import {isRankingEligible} from './research-pipeline.js?v=0.7.4';
+import {snapshotFreshness} from './freshness.js?v=0.7.4';
+import {t,wholeShareLabel} from './translations.js?v=0.7.4';
 
 export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
   const p=state.data.portfolio;
@@ -129,7 +129,15 @@ export function computeModel(){
   });
   opportunities.splice(0,opportunities.length,...scored);
 
-  const newCandidates=opportunities.filter(o=>!held.has(o.ticker));
+  // Quality first, then fit. Selecting purely by Strategy Score picked the best portfolio
+  // fit and only afterwards tested intrinsic quality, so a candidate could be disqualified
+  // by a criterion it was never selected on. Filtering to securities that clear the
+  // intrinsic threshold and then taking the best fit among them asks the two questions in
+  // the order they matter. If none clears the bar the field stays open and the ranking is
+  // used unchanged, so the gate still reports the shortfall rather than hiding it.
+  const allNewCandidates=opportunities.filter(o=>!held.has(o.ticker));
+  const qualified=allNewCandidates.filter(o=>o.customScore>=state.settings.opportunityThreshold);
+  const newCandidates=qualified.length?qualified:allNewCandidates;
   const candidate=newCandidates[0];
   const second=newCandidates[1];
   const heldBest=opportunities
@@ -154,6 +162,8 @@ export function computeModel(){
     candidate.strategyScore-(heldBest?.strategyScore??candidate.strategyScore);
   const inZone=candidate.inZone;
   const ras=candidate.ras;
+  // A position that the spendable cash covers in full displaces nothing.
+  const fundedFromCash=sizing.shares>=1&&sizing.amount<=sizing.spendable;
 
   const gates=[
     {
@@ -174,13 +184,18 @@ export function computeModel(){
       detail:`${cashAdv>=0?'+':''}${cashAdv} / +${state.settings.cashSafetyMargin}`
     },
     {
-      // With no holding there is no incumbent to beat, so the gate passes instead of
-      // blocking the first purchase against a margin over nothing.
+      // The gate asks whether capital would be better employed elsewhere, so it applies
+      // only when capital actually has to be moved. With no holding there is no incumbent,
+      // and when free cash above the reserve already funds the position nothing is
+      // displaced — requiring it to beat the best holding would block diversification for
+      // as long as one strong position exists.
       key:'switchGate',
-      pass:!heldBest||heldGap>=state.settings.switchMargin,
-      detail:heldBest
-        ?`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`
-        :t('noIncumbent')
+      pass:!heldBest||fundedFromCash||heldGap>=state.settings.switchMargin,
+      detail:!heldBest
+        ?t('noIncumbent')
+        :fundedFromCash
+          ?t('fundedFromCash')
+          :`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`
     },
     {
       key:'priceGate',

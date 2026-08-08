@@ -1,11 +1,11 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.7.3';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.7.3';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,hasStop,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.7.3';
-import {computeModel} from '../strategy-ranking.js?v=0.7.3';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.7.3';
-import {legacyMigrationProgress,rankingBasis,researchRecord} from '../research-pipeline.js?v=0.7.3';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.7.3';
-import {snapshotFreshness} from '../freshness.js?v=0.7.3';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.7.4';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.7.4';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,hasStop,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.7.4';
+import {computeModel} from '../strategy-ranking.js?v=0.7.4';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.7.4';
+import {legacyMigrationProgress,rankingBasis,researchRecord} from '../research-pipeline.js?v=0.7.4';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.7.4';
+import {snapshotFreshness} from '../freshness.js?v=0.7.4';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
