@@ -7,7 +7,7 @@
           "ticker": "MSFT",
           "opportunityScore": 86,
           "strategyScore": 81,
-          "ras": 74,
+          "ras": 86,
           "rank": 1,
           "fitAdjustment": -4.629383345258667,
           "crv": 2.7254901960784315,
@@ -36,7 +36,7 @@
           "ticker": "NOVO-B",
           "opportunityScore": 79,
           "strategyScore": 75,
-          "ras": 34,
+          "ras": 46,
           "rank": 2,
           "fitAdjustment": -4.191855981546937,
           "crv": 2.736842105263158,
@@ -65,7 +65,7 @@
           "ticker": "HNR1",
           "opportunityScore": 78,
           "strategyScore": 73,
-          "ras": 21,
+          "ras": 33,
           "rank": 3,
           "fitAdjustment": -5.075358580670899,
           "crv": 2.238095238095238,
@@ -94,7 +94,7 @@
           "ticker": "JPM",
           "opportunityScore": 78,
           "strategyScore": 73,
-          "ras": 18,
+          "ras": 30,
           "rank": 4,
           "fitAdjustment": -5.180232612192261,
           "crv": 3,
@@ -123,7 +123,7 @@
           "ticker": "ASML",
           "opportunityScore": 84,
           "strategyScore": 72,
-          "ras": 36,
+          "ras": 48,
           "rank": 5,
           "fitAdjustment": -11.78411952324996,
           "crv": 2.5675675675675675,
@@ -152,7 +152,7 @@
           "ticker": "ENEL",
           "opportunityScore": 77,
           "strategyScore": 72,
-          "ras": 15,
+          "ras": 27,
           "rank": 6,
           "fitAdjustment": -4.503603540380546,
           "crv": 2.3043478260869548,
@@ -181,7 +181,7 @@
           "ticker": "TSM",
           "opportunityScore": 77,
           "strategyScore": 72,
-          "ras": 15,
+          "ras": 27,
           "rank": 7,
           "fitAdjustment": -5.329453289633906,
           "crv": 2.4193548387096775,
@@ -210,7 +210,7 @@
           "ticker": "DTE",
           "opportunityScore": 76,
           "strategyScore": 72,
-          "ras": 12,
+          "ras": 24,
           "rank": 8,
           "fitAdjustment": -4.126073102971557,
           "crv": 2.1599999999999993,
@@ -239,7 +239,7 @@
           "ticker": "SHEL",
           "opportunityScore": 73,
           "strategyScore": 69,
-          "ras": 0,
+          "ras": 6,
           "rank": 9,
           "fitAdjustment": -4.403203896816568,
           "crv": 2.6249999999999964,
@@ -268,7 +268,7 @@
           "ticker": "BKNG",
           "opportunityScore": 83,
           "strategyScore": 68,
-          "ras": 18,
+          "ras": 30,
           "rank": 10,
           "fitAdjustment": -15.442947463724376,
           "crv": 1.9454545454545455,
@@ -294,8 +294,8 @@
           }
         }
       ],
-      "selectedCandidate": "NOVO-B",
-      "ras": 34,
+      "selectedCandidate": "ASML",
+      "ras": 48,
       "gates": [
         {
           "key": "freshnessGate",
@@ -304,33 +304,33 @@
         },
         {
           "key": "scoreGate",
-          "pass": false,
-          "detail": "79 ≥ 85"
+          "pass": true,
+          "detail": "84 ≥ 80"
         },
         {
           "key": "cashGate",
-          "pass": false,
-          "detail": "-3 / +5"
+          "pass": true,
+          "detail": "+6 / +5"
         },
         {
           "key": "switchGate",
           "pass": false,
-          "detail": "-6 / +5"
+          "detail": "-9 / +5"
         },
         {
           "key": "priceGate",
           "pass": false,
-          "detail": "450,00 €–462,00 €"
+          "detail": "790,00 €–805,00 €"
         },
         {
           "key": "crvGate",
           "pass": true,
-          "detail": "2,74 / 2,0"
+          "detail": "2,57 / 2,0"
         },
         {
           "key": "sizingGate",
-          "pass": true,
-          "detail": "1 ganze Aktie"
+          "pass": false,
+          "detail": "0 ganze Aktien"
         }
       ],
       "portfolioValue": 7580.54
@@ -341,7 +341,7 @@
           "ticker": "MSFT",
           "opportunityScore": 86,
           "strategyScore": 79,
-          "ras": 66,
+          "ras": 78,
           "rank": 1,
           "fitAdjustment": -6.587083518857392,
           "crv": 2.7254901960784315,
@@ -370,7 +370,7 @@
           "ticker": "DTE",
           "opportunityScore": 76,
           "strategyScore": 74,
-          "ras": 28,
+          "ras": 40,
           "rank": 2,
           "fitAdjustment": -1.6260731029715578,
           "crv": 2.1599999999999993,
@@ -399,7 +399,7 @@
           "ticker": "JPM",
           "opportunityScore": 78,
           "strategyScore": 73,
-          "ras": 25,
+          "ras": 37,
           "rank": 3,
           "fitAdjustment": -5.137932785790985,
           "crv": 3,
@@ -428,7 +428,7 @@
           "ticker": "ASML",
           "opportunityScore": 84,
           "strategyScore": 71,
-          "ras": 47,
+          "ras": 59,
           "rank": 4,
           "fitAdjustment": -12.78411952324996,
           "crv": 2.5675675675675675,
@@ -457,7 +457,7 @@
           "ticker": "NOVO-B",
           "opportunityScore": 79,
           "strategyScore": 66,
-          "ras": 7,
+          "ras": 19,
           "rank": 5,
           "fitAdjustment": -12.736716919579452,
           "crv": 2.736842105263158,
@@ -486,7 +486,7 @@
           "ticker": "BKNG",
           "opportunityScore": 83,
           "strategyScore": 65,
-          "ras": 13,
+          "ras": 25,
           "rank": 6,
           "fitAdjustment": -17.9006476373231,
           "crv": 1.9454545454545455,
@@ -515,7 +515,7 @@
           "ticker": "HNR1",
           "opportunityScore": 78,
           "strategyScore": 65,
-          "ras": 4,
+          "ras": 16,
           "rank": 7,
           "fitAdjustment": -12.851934523809515,
           "crv": 2.238095238095238,
@@ -544,7 +544,7 @@
           "ticker": "ENEL",
           "opportunityScore": 77,
           "strategyScore": 65,
-          "ras": 4,
+          "ras": 16,
           "rank": 8,
           "fitAdjustment": -11.51806491120637,
           "crv": 2.3043478260869548,
@@ -573,7 +573,7 @@
           "ticker": "TSM",
           "opportunityScore": 77,
           "strategyScore": 64,
-          "ras": 0,
+          "ras": 10,
           "rank": 9,
           "fitAdjustment": -13.126608241655793,
           "crv": 2.4193548387096775,
@@ -629,7 +629,7 @@
         }
       ],
       "selectedCandidate": "ASML",
-      "ras": 47,
+      "ras": 59,
       "gates": [
         {
           "key": "freshnessGate",
@@ -638,13 +638,13 @@
         },
         {
           "key": "scoreGate",
-          "pass": false,
-          "detail": "84 ≥ 88"
+          "pass": true,
+          "detail": "84 ≥ 83"
         },
         {
           "key": "cashGate",
           "pass": false,
-          "detail": "+0 / +7"
+          "detail": "+4 / +7"
         },
         {
           "key": "switchGate",
@@ -675,7 +675,7 @@
           "ticker": "MSFT",
           "opportunityScore": 86,
           "strategyScore": 82,
-          "ras": 79,
+          "ras": 88,
           "rank": 1,
           "fitAdjustment": -3.9913194342444127,
           "crv": 2.7254901960784315,
@@ -704,7 +704,7 @@
           "ticker": "ASML",
           "opportunityScore": 84,
           "strategyScore": 80,
-          "ras": 71,
+          "ras": 80,
           "rank": 2,
           "fitAdjustment": -4.184119523249958,
           "crv": 2.5675675675675675,
@@ -733,7 +733,7 @@
           "ticker": "NOVO-B",
           "opportunityScore": 79,
           "strategyScore": 75,
-          "ras": 31,
+          "ras": 40,
           "rank": 3,
           "fitAdjustment": -4.165404831628859,
           "crv": 2.736842105263158,
@@ -762,7 +762,7 @@
           "ticker": "JPM",
           "opportunityScore": 78,
           "strategyScore": 73,
-          "ras": 13,
+          "ras": 22,
           "rank": 4,
           "fitAdjustment": -5.442299826401276,
           "crv": 3,
@@ -791,7 +791,7 @@
           "ticker": "TSM",
           "opportunityScore": 77,
           "strategyScore": 72,
-          "ras": 16,
+          "ras": 25,
           "rank": 5,
           "fitAdjustment": -4.833246686938056,
           "crv": 2.4193548387096775,
@@ -820,7 +820,7 @@
           "ticker": "HNR1",
           "opportunityScore": 78,
           "strategyScore": 72,
-          "ras": 13,
+          "ras": 22,
           "rank": 6,
           "fitAdjustment": -6.435494665962976,
           "crv": 2.238095238095238,
@@ -849,7 +849,7 @@
           "ticker": "ENEL",
           "opportunityScore": 77,
           "strategyScore": 72,
-          "ras": 13,
+          "ras": 22,
           "rank": 7,
           "fitAdjustment": -4.91182327142873,
           "crv": 2.3043478260869548,
@@ -878,7 +878,7 @@
           "ticker": "DTE",
           "opportunityScore": 76,
           "strategyScore": 71,
-          "ras": 7,
+          "ras": 16,
           "rank": 8,
           "fitAdjustment": -5.080000000000002,
           "crv": 2.1599999999999993,
@@ -907,7 +907,7 @@
           "ticker": "BKNG",
           "opportunityScore": 83,
           "strategyScore": 69,
-          "ras": 19,
+          "ras": 28,
           "rank": 9,
           "fitAdjustment": -14.342947463724375,
           "crv": 1.9454545454545455,
@@ -963,7 +963,7 @@
         }
       ],
       "selectedCandidate": "ASML",
-      "ras": 71,
+      "ras": 80,
       "gates": [
         {
           "key": "freshnessGate",
@@ -973,17 +973,17 @@
         {
           "key": "scoreGate",
           "pass": true,
-          "detail": "84 ≥ 82"
+          "detail": "84 ≥ 77"
         },
         {
           "key": "cashGate",
           "pass": true,
-          "detail": "+6 / +3"
+          "detail": "+9 / +3"
         },
         {
           "key": "switchGate",
-          "pass": false,
-          "detail": "-2 / +3"
+          "pass": true,
+          "detail": "aus freiem Cash finanziert"
         },
         {
           "key": "priceGate",

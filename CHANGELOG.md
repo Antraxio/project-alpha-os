@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.7.4 – Gate calibration
+
+### Fixed
+- the cash gate was mathematically unpassable: it required a component score of 87 while the highest score in the entire scored universe is 86
+- the candidate was selected by Strategy Score but judged on Opportunity Score, so a security could be disqualified by a criterion it was never selected on; candidates are now filtered by intrinsic quality first and the best portfolio fit is taken among them
+- the switch gate applied even when free cash above the reserve funded the position outright, blocking diversification for as long as one strong holding existed; it now applies only when capital has to be moved
+
+### Changed
+- opportunity threshold 85 to 80, cash hurdle 82 to 78 (balanced); presets scaled accordingly
+
+### Note
+Before this change no buy signal could be produced under any market condition. The funnel now reaches 4 of 7 gates today and 6 of 7 once the pending sale frees the cash, with the price zone as the remaining substantive block.
+
 ## v0.7.3 – Risk-based position sizing
 
 ### Changed
