@@ -1,5 +1,5 @@
 {
-  "version": "0.7.2",
+  "version": "0.7.3",
   "modelChanges": [
     {
       "date": "2026-08-08",
@@ -197,7 +197,8 @@
     "defaultAction": {
       "de": "Im Regelfall null oder eine neue Position.",
       "en": "Normally zero or one new position."
-    }
+    },
+    "riskBudgetPct": 1.5
   },
   "scoreWeights": {
     "fundamental": 30,
@@ -316,6 +317,8 @@
     "switchMargin": 5,
     "minCrv": 2.0,
     "targetPositionPct": 35,
+    "riskBudgetPct": 1.5,
+    "maxPositionPct": 33,
     "concentrationWarningPct": 45,
     "cashReservePct": 25,
     "maxSectorExposurePct": 60,
@@ -337,6 +340,8 @@
       "switchMargin": 6,
       "minCrv": 2.5,
       "targetPositionPct": 25,
+      "riskBudgetPct": 1.0,
+      "maxPositionPct": 25,
       "concentrationWarningPct": 35,
       "cashReservePct": 40,
       "maxSectorExposurePct": 50,
@@ -357,6 +362,8 @@
       "switchMargin": 5,
       "minCrv": 2.0,
       "targetPositionPct": 35,
+      "riskBudgetPct": 1.5,
+      "maxPositionPct": 33,
       "concentrationWarningPct": 45,
       "cashReservePct": 25,
       "maxSectorExposurePct": 60,
@@ -377,6 +384,8 @@
       "switchMargin": 3,
       "minCrv": 1.7,
       "targetPositionPct": 45,
+      "riskBudgetPct": 2.0,
+      "maxPositionPct": 40,
       "concentrationWarningPct": 55,
       "cashReservePct": 15,
       "maxSectorExposurePct": 75,

@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.7.2';
+import {state} from './state.js?v=0.7.3';
 
 // A holding records its country ("Germany"), a candidate its region ("Europe"). Comparing
 // the two directly made every non-US region read as zero exposure. The mapping is derived
@@ -69,14 +69,28 @@ export function focusPosition(p){
   return eligible.reduce((best,x)=>x.target1/x.current<best.target1/best.current?x:best);
 }
 
+// Size follows risk, not a fixed share of the portfolio. The loss taken if the stop
+// triggers is held constant at riskBudgetPct of total assets, so a volatile security with
+// a distant stop receives a smaller position than a quiet one. Three limits apply and the
+// strictest wins: the risk budget, the maximum position size, and the spendable cash above
+// the reserve. A stop at or above the entry price yields no size at all rather than an
+// infinite one.
 export function computeSizing(candidate){
   const p=state.data.portfolio,portfolio=valueOf(p);
   const reserve=portfolio*state.settings.cashReservePct/100;
   const spendable=Math.max(0,p.cash-reserve);
-  const targetAmount=portfolio*state.settings.targetPositionPct/100;
-  let shares=Math.floor(Math.min(targetAmount,spendable)/candidate.price);
-  let aboveTarget=false;
-  if(shares===0&&candidate.price<=spendable){shares=1;aboveTarget=true}
+  const riskBudget=portfolio*(state.settings.riskBudgetPct??0)/100;
+  const riskPerShare=candidate.price-candidate.stop;
+  const budgetAmount=riskPerShare>0?riskBudget/riskPerShare*candidate.price:0;
+  const capAmount=portfolio*(state.settings.maxPositionPct??state.settings.targetPositionPct)/100;
+  const allowed=Math.min(budgetAmount,capAmount,spendable);
+  let shares=Math.floor(allowed/candidate.price);
+
+  // A single share that would breach the risk budget is reported, never silently proposed.
+  const oneShareAffordable=candidate.price<=Math.min(capAmount,spendable);
+  const aboveRiskBudget=shares===0&&oneShareAffordable&&riskPerShare>0;
+  const cappedByPosition=budgetAmount>capAmount&&capAmount<=spendable;
+  const cappedByCash=Math.min(budgetAmount,capAmount)>spendable;
   const amount=shares*candidate.price;
   const allocationPct=portfolio?amount/portfolio*100:0;
   const currentInvested=p.positions.reduce((s,x)=>s+x.current*x.shares,0);
@@ -85,8 +99,13 @@ export function computeSizing(candidate){
   const regionExisting=p.positions.filter(x=>regionOf(x.country)===candidate.region).reduce((s,x)=>s+x.current*x.shares,0);
   const sectorPct=postInvested?((sectorExisting+amount)/postInvested*100):0;
   const regionPct=postInvested?((regionExisting+amount)/postInvested*100):0;
+  const riskAmount=riskPerShare>0?riskPerShare*shares:0;
   return{
-    shares,amount,allocationPct,aboveTarget,spendable,reserve,sectorPct,regionPct,
+    shares,amount,allocationPct,spendable,reserve,sectorPct,regionPct,
+    riskBudget,riskPerShare,riskAmount,
+    riskPct:portfolio?riskAmount/portfolio*100:0,
+    stopDistancePct:candidate.price?riskPerShare/candidate.price*100:0,
+    aboveRiskBudget,cappedByPosition,cappedByCash,
     concentrationWarning:allocationPct>state.settings.concentrationWarningPct,
     sectorWarning:sectorPct>state.settings.maxSectorExposurePct,
     regionWarning:regionPct>state.settings.maxRegionExposurePct

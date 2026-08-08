@@ -1,10 +1,10 @@
-import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.7.2';
-import {profileName} from './src/scoring.js?v=0.7.2';
-import {computeModel} from './src/strategy-ranking.js?v=0.7.2';
-import {regionName,sectorName,t} from './src/translations.js?v=0.7.2';
-import {loadAlphaData} from './src/data-loader.js?v=0.7.2';
-import {snapshotFreshness} from './src/freshness.js?v=0.7.2';
-import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.7.2';
+import {$,clone,dateFmt,euro,loc,num,state,storage} from './src/state.js?v=0.7.3';
+import {profileName} from './src/scoring.js?v=0.7.3';
+import {computeModel} from './src/strategy-ranking.js?v=0.7.3';
+import {regionName,sectorName,t} from './src/translations.js?v=0.7.3';
+import {loadAlphaData} from './src/data-loader.js?v=0.7.3';
+import {snapshotFreshness} from './src/freshness.js?v=0.7.3';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.7.3';
 
 const controlDefs={
   weights:[
@@ -23,7 +23,9 @@ const controlDefs={
     ['minCrv',1,4,.1,'Minimum risk/reward ratio','Mindest-Chance-Risiko-Verhältnis']
   ],
   portfolio:[
-    ['targetPositionPct',5,60,1,'Target initial position as % of portfolio','Zielgröße der Erstposition in %'],
+    ['riskBudgetPct',0.25,4,.25,'Maximum loss per trade as % of total assets','Maximaler Verlust je Trade in % des Vermögens'],
+    ['maxPositionPct',5,60,1,'Hard cap for a single position','Harte Obergrenze für eine Einzelposition'],
+    ['targetPositionPct',5,60,1,'Preferred position weight for the strategy fit','Bevorzugtes Positionsgewicht für den Strategie-Fit'],
     ['concentrationWarningPct',20,80,1,'Warning level for a single position','Warnschwelle für eine Einzelposition'],
     ['cashReservePct',0,60,1,'Desired cash reserve after a purchase','Gewünschte Cashreserve nach Kauf'],
     ['maxSectorExposurePct',20,100,1,'Warning level for sector exposure','Warnschwelle für Sektorexponierung'],
@@ -86,13 +88,15 @@ function renderSettingsPreview(){
     $('customBadge').textContent=profileLabel(p);$('customBadge').classList.toggle('custom-indicator',p==='custom');$('weightTotal').textContent='100%';
     $('settingsPreview').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;
   }
-  if(m.sizing.aboveTarget)warnings.push(t('wholeShareAboveTarget'));
+  if(m.sizing.aboveRiskBudget)warnings.push(t('oneShareAboveRiskBudget'));
+  if(m.sizing.cappedByPosition)warnings.push(t('cappedByPosition'));
+  if(m.sizing.cappedByCash)warnings.push(t('cappedByCash'));
   if(m.sizing.shares===0)warnings.push(t('notFinanceable'));
   if(m.sizing.concentrationWarning)warnings.push(t('concentrationWarning'));
   if(m.sizing.sectorWarning||m.sizing.regionWarning)warnings.push(t('fitWarning'));
   $('customBadge').textContent=profileLabel(p);$('customBadge').classList.toggle('custom-indicator',p==='custom');
   $('weightTotal').textContent='100%';
-  $('settingsPreview').innerHTML=`<div class="preview-decision" data-settings-candidate="${m.candidate.ticker}"><span>${t('settingsCandidate')} · ${t('activeStrategy')} ${profileLabel(p)}</span><strong>${m.candidate.name} · ${m.candidate.strategyScore}</strong><small>${t('strategyScore')} · OS ${m.candidate.customScore} · ${t('fitAdjustment')} ${m.candidate.fitAdjustment>=0?'+':''}${num(m.candidate.fitAdjustment,1)} · ${m.allPassed?t('buyReview'):t('noNewPosition')}</small></div><div class="preview-grid"><div><span>${t('relativeAttractiveness')}</span><b>${m.ras}</b><small>${m.cashAdv>=0?'+':''}${m.cashAdv} vs. Cash</small></div><div><span>${t('crv')}</span><b>${num(m.candidate.entryCrv,2)}</b><small>Min. ${num(state.settings.minCrv,1)}</small></div><div><span>${t('suggestedShares')}</span><b>${m.sizing.shares}</b><small>${num(m.sizing.allocationPct,1)} %</small></div><div><span>${t('sectorExposure')}</span><b>${num(m.sizing.sectorPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('regionExposure')}</span><b>${num(m.sizing.regionPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('gates')}</span><b>${m.gates.filter(g=>g.pass).length}/${m.gates.length}</b><small>${m.allPassed?t('passed'):t('open')}</small></div></div>${warnings.map(w=>`<div class="preview-warning">${w}</div>`).join('')}<div class="settings-ranking">${m.opportunities.slice(0,5).map(o=>`<div class="settings-rank-row" data-settings-rank-ticker="${o.ticker}" data-rank="${o.customRank}" data-opportunity-score="${o.customScore}" data-strategy-score="${o.strategyScore}"><b>#${o.customRank}</b><span>${o.name}<small class="calculated-score-label">OS ${o.customScore} · ${t('fitAdjustment')} ${o.fitAdjustment>=0?'+':''}${num(o.fitAdjustment,1)}</small></span><strong>${o.strategyScore}</strong></div>`).join('')}</div>
+  $('settingsPreview').innerHTML=`<div class="preview-decision" data-settings-candidate="${m.candidate.ticker}"><span>${t('settingsCandidate')} · ${t('activeStrategy')} ${profileLabel(p)}</span><strong>${m.candidate.name} · ${m.candidate.strategyScore}</strong><small>${t('strategyScore')} · OS ${m.candidate.customScore} · ${t('fitAdjustment')} ${m.candidate.fitAdjustment>=0?'+':''}${num(m.candidate.fitAdjustment,1)} · ${m.allPassed?t('buyReview'):t('noNewPosition')}</small></div><div class="preview-grid"><div><span>${t('relativeAttractiveness')}</span><b>${m.ras}</b><small>${m.cashAdv>=0?'+':''}${m.cashAdv} vs. Cash</small></div><div><span>${t('crv')}</span><b>${num(m.candidate.entryCrv,2)}</b><small>Min. ${num(state.settings.minCrv,1)}</small></div><div><span>${t('suggestedShares')}</span><b>${m.sizing.shares}</b><small>${num(m.sizing.allocationPct,1)} %</small></div><div><span>${t('riskPerTrade')}</span><b>${euro(m.sizing.riskAmount)}</b><small>${num(m.sizing.riskPct,2)} % · ${t('stopDistance')} ${num(m.sizing.stopDistancePct,1)} %</small></div><div><span>${t('sectorExposure')}</span><b>${num(m.sizing.sectorPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('regionExposure')}</span><b>${num(m.sizing.regionPct,1)} %</b><small>${t('postTrade')}</small></div><div><span>${t('gates')}</span><b>${m.gates.filter(g=>g.pass).length}/${m.gates.length}</b><small>${m.allPassed?t('passed'):t('open')}</small></div></div>${warnings.map(w=>`<div class="preview-warning">${w}</div>`).join('')}<div class="settings-ranking">${m.opportunities.slice(0,5).map(o=>`<div class="settings-rank-row" data-settings-rank-ticker="${o.ticker}" data-rank="${o.customRank}" data-opportunity-score="${o.customScore}" data-strategy-score="${o.strategyScore}"><b>#${o.customRank}</b><span>${o.name}<small class="calculated-score-label">OS ${o.customScore} · ${t('fitAdjustment')} ${o.fitAdjustment>=0?'+':''}${num(o.fitAdjustment,1)}</small></span><strong>${o.strategyScore}</strong></div>`).join('')}</div>
   <div class="ranking-diagnostic">
     <div class="diagnostic-head"><b>${t('rankingDiagnostics')}</b><span>${t('versusBalanced')}</span></div>
     ${rankingDiagnostics(m).map(item=>{
