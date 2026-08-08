@@ -1,8 +1,9 @@
-import {clamp,euro,num,state} from './state.js?v=0.6.6';
-import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.6.6';
-import {computeSizing,valueOf} from './portfolio-calculations.js?v=0.6.6';
-import {isRankingEligible} from './research-pipeline.js?v=0.6.6';
-import {wholeShareLabel} from './translations.js?v=0.6.6';
+import {clamp,euro,num,state} from './state.js?v=0.6.7';
+import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.6.7';
+import {computeSizing,valueOf} from './portfolio-calculations.js?v=0.6.7';
+import {isRankingEligible} from './research-pipeline.js?v=0.6.7';
+import {snapshotFreshness} from './freshness.js?v=0.6.7';
+import {wholeShareLabel} from './translations.js?v=0.6.7';
 
 export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
   const p=state.data.portfolios.chatgpt;
@@ -111,10 +112,12 @@ export function computeModel(){
     .filter(o=>held.has(o.ticker))
     .sort((a,b)=>b.strategyScore-a.strategyScore)[0];
 
+  const freshness=snapshotFreshness();
+
   if(!candidate){
     return{
       opportunities,candidate:null,second:null,heldBest,
-      sizing:null,ras:null,gates:[],allPassed:false,
+      sizing:null,ras:null,gates:[],allPassed:false,freshness,
       cashAdv:null,heldGap:null,inZone:false,hasEligibleCandidate:false
     };
   }
@@ -143,6 +146,11 @@ export function computeModel(){
   );
 
   const gates=[
+    {
+      key:'freshnessGate',
+      pass:!freshness.isStale,
+      detail:freshness.dateKnown?`${num(freshness.ageHours,1)} h / ${num(freshness.maxAgeHours,0)} h`:'–'
+    },
     {
       key:'scoreGate',
       pass:candidate.customScore>=state.settings.opportunityThreshold,
@@ -184,6 +192,7 @@ export function computeModel(){
     ras,
     gates,
     allPassed:gates.every(g=>g.pass),
+    freshness,
     cashAdv,
     heldGap,
     inZone,

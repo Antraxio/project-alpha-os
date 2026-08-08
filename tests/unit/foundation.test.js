@@ -1,14 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.6.6';
-import {I18N} from '../../src/translations.js?v=0.6.6';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.6';
-import {computeSizing} from '../../src/portfolio-calculations.js?v=0.6.6';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.6.6';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.6';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.6';
-import {derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.6.6';
+import {clone,state} from '../../src/state.js?v=0.6.7';
+import {I18N} from '../../src/translations.js?v=0.6.7';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.7';
+import {computeSizing} from '../../src/portfolio-calculations.js?v=0.6.7';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.6.7';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.7';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.7';
+import {derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.6.7';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.6.7';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -18,6 +19,7 @@ function reset(preset='balanced'){
   state.data=clone(originalData);
   state.settings=clone(state.data.strategyPresets[preset]);
   state.decisionMode='auto';
+  state.referenceTime=Date.parse(state.data.snapshotDate)+3600000;
 }
 
 test.beforeEach(()=>reset());
@@ -213,4 +215,33 @@ test('legacy resources retain their public schemas',async()=>{
   const legacy=await readJson('opportunities.json');
   assert.equal(legacy.version,'0.1.1');assert.ok(Array.isArray(legacy.opportunities));assert.ok(legacy.opportunities.length>0);
   assert.equal(state.data.universe.length,50);assert.equal(state.data.opportunities.length,10);assert.equal(state.data.researchPipeline.records.length,5);
+});
+
+test('a snapshot within the configured age passes the freshness gate',()=>{
+  const model=computeModel();
+  const gate=model.gates.find(item=>item.key==='freshnessGate');
+  assert.equal(model.freshness.isStale,false);
+  assert.equal(gate.pass,true);
+});
+
+test('a stale snapshot fails the freshness gate and blocks every buy verdict',()=>{
+  for(const preset of ['balanced','defensive','offensive']){
+    reset(preset);
+    state.referenceTime=Date.parse(state.data.snapshotDate)+25*3600000;
+    const model=computeModel();
+    assert.equal(model.freshness.isStale,true,preset);
+    assert.equal(model.gates.find(item=>item.key==='freshnessGate').pass,false,preset);
+    assert.equal(model.allPassed,false,preset);
+  }
+});
+
+test('the freshness gate uses the configured rule and fails closed on an unusable snapshot date',()=>{
+  state.data.rules.maxSnapshotAgeHours=72;
+  state.referenceTime=Date.parse(state.data.snapshotDate)+48*3600000;
+  assert.equal(snapshotFreshness().isStale,false);
+  state.data.snapshotDate='not-a-date';
+  const unusable=snapshotFreshness();
+  assert.equal(unusable.dateKnown,false);
+  assert.equal(unusable.isStale,true);
+  assert.equal(computeModel().allPassed,false);
 });

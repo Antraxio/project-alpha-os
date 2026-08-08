@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.6.6';
+import {state} from './state.js?v=0.6.7';
 
 export const I18N={
   de:{
@@ -24,7 +24,8 @@ export const I18N={
     portfolioValue:'Depotwert',activeCash:'Aktives Cash',openProfit:'Offener Buchgewinn',gapClaude:'Abstand zu Claude',leads:'führt',cashQuote:'Cashquote',
     os:'Opportunity Score',ras:'Relative Attraktivität',relativeAttractiveness:'Relative Attraktivität',relativeAttractivenessShort:'RELATIV',crv:'CRV',suggestedShares:'Vorgeschlagene Stückzahl',wholeShares:'volle Aktien',oneShare:'eine Aktie',noShare:'keine Aktie',
     current:'Aktuell',entry:'Einstieg',stop:'Stop',target:'Ziel',conviction:'Conviction',catalyst:'Katalysator',risk:'Risiko',decision:'Entscheidung',observe:'Beobachten',executeReview:'Ausführung prüfen',
-    scoreGate:'Absolute Qualität',cashGate:'Cash-Sicherheitsmarge',switchGate:'Relative Führungsposition',priceGate:'Preiszone',crvGate:'Chance/Risiko',sizingGate:'Volle-Aktien-Finanzierbarkeit',
+    freshnessGate:'Datenaktualität',scoreGate:'Absolute Qualität',cashGate:'Cash-Sicherheitsmarge',switchGate:'Relative Führungsposition',priceGate:'Preiszone',crvGate:'Chance/Risiko',sizingGate:'Volle-Aktien-Finanzierbarkeit',
+    staleSnapshot:'Snapshot veraltet',staleSnapshotWarning:'Snapshot veraltet – keine Handlung daraus ableiten.',
     passed:'Bestanden',open:'Offen',fundamental:'Fundamental',technical:'Technik',macro:'Makro',diversification:'Diversifikation',
     monitorNow:'Jetzt beobachten',prepareAt:'Vorbereiten bei',executeOnly:'Nur ausführen bei',allGates:'allen Gates',weight:'Gewicht',
     sectorExposure:'Sektorexponierung',regionExposure:'Regionsexponierung',postTrade:'nach Kauf',warning:'Warnung',withinPreference:'innerhalb Präferenz',
@@ -85,7 +86,8 @@ export const I18N={
     portfolioValue:'Portfolio value',activeCash:'Active cash',openProfit:'Open profit',gapClaude:'Gap to Claude',leads:'leads',cashQuote:'Cash ratio',
     os:'Opportunity Score',ras:'Relative attractiveness',relativeAttractiveness:'Relative attractiveness',relativeAttractivenessShort:'RELATIVE',crv:'Risk/reward',suggestedShares:'Suggested shares',wholeShares:'whole shares',oneShare:'one share',noShare:'no shares',
     current:'Current',entry:'Entry',stop:'Stop',target:'Target',conviction:'Conviction',catalyst:'Catalyst',risk:'Risk',decision:'Decision',observe:'Monitor',executeReview:'Review execution',
-    scoreGate:'Absolute quality',cashGate:'Cash safety margin',switchGate:'Relative leadership',priceGate:'Price zone',crvGate:'Risk/reward',sizingGate:'Whole-share affordability',
+    freshnessGate:'Data freshness',scoreGate:'Absolute quality',cashGate:'Cash safety margin',switchGate:'Relative leadership',priceGate:'Price zone',crvGate:'Risk/reward',sizingGate:'Whole-share affordability',
+    staleSnapshot:'Snapshot stale',staleSnapshotWarning:'Snapshot is stale — do not derive any action from it.',
     passed:'Passed',open:'Open',fundamental:'Fundamental',technical:'Technical',macro:'Macro',diversification:'Diversification',
     monitorNow:'Monitor now',prepareAt:'Prepare at',executeOnly:'Execute only with',allGates:'all gates',weight:'Weight',
     sectorExposure:'Sector exposure',regionExposure:'Region exposure',postTrade:'after purchase',warning:'Warning',withinPreference:'within preference',

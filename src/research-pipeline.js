@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.6.6';
+import {state} from './state.js?v=0.6.7';
 
 export const REQUIRED_RESEARCH_CHECKLIST=Object.freeze([
   'identity','primarySources','fundamental','catalyst','risk',

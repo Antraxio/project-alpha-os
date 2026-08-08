@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.6 derives cash, open positions, and realised results from a validated portfolio transaction ledger while preserving the complete model, research, portfolio, and benchmark functionality.
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.7 adds a central snapshot-freshness gate that withdraws every execution verdict once the model snapshot exceeds its configured maximum age, while preserving the complete model, research, portfolio, and benchmark functionality.
 
 The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
@@ -22,6 +22,7 @@ app.js                       Browser coordination, persistence, event binding
 src/
   state.js                   Runtime state and formatting helpers
   translations.js            Complete German/English UI dictionary
+  freshness.js               Snapshot age and staleness evaluation
   scoring.js                 Opportunity Score and score helpers
   strategy-ranking.js        Portfolio-aware Strategy Score, gates, ranking
   portfolio-calculations.js  Portfolio value and whole-share sizing
@@ -54,6 +55,7 @@ All existing view IDs and navigation targets remain unchanged.
 
 ## Investment model boundaries
 
+- The snapshot freshness gate is evaluated before every other gate. Once the snapshot is older than `rules.maxSnapshotAgeHours`, the gate fails, every buy verdict is withdrawn, and the application states that no action may be derived. An unparseable snapshot date fails the gate as well.
 - Opportunity Score is the intrinsic assessment calculated with the documented default component weights. It does not change with the active strategy profile.
 - Strategy Score adds the active profile's component-weight fit plus affordability, target-position fit, CRV, price-zone, concentration, sector, and region effects.
 - RAS is recalculated from the active component weighting, ranking gaps, price-zone state, and portfolio warnings; the v0.6.2 preset results remain unchanged.

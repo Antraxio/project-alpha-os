@@ -35,6 +35,9 @@ const browser = await chromium.launch();
 const baseUrl = (process.env.ALPHA_BASE_URL || "http://127.0.0.1:4173") +
   "/?cachebust=" + Date.now();
 
+// Screenshots must stay reproducible, so the freshness gate is evaluated one hour after the snapshot.
+const referenceTime = Date.parse(JSON.parse(readFileSync("data/core.json", "utf8")).snapshotDate) + 3600000;
+
 async function openPage(width, height) {
   const page = await browser.newPage({
     viewport: { width, height },
@@ -52,6 +55,8 @@ async function openPage(width, height) {
   page.on("pageerror", error => {
     errors.push(error.message);
   });
+
+  await page.clock.setFixedTime(referenceTime);
 
   await page.goto(baseUrl, {
     waitUntil: "networkidle",

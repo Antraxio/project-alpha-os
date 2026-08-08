@@ -1,9 +1,10 @@
-import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.6.6';
-import {profileName} from './src/scoring.js?v=0.6.6';
-import {computeModel} from './src/strategy-ranking.js?v=0.6.6';
-import {regionName,sectorName,t} from './src/translations.js?v=0.6.6';
-import {loadAlphaData} from './src/data-loader.js?v=0.6.6';
-import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.6.6';
+import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.6.7';
+import {profileName} from './src/scoring.js?v=0.6.7';
+import {computeModel} from './src/strategy-ranking.js?v=0.6.7';
+import {regionName,sectorName,t} from './src/translations.js?v=0.6.7';
+import {loadAlphaData} from './src/data-loader.js?v=0.6.7';
+import {snapshotFreshness} from './src/freshness.js?v=0.6.7';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.6.7';
 
 const controlDefs={
   weights:[
@@ -129,7 +130,12 @@ function populateFilters(){
 }
 function renderAll(){
   applyStaticTranslations();populateFilters();renderModelViews();renderSettings();updateProfileUI();switchView(state.view);
-  $('freshness').textContent=`${t('dataStand')}: ${dateFmt(state.data.snapshotDate)} · ${loc(state.data.dataMode)}`;$('systemLabel').textContent=t('modelLoaded');
+  const freshness=snapshotFreshness();
+  $('freshness').textContent=`${t('dataStand')}: ${dateFmt(state.data.snapshotDate)} · ${loc(state.data.dataMode)}${freshness.isStale?` · ${t('staleSnapshot')}`:''}`;
+  $('freshness').classList.toggle('stale',freshness.isStale);
+  $('staleBanner').hidden=!freshness.isStale;
+  $('staleBanner').textContent=freshness.isStale?t('staleSnapshotWarning'):'';
+  $('systemLabel').textContent=t('modelLoaded');
   state.lastRanking=computeModel().opportunities.map(o=>o.ticker).join('|');
 }
 function bind(){

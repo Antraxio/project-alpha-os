@@ -18,7 +18,7 @@
       ],
       "selectedCandidate": "ASML",
       "ras": 70,
-      "gates": [["scoreGate", false], ["cashGate", false], ["switchGate", true], ["priceGate", false], ["crvGate", true], ["sizingGate", true]]
+      "gates": [["freshnessGate", true], ["scoreGate", false], ["cashGate", false], ["switchGate", true], ["priceGate", false], ["crvGate", true], ["sizingGate", true]]
     },
     "defensive": {
       "securities": [
@@ -35,7 +35,7 @@
       ],
       "selectedCandidate": "NOVO-B",
       "ras": 37,
-      "gates": [["scoreGate", false], ["cashGate", false], ["switchGate", false], ["priceGate", false], ["crvGate", true], ["sizingGate", true]]
+      "gates": [["freshnessGate", true], ["scoreGate", false], ["cashGate", false], ["switchGate", false], ["priceGate", false], ["crvGate", true], ["sizingGate", true]]
     },
     "offensive": {
       "securities": [
@@ -52,7 +52,7 @@
       ],
       "selectedCandidate": "ASML",
       "ras": 74,
-      "gates": [["scoreGate", true], ["cashGate", true], ["switchGate", true], ["priceGate", false], ["crvGate", true], ["sizingGate", true]]
+      "gates": [["freshnessGate", true], ["scoreGate", true], ["cashGate", true], ["switchGate", true], ["priceGate", false], ["crvGate", true], ["sizingGate", true]]
     }
   }
 }

@@ -1,10 +1,10 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.6';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.6';
-import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.6';
-import {computeModel} from '../strategy-ranking.js?v=0.6.6';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.6';
-import {researchRecord} from '../research-pipeline.js?v=0.6.6';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.6';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.7';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.7';
+import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.7';
+import {computeModel} from '../strategy-ranking.js?v=0.6.7';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.7';
+import {researchRecord} from '../research-pipeline.js?v=0.6.7';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.7';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
@@ -223,6 +223,7 @@ export function renderDecision(){
   $('decisionStrategyFit').innerHTML=strategyFitPanel(x);
 
   const gates=automatic?m.gates:[
+    {key:'freshnessGate',pass:!m.freshness.isStale,detail:m.freshness.dateKnown?`${num(m.freshness.ageHours,1)} h / ${num(m.freshness.maxAgeHours,0)} h`:'–'},
     {key:'scoreGate',pass:x.customScore>=state.settings.opportunityThreshold,detail:`${x.customScore} ≥ ${state.settings.opportunityThreshold}`},
     {key:'priceGate',pass:x.inZone,detail:`${euro(x.entryLow)}–${euro(x.entryHigh)}`},
     {key:'crvGate',pass:x.entryCrv>=state.settings.minCrv,detail:`${num(x.entryCrv,2)} / ${num(state.settings.minCrv,1)}`},

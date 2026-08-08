@@ -1,6 +1,21 @@
 {
-  "version": "0.6.6",
+  "version": "0.6.7",
   "modelChanges": [
+    {
+      "date": "2026-08-08",
+      "title": {
+        "de": "Aktualitäts-Gate eingeführt",
+        "en": "Freshness gate introduced"
+      },
+      "detail": {
+        "de": "Ist der Snapshot älter als 24 Stunden, fällt das Gate und jede Kaufempfehlung wird zurückgezogen.",
+        "en": "Once the snapshot is older than 24 hours the gate fails and every buy verdict is withdrawn."
+      },
+      "category": {
+        "de": "Datenqualität",
+        "en": "Data quality"
+      }
+    },
     {
       "date": "2026-08-07",
       "title": {
@@ -146,6 +161,7 @@
     }
   },
   "rules": {
+    "maxSnapshotAgeHours": 24,
     "crvMinimum": 2,
     "opportunityThreshold": 85,
     "cashHurdle": 82,
