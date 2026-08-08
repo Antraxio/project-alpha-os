@@ -162,6 +162,10 @@ select{
 .portfolio-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:20px}.portfolio-metric{padding:18px;border-right:1px solid var(--line)}.portfolio-metric:last-child{border-right:0}
 .portfolio-metric span,.portfolio-metric b,.portfolio-metric small{display:block}.portfolio-metric span{font-size:9px;color:var(--muted)}.portfolio-metric b{font-size:22px;margin:7px 0}.portfolio-metric small{font-size:9px;color:var(--faint)}
 .portfolio-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}.position-intelligence,.allocation-panel,.risk-panel,.closed-trades{padding:22px}
+.position-group-label{display:block;font-size:9px;letter-spacing:1.2px;font-weight:900;color:var(--muted);margin-bottom:12px}
+.position-card+.position-card{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.legend-caption{font-size:9px;letter-spacing:1px;font-weight:800;color:var(--faint);text-transform:uppercase}
+.risk-rows{display:grid;gap:4px}.risk-position-label{font-size:10px;color:var(--muted)}
 .position-head{display:flex;justify-content:space-between}.position-head h2{margin:0}.position-head p{font-size:10px;color:var(--muted);margin:5px 0}.position-value{text-align:right}.position-value b,.position-value span{display:block}.position-value b{font-size:26px}.position-value span{font-size:10px;margin-top:4px}
 .position-strategy{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px;margin-top:19px}.strategy-levels{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
 .strategy-level{padding:13px;background:var(--panel)}.strategy-level span,.strategy-level b,.strategy-level small{display:block}.strategy-level span{font-size:9px;color:var(--muted)}.strategy-level b{font-size:14px;margin:6px 0}.strategy-level small{font-size:9px;color:var(--faint)}
