@@ -1,15 +1,16 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.7.4';
-import {I18N} from '../../src/translations.js?v=0.7.4';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.4';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.4';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.7.4';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.4';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.4';
-import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.4';
-import {snapshotFreshness} from '../../src/freshness.js?v=0.7.4';
+import {clone,state} from '../../src/state.js?v=0.7.5';
+import {I18N} from '../../src/translations.js?v=0.7.5';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.5';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.5';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.7.5';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.5';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.5';
+import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.5';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.7.5';
+import {averageTrueRange,stopFromAtrPct,trueRange,validateBar,validateSeries,venueQuality,volatilityStop} from '../../src/market-data.js?v=0.7.5';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -506,4 +507,102 @@ test('an incomplete dossier withdraws the inherited exception rather than fallin
   assert.equal(basis.reason,'dossierIncomplete');
   assert.equal(isRankingEligible(state.data.opportunities.find(item=>item.ticker==='MSFT')),false);
   assert.equal(computeModel().opportunities.some(item=>item.ticker==='MSFT'),false);
+});
+
+// Synthetic bars with a known Wilder ATR, cross-checked against an independent calculation.
+const SYNTHETIC_BARS=[
+  {high:102,low:99,close:100.5},{high:100.5,low:98.5,close:99.5},{high:101,low:99,close:100},
+  {high:103.5,low:101.5,close:102.5},{high:102,low:99,close:100.5},{high:102.5,low:100.5,close:101.5},
+  {high:105,low:103,close:104},{high:103.5,low:101.5,close:102.5},{high:104,low:101,close:102.5},
+  {high:106.5,low:104.5,close:105.5},{high:105,low:103,close:104},{high:105.5,low:103.5,close:104.5},
+  {high:108,low:105,close:106.5},{high:106.5,low:104.5,close:105.5},{high:107,low:105,close:106},
+  {high:109.5,low:107.5,close:108.5},{high:108,low:105,close:106.5},{high:108.5,low:106.5,close:107.5},
+  {high:111,low:109,close:110},{high:109.5,low:107.5,close:108.5}
+];
+
+test('true range accounts for the overnight gap, not only the intraday span',()=>{
+  assert.equal(trueRange({high:102,low:100,close:101},undefined),2);
+  assert.equal(trueRange({high:102,low:100,close:101},90),12,'a gap up must widen the range');
+  assert.equal(trueRange({high:102,low:100,close:101},110),10,'a gap down must widen it too');
+  // This is why a quote-only venue still yields a non-zero ATR: the gap survives even when
+  // high equals low.
+  assert.equal(trueRange({high:100,low:100,close:100},95),5);
+});
+
+test('average true range reproduces an independently calculated Wilder value',()=>{
+  const atr=averageTrueRange(SYNTHETIC_BARS,14);
+  assert.equal(Math.round(atr*1e10)/1e10,2.7937611295);
+  assert.equal(averageTrueRange(SYNTHETIC_BARS.slice(0,14),14),null,'too short must yield null, not a guess');
+  assert.equal(averageTrueRange([],14),null);
+  assert.equal(averageTrueRange(SYNTHETIC_BARS,0),null);
+});
+
+test('a volatility stop is only derived when the inputs allow it',()=>{
+  const atr=averageTrueRange(SYNTHETIC_BARS,14);
+  assert.equal(Math.round(volatilityStop(120,atr,2.5)*1e10)/1e10,113.0155971762);
+  assert.ok(volatilityStop(120,atr,2.5)<120);
+  for(const [price,value,multiplier] of [[0,atr,2.5],[120,0,2.5],[120,atr,0],[120,Number.NaN,2.5],[Number.NaN,atr,2.5]]){
+    assert.equal(volatilityStop(price,value,multiplier),null);
+  }
+  assert.equal(volatilityStop(10,100,2.5),null,'a stop below zero is no stop');
+});
+
+test('a percentage stop is currency neutral so a US volatility can size a EUR stop',()=>{
+  // 2.77 % measured on the US listing, applied to the EUR price of the German listing.
+  const stop=stopFromAtrPct(55.20,2.77,2.5);
+  assert.equal(Math.round(stop*100)/100,51.38);
+  assert.equal(Math.round((55.20-stop)/55.20*10000)/100,6.93);
+  assert.equal(stopFromAtrPct(55.20,0,2.5),null);
+  assert.equal(stopFromAtrPct(55.20,50,2.5),null,'an implausible width yields no stop rather than a negative one');
+});
+
+test('a quote-only venue is reported as unusable for volatility',()=>{
+  const traded=SYNTHETIC_BARS.map(bar=>({...bar,volume:1000}));
+  assert.equal(venueQuality(traded).tradable,true);
+  assert.equal(venueQuality(traded).flatPct,0);
+  // Seventy per cent of Frankfurt bars for Biomarin quote high = low on a median volume of
+  // one hundred shares.
+  const quoted=SYNTHETIC_BARS.map((bar,index)=>index%10<7?{high:bar.close,low:bar.close,close:bar.close,volume:0}:{...bar,volume:100});
+  const quality=venueQuality(quoted);
+  assert.equal(quality.flatPct,70);
+  assert.equal(quality.zeroVolumePct,70);
+  assert.equal(quality.tradable,false);
+  assert.equal(venueQuality([]).tradable,false);
+});
+
+test('bars are rejected only when structurally impossible and large moves are classified',()=>{
+  const config={maxDailyMovePct:25,splitTolerancePct:2,atrPeriod:14,atrMultiplier:2.5};
+  assert.equal(validateBar({high:102,low:100,close:101},{previousClose:100,config}).severity,'ok');
+  for(const bad of [{high:102,low:100,close:0},{high:100,low:102,close:101},{high:102,low:100,close:103},{high:102,low:100,close:'x'}]){
+    assert.equal(validateBar(bad,{previousClose:100,config}).severity,'reject',JSON.stringify(bad));
+  }
+  assert.equal(validateBar({high:102,low:100,close:101},{previousClose:100,currency:'USD',expectedCurrency:'EUR',config}).severity,'reject');
+
+  // A halving lands on a 2:1 split ratio and must not be read as a market collapse.
+  const split=validateBar({high:51,low:49,close:50},{previousClose:100,config});
+  assert.equal(split.severity,'corporateAction');
+  assert.equal(split.ratio,1/2);
+
+  // A large move that matches no split ratio is real until a human says otherwise.
+  const drop=validateBar({high:66,low:64,close:65},{previousClose:100,config});
+  assert.equal(drop.severity,'review');
+  assert.equal(Math.round(drop.movePct),-35);
+});
+
+test('a series reports its findings and stays usable unless a bar is impossible',()=>{
+  const history={
+    dates:['2026-08-03','2026-08-04','2026-08-05'],
+    currency:'EUR',
+    series:{TEST:{firstIndex:0,high:[102,103,104],low:[100,101,102],close:[101,102,103]}}
+  };
+  const clean=validateSeries(history,'TEST',{expectedCurrency:'EUR'});
+  assert.equal(clean.bars,3);
+  assert.equal(clean.findings.length,0);
+  assert.equal(clean.usable,true);
+
+  history.series.TEST.close[2]=500;
+  const broken=validateSeries(history,'TEST',{expectedCurrency:'EUR'});
+  assert.equal(broken.usable,false,'a close outside its own high-low range makes the series unusable');
+  assert.equal(broken.rejected,1);
+  assert.equal(validateSeries(history,'MISSING').bars,0);
 });

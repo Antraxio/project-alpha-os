@@ -1,5 +1,5 @@
 {
-  "version": "0.7.4",
+  "version": "0.7.5",
   "modelChanges": [
     {
       "date": "2026-08-08",
@@ -198,7 +198,13 @@
       "de": "Im Regelfall null oder eine neue Position.",
       "en": "Normally zero or one new position."
     },
-    "riskBudgetPct": 1.5
+    "riskBudgetPct": 1.5,
+    "priceValidation": {
+      "maxDailyMovePct": 25,
+      "splitTolerancePct": 2,
+      "atrPeriod": 14,
+      "atrMultiplier": 2.5
+    }
   },
   "scoreWeights": {
     "fundamental": 30,

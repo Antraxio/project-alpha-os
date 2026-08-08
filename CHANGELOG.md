@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.7.5 – Price history foundation
+
+### Added
+- `src/market-data.js`: bar validation, corporate-action classification, Wilder average true range, volatility-derived stops and venue quality assessment
+- price history schema: shared date axis plus one ragged series per security, with high and low alongside the close because the true range needs them
+- `rules.priceValidation` with the plausibility band, split tolerance, ATR period and multiplier
+
+### Notes
+Structurally impossible bars are rejected and never reach the model. A large move is classified rather than discarded: it is attributed to a corporate action when it lands on a common split ratio, and marked for review otherwise, because an earnings surprise is real data.
+
+Volatility must come from the primary listing, not the venue the broker quotes. Measured on Biomarin: Frankfurt shows a median daily range of 0.00 % on a median volume of 100 shares with 70 % of days quoting high = low, against 2.51 % and 1.97 million shares in the US. Expressing the result as a percentage keeps it currency-neutral, so a US-derived volatility sizes a stop on the EUR price without an exchange rate entering the calculation.
+
+Nothing is fetched yet. No scheduled workflow, no committed prices.
+
 ## v0.7.4 – Gate calibration
 
 ### Fixed
