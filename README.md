@@ -1,6 +1,6 @@
 # Project Alpha OS
 
-Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.6.7 adds a central snapshot-freshness gate that withdraws every execution verdict once the model snapshot exceeds its configured maximum age, while preserving the complete model, research, portfolio, and benchmark functionality.
+Project Alpha OS is a bilingual, static decision-intelligence prototype for transparent investment ranking, portfolio fit, research governance, and execution discipline. Version 0.7.0 replaces the two-portfolio competition with the single real Scalable Capital account and derives every position, cost basis and cash figure from a documented transaction ledger.
 
 The application uses an embedded manual model snapshot. It has no live market-data feed and must not be treated as personalized financial advice.
 
@@ -33,7 +33,7 @@ src/
   ui/views.js                Existing DOM view renderers
 data/
   core.json                  Snapshot, rules, presets, timeline, decision copy
-  portfolios.json            Portfolios, positions, and closed trades
+  portfolio.json             Single portfolio transaction ledger, market data and trade plans
   opportunities.json         Fully scored opportunities only
   universe.json              Global Liquid 50 universe
   research.json              Research pipeline and source-backed dossiers
@@ -52,6 +52,16 @@ The refactor preserves the existing browser storage contract:
 - `alphaResearchTicker`
 
 All existing view IDs and navigation targets remain unchanged.
+
+## Portfolio ledger
+
+The portfolio is derived, never stored as aggregates. `data/portfolio.json` holds a transaction ledger with `OPENING_CASH`, `BUY`, `SELL`, `FEE`, `TAX`, `DIVIDEND`, `DEPOSIT` and `WITHDRAWAL` records; cash, open positions, cost basis, realised and unrealised results all follow from it.
+
+- Cost basis uses the **average-cost** method, matching the broker's own reporting.
+- Sales reduce the pooled cost proportionally, so partial and full sales are both supported. A sale larger than the held shares is rejected.
+- `cashTrackedFrom` marks the date the cash balance is anchored. Trades booked before it build the position and its cost basis but are not deducted from cash a second time, because the opening balance already reflects them.
+- `cashReconciliation()` compares the derived balance against the broker-reported one. **A gap is surfaced, never absorbed.** The current data carries an open difference of 4.81 EUR that is not explained by any booking on the statement.
+- Positions without a recorded stop are excluded from the stop scenario and counted separately rather than being treated as if a stop existed.
 
 ## Investment model boundaries
 

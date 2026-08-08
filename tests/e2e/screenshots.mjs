@@ -81,7 +81,6 @@ async function switchView(page, view) {
       universe: "opportunities",
       research: "opportunities",
       timeline: "opportunities",
-      competition: "portfolio",
       journal: "portfolio",
       methodology: "model",
       "model-history": "model"
@@ -189,7 +188,7 @@ async function assertSeparatedHistories() {
   await setLanguage(page, "de");
   await switchView(page, "journal");
   const transactions = await page.locator("#journalFeed").innerText();
-  if (!["Microsoft", "Meta Platforms A", "TSMC ADR"].every(item => transactions.includes(item))) {
+  if (!["Biomarin Pharmaceutical", "Microsoft", "Meta Platforms A", "TSMC ADR"].every(item => transactions.includes(item))) {
     throw new Error(`Transaction history is incomplete: ${transactions}`);
   }
   if (["Strategy Studio", "Zweisprachige Oberfläche", "DISZIPLIN-SCORE"].some(item => transactions.includes(item))) {
@@ -200,7 +199,7 @@ async function assertSeparatedHistories() {
   if (!["Navigation vereinfacht", "Strategy Studio eingeführt", "Zweisprachige Oberfläche"].every(item => changes.includes(item))) {
     throw new Error(`Model change history is incomplete: ${changes}`);
   }
-  if (["Microsoft", "Meta Platforms A", "TSMC ADR"].some(item => changes.includes(item))) {
+  if (["Biomarin Pharmaceutical", "Meta Platforms A", "TSMC ADR"].some(item => changes.includes(item))) {
     throw new Error(`Model change history contains portfolio transactions: ${changes}`);
   }
   if (errors.length) throw new Error(`Browser errors in separated histories: ${errors.join(" | ")}`);

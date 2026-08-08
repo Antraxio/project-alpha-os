@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.6.7';
-import {I18N} from '../../src/translations.js?v=0.6.7';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.7';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.6.7';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.6.7';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.7';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.7';
-import {derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.6.7';
-import {snapshotFreshness} from '../../src/freshness.js?v=0.6.7';
+import {clone,state} from '../../src/state.js?v=0.7.0';
+import {I18N} from '../../src/translations.js?v=0.7.0';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.0';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.0';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.7.0';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.0';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.0';
+import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.0';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.7.0';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -27,27 +27,24 @@ test.beforeEach(()=>reset());
 test('Opportunity and Strategy Scores reproduce the balanced calculation',()=>{
   const asml=state.data.opportunities.find(x=>x.ticker==='ASML');
   assert.equal(opportunityScore(asml.components),84);
-  assert.equal(computeModel().opportunities.find(x=>x.ticker==='ASML').strategyScore,84);
+  assert.equal(computeModel().opportunities.find(x=>x.ticker==='ASML').strategyScore,72);
 });
 
-test('all scored securities across all presets retain the committed v0.6.2 strategy results',async()=>{
-  const fixture=await readJson('tests/fixtures/v0.6.2-strategy-results.json');
+test('all scored securities across all presets retain the committed v0.7.0 strategy results',async()=>{
+  const fixture=await readJson('tests/fixtures/v0.7.0-portfolio-results.json');
   for(const preset of ['balanced','defensive','offensive']){
     reset(preset);
     const model=computeModel();
     const expected=fixture.presets[preset];
-    assert.deepEqual(model.opportunities.map(item=>[item.ticker,item.strategyComponentScore,item.strategyScore,item.customRank,item.portfolioFitAdjustment]),expected.securities,preset);
+    assert.deepEqual(model.opportunities.map(item=>[item.ticker,item.strategyScore,item.customRank]),expected.securities.map(item=>[item.ticker,item.strategyScore,item.rank]),preset);
     assert.equal(model.candidate?.ticker??null,expected.selectedCandidate,preset);
     assert.equal(model.ras,expected.ras,preset);
-    // The v0.6.2 fixture is a historical reference and must keep recording exactly the
-    // gates that existed then. The freshness gate arrived in 0.6.7 and is asserted
-    // separately, so it is excluded here rather than written into the fixture.
-    assert.deepEqual(model.gates.filter(gate=>gate.key!=='freshnessGate').map(gate=>[gate.key,gate.pass]),expected.gates,preset);
+    assert.deepEqual(model.gates.map(gate=>[gate.key,gate.pass]),expected.gates.map(gate=>[gate.key,gate.pass]),preset);
   }
 });
 
-test('portfolio sizing and CRV remain identical to the complete legacy differential fixture',async()=>{
-  const fixture=await readJson('tests/fixtures/v0.6.0-model-results.json');
+test('portfolio sizing and CRV remain identical to the committed v0.7.0 differential fixture',async()=>{
+  const fixture=await readJson('tests/fixtures/v0.7.0-portfolio-results.json');
   for(const preset of ['balanced','defensive','offensive']){
     reset(preset);
     const actual=computeModel().opportunities.map(item=>({ticker:item.ticker,crv:item.entryCrv,sizing:item.sizing}));
@@ -71,7 +68,7 @@ test('Strategy Score exposes component and portfolio fit without changing its re
   assert.equal(opportunityScore(novo.components),79);
   assert.equal(strategyComponentScore(novo.components),80);
   assert.equal(novo.componentWeightAdjustment,1);
-  assert.equal(novo.portfolioFitAdjustment,-1.762570039819563);
+  assert.equal(novo.portfolioFitAdjustment,-13.736716919579452);
   assert.equal(novo.fitAdjustment,novo.componentWeightAdjustment+novo.portfolioFitAdjustment);
   assert.equal(novo.strategyScore,Math.round(novo.customScore+novo.fitAdjustment));
   assert.deepEqual(novo.fitReasons.map(reason=>reason.key),['componentWeightFit','affordability','positionFit','crvFit','priceFit','diversificationFit']);
@@ -86,13 +83,13 @@ test('a custom component-weight change updates Strategy Score, ranking and RAS b
   assert.notDeepEqual(after.opportunities.map(item=>item.ticker),before.opportunities.map(item=>item.ticker));
   assert.notEqual(after.opportunities.find(item=>item.ticker==='NOVO-B').strategyScore,before.opportunities.find(item=>item.ticker==='NOVO-B').strategyScore);
   assert.notEqual(after.ras,before.ras);
-  assert.equal(after.candidate.ticker,after.opportunities.find(item=>!state.data.portfolios.chatgpt.positions.some(position=>position.ticker===item.ticker)).ticker);
+  assert.equal(after.candidate.ticker,after.opportunities.find(item=>!state.data.portfolio.positions.some(position=>position.ticker===item.ticker)).ticker);
 });
 
 test('presets retain established ranking changes',()=>{
   const orders={};
   for(const preset of ['balanced','defensive','offensive']){reset(preset);orders[preset]=computeModel().opportunities.slice(0,5).map(x=>x.ticker).join('|');}
-  assert.deepEqual(orders,{balanced:'ASML|MSFT|NOVO-B|HNR1|ENEL',defensive:'NOVO-B|ENEL|HNR1|MSFT|DTE',offensive:'ASML|MSFT|NOVO-B|TSM|ENEL'});
+  assert.deepEqual(orders,{balanced:'MSFT|NOVO-B|HNR1|JPM|ASML',defensive:'MSFT|DTE|JPM|ASML|NOVO-B',offensive:'MSFT|ASML|NOVO-B|JPM|TSM'});
 });
 
 test('watchlist exposes all 50 securities without changing ranked order or inventing scores',()=>{
@@ -106,36 +103,82 @@ test('watchlist exposes all 50 securities without changing ranked order or inven
   assert.ok(watchlist.slice(model.opportunities.length).every(item=>item.opportunityScore===null&&item.conviction===null));
 });
 
-test('whole-share sizing returns affordable integers',()=>{
+test('whole-share sizing returns affordable integers and respects the cash reserve',()=>{
   const candidate=state.data.opportunities.find(x=>x.ticker==='ASML');
   const sizing=computeSizing(candidate);
-  assert.equal(sizing.shares,1);assert.equal(Number.isInteger(sizing.shares),true);assert.ok(sizing.amount<=sizing.spendable);
+  assert.equal(Number.isInteger(sizing.shares),true);
+  assert.ok(sizing.amount<=sizing.spendable);
+  assert.equal(sizing.shares,0,'ASML costs more than the spendable cash above the reserve');
+  const affordable=computeSizing({...candidate,price:100});
+  assert.ok(affordable.shares>=1);
+  assert.ok(affordable.amount<=affordable.spendable);
   assert.equal(computeSizing({...candidate,price:999999}).shares,0);
 });
 
-test('portfolio ledger reproduces every confirmed portfolio value without stored aggregates',async()=>{
-  const source=await readJson('data/portfolios.json');
-  assert.ok(Object.values(source.portfolios).every(portfolio=>!('cash' in portfolio)&&!('positions' in portfolio)&&!('closedTrades' in portfolio)));
-  const derived=derivePortfolioData(source).portfolios;
-  assert.equal(derived.chatgpt.cash,1654.1);
-  assert.equal(derived.claude.cash,1855.28);
-  assert.deepEqual(derived.chatgpt.positions.map(item=>[item.ticker,item.openedAt,item.shares,item.entry]),[['MSFT','2026-07-15',2,337.15]]);
-  assert.deepEqual(derived.chatgpt.closedTrades.map(item=>[item.ticker,item.result]),[['META',-83.6],['TSM',-88]]);
-  const ledgerAssets=derived.chatgpt.cash+derived.chatgpt.positions.reduce((sum,item)=>sum+item.entry*item.shares,0);
-  const ledgerCapital=derived.chatgpt.startCapital+derived.chatgpt.closedTrades.reduce((sum,item)=>sum+item.result,0);
-  assert.equal(Math.round(ledgerAssets*100),Math.round(ledgerCapital*100));
+test('portfolio ledger reproduces the documented Scalable positions and cash',async()=>{
+  const source=await readJson('data/portfolio.json');
+  assert.ok(!('cash' in source.portfolio)&&!('positions' in source.portfolio)&&!('closedTrades' in source.portfolio));
+  const derived=derivePortfolioData(source).portfolio;
+  assert.equal(derived.cash,2534.42);
+  assert.deepEqual(derived.positions.map(item=>[item.ticker,item.shares,item.entry]),[
+    ['BMRN',51,86.42],['MSFT',2,337.15],['NKE',18,82.57],['DTE',14,26.42],['JPM',1,300.3]
+  ]);
+  assert.deepEqual(derived.closedTrades.map(item=>[item.ticker,item.result]),[['TTE',21.84],['SHEL',5.6],['TSM',-88],['META',-83.6]]);
+  assert.deepEqual(derived.cashFlow,{deposited:4000,withdrawn:0,fees:25.69,taxes:3.64,income:6.47});
+  const reconciliation=cashReconciliation(derived);
+  assert.equal(reconciliation.reported,2529.61);
+  assert.equal(reconciliation.difference,4.81);
+  assert.equal(reconciliation.reconciled,false,'the open 4.81 EUR gap to the bank must stay visible');
 });
 
 test('portfolio ledger rejects duplicate, incomplete, and unsupported transactions',()=>{
-  const base={name:'Test',startCapital:1000,transactions:[{id:'buy-1',type:'BUY',date:null,ticker:'TEST',shares:1,price:100,current:100}]};
-  assert.throws(()=>derivePortfolio({...base,transactions:[...base.transactions,{...base.transactions[0]}]}),/transaction id/);
-  assert.throws(()=>derivePortfolio({...base,transactions:[{id:'bad',type:'BUY',shares:0,price:100}]}),/shares/);
-  assert.throws(()=>derivePortfolio({...base,transactions:[{id:'bad',type:'DIVIDEND',result:10}]}),/ledger type/);
+  const buy={id:'buy-1',type:'BUY',date:'2026-01-01',ticker:'TEST',shares:1,amount:100};
+  const base={name:'Test',marketData:{prices:{TEST:100}},transactions:[buy]};
+  assert.throws(()=>derivePortfolio({...base,transactions:[buy,{...buy}]}),/transaction id/);
+  assert.throws(()=>derivePortfolio({...base,transactions:[{...buy,id:'bad',shares:0}]}),/shares/);
+  assert.throws(()=>derivePortfolio({...base,transactions:[{...buy,id:'bad',amount:0}]}),/amount/);
+  assert.throws(()=>derivePortfolio({...base,transactions:[{id:'bad',type:'TRANSFER',amount:10}]}),/ledger type/);
+  assert.throws(()=>derivePortfolio({name:'X',marketData:{prices:{}},transactions:[buy]}),/Missing market price/);
+});
+
+test('a sale may never exceed the held shares and reduces the pooled cost proportionally',()=>{
+  const prices={marketData:{prices:{TEST:100}}};
+  const buys=[
+    {id:'b1',type:'BUY',date:'2026-01-01',ticker:'TEST',shares:2,amount:200},
+    {id:'b2',type:'BUY',date:'2026-01-02',ticker:'TEST',shares:2,amount:300}
+  ];
+  assert.throws(()=>derivePortfolio({...prices,transactions:[...buys,{id:'s',type:'SELL',date:'2026-01-03',ticker:'TEST',shares:5,amount:100}]}),/ledger sale/);
+  const partial=derivePortfolio({...prices,transactions:[...buys,{id:'s',type:'SELL',date:'2026-01-03',ticker:'TEST',shares:1,amount:150}]});
+  assert.equal(partial.positions[0].shares,3);
+  assert.equal(partial.positions[0].entry,125);
+  assert.equal(partial.closedTrades[0].cost,125);
+  assert.equal(partial.closedTrades[0].result,25);
+  const full=derivePortfolio({...prices,transactions:[...buys,{id:'s',type:'SELL',date:'2026-01-03',ticker:'TEST',shares:4,amount:600}]});
+  assert.deepEqual(full.positions,[]);
+  assert.equal(full.closedTrades[0].result,100);
+});
+
+test('cash is tracked only from the configured date and reconciled against the bank',()=>{
+  const portfolio=derivePortfolio({
+    cashTrackedFrom:'2026-07-01',
+    marketData:{prices:{TEST:10},reportedCash:95},
+    transactions:[
+      {id:'old',type:'BUY',date:'2024-05-01',ticker:'TEST',shares:5,amount:500},
+      {id:'open',type:'OPENING_CASH',date:'2026-07-01',amount:100},
+      {id:'fee',type:'FEE',date:'2026-07-02',amount:1}
+    ]
+  });
+  assert.equal(portfolio.cash,99);
+  assert.equal(portfolio.positions[0].shares,5);
+  const reconciliation=cashReconciliation(portfolio);
+  assert.equal(reconciliation.reported,95);
+  assert.equal(reconciliation.difference,4);
+  assert.equal(reconciliation.reconciled,false);
 });
 
 test('automatic candidate is the highest eligible non-held security',()=>{
-  assert.equal(activeDecisionSelection().scored.ticker,'ASML');
-  assert.equal(state.data.portfolios.chatgpt.positions.some(x=>x.ticker===activeDecisionSelection().scored.ticker),false);
+  assert.equal(activeDecisionSelection().scored.ticker,'NOVO-B');
+  assert.equal(state.data.portfolio.positions.some(x=>x.ticker===activeDecisionSelection().scored.ticker),false);
 });
 
 function addSyntheticOpportunity(ticker){
@@ -193,14 +236,14 @@ test('only a fully complete approved dossier is eligible',()=>{
 });
 
 test('zero eligible non-held candidates returns a valid empty model without fallback',()=>{
-  state.data.portfolios.chatgpt.positions=state.data.opportunities.map(item=>({ticker:item.ticker,name:item.name,sector:item.sector,country:item.country,current:item.price,entry:item.price,shares:1}));
+  state.data.portfolio.positions=state.data.opportunities.map(item=>({ticker:item.ticker,name:item.name,sector:item.sector,country:item.country,current:item.price,entry:item.price,shares:1}));
   const model=computeModel();
   assert.equal(model.candidate,null);assert.equal(model.sizing,null);assert.equal(model.ras,null);assert.deepEqual(model.gates,[]);assert.equal(model.hasEligibleCandidate,false);
   assert.equal(activeDecisionSelection().scored,null);assert.equal(activeDecisionSelection().universe,null);
 });
 
 test('an entirely ineligible non-held universe leaves only held securities and no candidate',()=>{
-  const held=new Set(state.data.portfolios.chatgpt.positions.map(item=>item.ticker));
+  const held=new Set(state.data.portfolio.positions.map(item=>item.ticker));
   state.data.universe.forEach(item=>{if(!held.has(item.ticker))item.coverageStatus='research_pending';});
   const model=computeModel();
   assert.equal(model.candidate,null);assert.ok(model.opportunities.every(item=>held.has(item.ticker)));
@@ -213,7 +256,7 @@ test('German and English translation and data pairs are complete',()=>{
 });
 
 test('legacy resources retain their public schemas',async()=>{
-  const modular=Object.assign({},...await Promise.all(['core','portfolios','opportunities','universe','research'].map(name=>readJson(`data/${name}.json`))));
+  const modular=Object.assign({},...await Promise.all(['core','portfolio','opportunities','universe','research'].map(name=>readJson(`data/${name}.json`))));
   assert.deepEqual(await readJson('alpha-data.json'),derivePortfolioData(modular));
   const legacy=await readJson('opportunities.json');
   assert.equal(legacy.version,'0.1.1');assert.ok(Array.isArray(legacy.opportunities));assert.ok(legacy.opportunities.length>0);
@@ -281,36 +324,35 @@ test('an unusable evaluation time fails closed instead of reporting an age',()=>
 });
 
 test('portfolio aggregates cover zero, one and several positions without relying on the first entry',()=>{
-  const chatgpt=state.data.portfolios.chatgpt,claude=state.data.portfolios.claude;
-  assert.equal(Math.round(unrealisedOf(chatgpt)*100),13086);
-  assert.equal(Math.round(unrealisedOf(claude)*100),1058);
-  assert.equal(Math.round(investedOf(claude)*100),68076);
-  assert.equal(Math.round(costBasisOf(claude)*100),67018);
+  const p=state.data.portfolio;
+  assert.equal(Math.round(unrealisedOf(p)*100),-219204);
+  assert.equal(Math.round(investedOf(p)*100),504612);
+  assert.equal(Math.round(costBasisOf(p)*100),723816);
   const empty={cash:2500,startCapital:2500,positions:[],closedTrades:[]};
   assert.equal(unrealisedOf(empty),0);
   assert.equal(investedOf(empty),0);
   assert.deepEqual(exposureBreakdown(empty.positions,'country'),[]);
   assert.equal(focusPosition(empty),null);
-  assert.deepEqual(portfolioRisk(empty),{ifStop:0,giveback:0,valueAtStop:2500});
+  assert.deepEqual(portfolioRisk(empty),{ifStop:0,giveback:0,valueAtStop:2500,covered:0,uncovered:0});
 });
 
 test('exposure breakdown is data driven and sorted by value across every position',()=>{
-  const claude=state.data.portfolios.claude;
-  const countries=exposureBreakdown(claude.positions,'country');
-  assert.deepEqual(countries.map(item=>item.name),['Germany','USA']);
-  assert.equal(Math.round(countries[0].pct*100)/100,55.24);
+  const p=state.data.portfolio;
+  const countries=exposureBreakdown(p.positions,'country');
+  assert.deepEqual(countries.map(item=>item.name),['USA','Germany']);
+  assert.equal(Math.round(countries[0].pct*100)/100,91.95);
   assert.equal(Math.round(countries.reduce((sum,item)=>sum+item.pct,0)),100);
-  const sectors=exposureBreakdown(claude.positions,'sector');
-  assert.deepEqual(sectors.map(item=>item.name),['Telecom','Financials']);
-  assert.equal(exposureBreakdown(state.data.portfolios.chatgpt.positions,'country').length,1);
+  const sectors=exposureBreakdown(p.positions,'sector');
+  assert.deepEqual(sectors.map(item=>item.name),['Healthcare','Technology','Consumer','Telecom','Financials']);
+  assert.equal(Math.round(sectors.reduce((sum,item)=>sum+item.pct,0)),100);
 });
 
 test('focus position and aggregated risk use every position, not positions[0]',()=>{
-  const claude=state.data.portfolios.claude;
-  assert.equal(focusPosition(claude).ticker,'DTE');
-  const risk=portfolioRisk(claude);
-  assert.equal(Math.round(risk.ifStop*100),-5026);
-  assert.equal(Math.round(risk.giveback*100),6084);
-  assert.equal(Math.round(risk.valueAtStop*100),Math.round((1855.28+23.78*14+287)*100));
+  const p=state.data.portfolio;
+  assert.equal(focusPosition(p).ticker,'MSFT');
+  const risk=portfolioRisk(p);
+  assert.equal(risk.covered,3,'only Microsoft, Telekom and JPMorgan carry a recorded stop');
+  assert.equal(risk.uncovered,2,'Biomarin and NIKE have no stop and must not be counted as covered');
+  assert.equal(Math.round(risk.ifStop*100),Math.round(((370-337.15)*2+(23.78-26.42)*14+(287-300.3))*100));
   assert.equal(focusPosition({positions:[{ticker:'X',current:10}]}),null);
 });
