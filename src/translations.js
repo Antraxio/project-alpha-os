@@ -128,7 +128,7 @@ export const t=k=>I18N[state.language][k]??k;
 
 export const wholeShareLabel=count=>{
   if(state.language==='de'){
-    return count===1?'1 ganze Akte':`${count} ganze Aktien`;
+    return count===1?'1 ganze Aktie':`${count} ganze Aktien`;
   }
   return count===1?'1 whole share':`${count} whole shares`;
 };
