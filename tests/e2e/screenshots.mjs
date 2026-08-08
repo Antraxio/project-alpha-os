@@ -38,7 +38,9 @@ const baseUrl = (process.env.ALPHA_BASE_URL || "http://127.0.0.1:4173") +
 // Screenshots must stay reproducible, so the freshness gate is evaluated one hour after the snapshot.
 const referenceTime = Date.parse(JSON.parse(readFileSync("data/core.json", "utf8")).snapshotDate) + 3600000;
 
-async function openPage(width, height) {
+const staleReferenceTime = referenceTime + 30 * 3600000;
+
+async function openPage(width, height, atTime = referenceTime) {
   const page = await browser.newPage({
     viewport: { width, height },
     deviceScaleFactor: 1
@@ -56,7 +58,7 @@ async function openPage(width, height) {
     errors.push(error.message);
   });
 
-  await page.clock.setFixedTime(referenceTime);
+  await page.clock.setFixedTime(atTime);
 
   await page.goto(baseUrl, {
     waitUntil: "networkidle",
@@ -94,6 +96,92 @@ async function switchView(page, view) {
 async function setLanguage(page, language) {
   await page.locator(`[data-lang="${language}"]`).click();
   await page.waitForTimeout(400);
+}
+
+async function assertStaleSnapshotDegradedMode() {
+  const { page, errors } = await openPage(1366, 1024, staleReferenceTime);
+
+  const expected = {
+    de: {
+      banner: "Snapshot veraltet",
+      kicker: "LETZTE BEWERTUNG",
+      headline: "Keine neue Position",
+      trigger: "Kein aktueller Trigger",
+      distance: "Abstand ausgeblendet",
+      sizing: "Keine Stückzahl-Empfehlung",
+      ladder: "keine Ausführungsschritte",
+      buyWording: ["Kauf vorbereiten", "Kauf prüfen"]
+    },
+    en: {
+      banner: "Snapshot is stale",
+      kicker: "LAST ASSESSMENT",
+      headline: "Do not open a new position",
+      trigger: "No current trigger",
+      distance: "Distance hidden",
+      sizing: "No share-count recommendation",
+      ladder: "No execution steps",
+      buyWording: ["Prepare a purchase", "Review buy"]
+    }
+  };
+
+  for (const language of ["de", "en"]) {
+    const copy = expected[language];
+    await setLanguage(page, language);
+    await switchView(page, "dashboard");
+
+    const banner = page.locator("#staleBanner");
+    if (await banner.isHidden()) {
+      throw new Error(`Stale banner is hidden in ${language}`);
+    }
+    if (!(await banner.innerText()).includes(copy.banner)) {
+      throw new Error(`Stale banner text is wrong in ${language}: ${await banner.innerText()}`);
+    }
+
+    const checks = [
+      ["#decisionKicker", copy.kicker],
+      ["#briefingHeadline", copy.headline],
+      ["#briefingTrigger", copy.trigger],
+      ["#triggerDistance", copy.distance],
+      ["#briefingPoints", copy.sizing]
+    ];
+    for (const [selector, needle] of checks) {
+      const text = await page.locator(selector).innerText();
+      if (!text.includes(needle)) {
+        throw new Error(`Stale mode ${selector} in ${language} lacks "${needle}": ${text}`);
+      }
+    }
+
+    const zoneWidth = await page.locator("#priceZoneProgress").evaluate(node => node.style.width);
+    if (zoneWidth !== "0%") {
+      throw new Error(`Stale price-zone progress is not cleared in ${language}: ${zoneWidth}`);
+    }
+
+    const verdict = await page.locator("#execVerdict").innerText();
+    if (copy.buyWording.some(word => verdict.includes(word))) {
+      throw new Error(`Stale mode still recommends a purchase in ${language}: ${verdict}`);
+    }
+
+    await switchView(page, "decision");
+    const gates = await page.locator("#decisionGates").innerText();
+    if (!gates.includes(language === "de" ? "Datenaktualität" : "Data freshness")) {
+      throw new Error(`Freshness gate missing from the gate list in ${language}: ${gates}`);
+    }
+    const freshnessGate = page.locator("#decisionGates .gate").first();
+    if (!(await freshnessGate.locator(".gate-icon.fail").count())) {
+      throw new Error(`Freshness gate does not fail in ${language}`);
+    }
+    const ladder = await page.locator("#actionLadder").innerText();
+    if (!ladder.includes(copy.ladder)) {
+      throw new Error(`Stale action ladder is not replaced in ${language}: ${ladder}`);
+    }
+    const detail = await page.locator("#candidateDetail .level-grid").innerText();
+    if (/\d+\s+(ganze|whole)/.test(detail)) {
+      throw new Error(`Stale mode still suggests a share count in ${language}: ${detail}`);
+    }
+  }
+
+  if (errors.length) throw new Error(`Browser errors in stale mode: ${errors.join(" | ")}`);
+  await page.close();
 }
 
 async function assertSeparatedHistories() {
@@ -551,5 +639,7 @@ await assertBrowserPersistence();
 await assertImmediateStrategySliderAndReset();
 
 await assertSeparatedHistories();
+
+await assertStaleSnapshotDegradedMode();
 
 await browser.close();

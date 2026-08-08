@@ -39,7 +39,10 @@ test('all scored securities across all presets retain the committed v0.6.2 strat
     assert.deepEqual(model.opportunities.map(item=>[item.ticker,item.strategyComponentScore,item.strategyScore,item.customRank,item.portfolioFitAdjustment]),expected.securities,preset);
     assert.equal(model.candidate?.ticker??null,expected.selectedCandidate,preset);
     assert.equal(model.ras,expected.ras,preset);
-    assert.deepEqual(model.gates.map(gate=>[gate.key,gate.pass]),expected.gates,preset);
+    // The v0.6.2 fixture is a historical reference and must keep recording exactly the
+    // gates that existed then. The freshness gate arrived in 0.6.7 and is asserted
+    // separately, so it is excluded here rather than written into the fixture.
+    assert.deepEqual(model.gates.filter(gate=>gate.key!=='freshnessGate').map(gate=>[gate.key,gate.pass]),expected.gates,preset);
   }
 });
 
@@ -244,4 +247,35 @@ test('the freshness gate uses the configured rule and fails closed on an unusabl
   assert.equal(unusable.dateKnown,false);
   assert.equal(unusable.isStale,true);
   assert.equal(computeModel().allPassed,false);
+});
+
+test('a snapshot dated in the future is never treated as fresh',()=>{
+  state.referenceTime=Date.parse(state.data.snapshotDate)-3600000;
+  const ahead=snapshotFreshness();
+  assert.equal(ahead.future,true);
+  assert.equal(ahead.isStale,true);
+  const model=computeModel();
+  assert.equal(model.gates.find(gate=>gate.key==='freshnessGate').pass,false);
+  assert.equal(model.allPassed,false);
+});
+
+test('only a finite positive age threshold can report a fresh snapshot',()=>{
+  for(const invalid of [0,-1,Number.NaN,Number.POSITIVE_INFINITY,'24',null,undefined]){
+    state.data.rules.maxSnapshotAgeHours=invalid;
+    state.referenceTime=Date.parse(state.data.snapshotDate)+3600000;
+    const result=snapshotFreshness();
+    assert.equal(result.thresholdValid,false,String(invalid));
+    assert.equal(result.isStale,true,String(invalid));
+    assert.equal(result.maxAgeHours,null,String(invalid));
+    assert.equal(computeModel().allPassed,false,String(invalid));
+    assert.equal(computeModel().gates.find(gate=>gate.key==='freshnessGate').detail,'\u2013',String(invalid));
+  }
+});
+
+test('an unusable evaluation time fails closed instead of reporting an age',()=>{
+  state.referenceTime=Number.NaN;
+  const result=snapshotFreshness(state.data,Number.NaN);
+  assert.equal(result.dateKnown,false);
+  assert.equal(result.ageHours,null);
+  assert.equal(result.isStale,true);
 });

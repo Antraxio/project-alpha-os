@@ -149,7 +149,9 @@ export function computeModel(){
     {
       key:'freshnessGate',
       pass:!freshness.isStale,
-      detail:freshness.dateKnown?`${num(freshness.ageHours,1)} h / ${num(freshness.maxAgeHours,0)} h`:'–'
+      detail:freshness.dateKnown&&freshness.thresholdValid
+        ?`${num(freshness.ageHours,1)} h / ${num(freshness.maxAgeHours,0)} h`
+        :'–'
     },
     {
       key:'scoreGate',

@@ -1026,3 +1026,5 @@ input[type="range"]{width:100%;min-width:0;padding:0;border:0;background:transpa
   .research-checklist{grid-template-columns:1fr}
   .research-actions{flex-direction:column}
 }
+.ladder-stale{padding:14px;border:1px solid rgba(255,107,107,.35);border-radius:10px;background:rgba(255,107,107,.08);color:#ff9a9a;font-size:11px;font-weight:700}
+.msft-progress.is-stale .distance-bar{opacity:.35}.msft-progress.is-stale .msft-line span{color:#ff9a9a;font-weight:700}
