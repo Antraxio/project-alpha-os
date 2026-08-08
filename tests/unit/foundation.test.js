@@ -4,7 +4,7 @@ import test from 'node:test';
 import {clone,state} from '../../src/state.js?v=0.6.7';
 import {I18N} from '../../src/translations.js?v=0.6.7';
 import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.6.7';
-import {computeSizing} from '../../src/portfolio-calculations.js?v=0.6.7';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.6.7';
 import {computeModel} from '../../src/strategy-ranking.js?v=0.6.7';
 import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.6.7';
 import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.6.7';
@@ -278,4 +278,39 @@ test('an unusable evaluation time fails closed instead of reporting an age',()=>
   assert.equal(result.dateKnown,false);
   assert.equal(result.ageHours,null);
   assert.equal(result.isStale,true);
+});
+
+test('portfolio aggregates cover zero, one and several positions without relying on the first entry',()=>{
+  const chatgpt=state.data.portfolios.chatgpt,claude=state.data.portfolios.claude;
+  assert.equal(Math.round(unrealisedOf(chatgpt)*100),13086);
+  assert.equal(Math.round(unrealisedOf(claude)*100),1058);
+  assert.equal(Math.round(investedOf(claude)*100),68076);
+  assert.equal(Math.round(costBasisOf(claude)*100),67018);
+  const empty={cash:2500,startCapital:2500,positions:[],closedTrades:[]};
+  assert.equal(unrealisedOf(empty),0);
+  assert.equal(investedOf(empty),0);
+  assert.deepEqual(exposureBreakdown(empty.positions,'country'),[]);
+  assert.equal(focusPosition(empty),null);
+  assert.deepEqual(portfolioRisk(empty),{ifStop:0,giveback:0,valueAtStop:2500});
+});
+
+test('exposure breakdown is data driven and sorted by value across every position',()=>{
+  const claude=state.data.portfolios.claude;
+  const countries=exposureBreakdown(claude.positions,'country');
+  assert.deepEqual(countries.map(item=>item.name),['Germany','USA']);
+  assert.equal(Math.round(countries[0].pct*100)/100,55.24);
+  assert.equal(Math.round(countries.reduce((sum,item)=>sum+item.pct,0)),100);
+  const sectors=exposureBreakdown(claude.positions,'sector');
+  assert.deepEqual(sectors.map(item=>item.name),['Telecom','Financials']);
+  assert.equal(exposureBreakdown(state.data.portfolios.chatgpt.positions,'country').length,1);
+});
+
+test('focus position and aggregated risk use every position, not positions[0]',()=>{
+  const claude=state.data.portfolios.claude;
+  assert.equal(focusPosition(claude).ticker,'DTE');
+  const risk=portfolioRisk(claude);
+  assert.equal(Math.round(risk.ifStop*100),-5026);
+  assert.equal(Math.round(risk.giveback*100),6084);
+  assert.equal(Math.round(risk.valueAtStop*100),Math.round((1855.28+23.78*14+287)*100));
+  assert.equal(focusPosition({positions:[{ticker:'X',current:10}]}),null);
 });

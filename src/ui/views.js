@@ -1,6 +1,6 @@
 import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.7';
 import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.7';
-import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.7';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.7';
 import {computeModel} from '../strategy-ranking.js?v=0.6.7';
 import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.7';
 import {researchRecord} from '../research-pipeline.js?v=0.6.7';
@@ -81,26 +81,71 @@ function sparkline(values){
   return`<svg class="mini-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}"/></svg>`;
 }
 
+function heldExclusionText(){
+  const held=state.data.portfolios.chatgpt.positions.map(position=>position.name);
+  if(!held.length){
+    return state.language==='de'
+      ?'Es sind keine bestehenden Positionen vorhanden, die von der Auswahl ausgeschlossen wären.'
+      :'There are no existing holdings that would be excluded from the selection.';
+  }
+  const names=held.join(', ');
+  return state.language==='de'
+    ?`${names} ${held.length===1?'wird':'werden'} als bestehende Position${held.length===1?'':'en'} nicht als neue Chance gewertet.`
+    :`${names} ${held.length===1?'is':'are'} already held and ${held.length===1?'is':'are'} excluded from new-opportunity selection.`;
+}
+
+function renderPositionFocus(focus){
+  if(!focus){
+    $('positionFocusTicker').textContent='–';
+    $('positionFocusHeadline').textContent=t('noTargetPosition');
+    $('positionFocus').innerHTML='';
+    return;
+  }
+  const stale=snapshotFreshness().isStale;
+  const targetDist=(focus.target1/focus.current-1)*100;
+  const span=focus.target1-focus.entry;
+  const progress=clamp(span?(focus.current-focus.entry)/span*100:0,0,100);
+  const distance=stale
+    ?`${t('staleZoneHidden')} · ${t('staleHistoric')}`
+    :`${num(targetDist,2)} % ${state.language==='de'?'bis Ziel 1':'to target 1'}`;
+  $('positionFocusTicker').textContent=focus.ticker;
+  $('positionFocusHeadline').textContent=t('closestToTarget');
+  $('positionFocus').innerHTML=`<div class="msft-progress${stale?' is-stale':''}"><div class="msft-line"><strong>${euro(focus.current)}</strong><span>${distance}</span></div><div class="distance-bar"><i style="width:${stale?0:progress}%"></i></div><div class="msft-labels"><span>${t('entry')} ${euro(focus.entry)}</span><span>${t('target')} 1 ${euro(focus.target1)}</span></div></div>`;
+}
+
 export function renderExecutive(){
-  const d=state.data,m=computeModel(),c=d.portfolios.chatgpt,cl=d.portfolios.claude,msft=c.positions[0],cv=valueOf(c),clv=valueOf(cl),gap=cv-clv,open=(msft.current-msft.entry)*msft.shares;
+  const d=state.data,m=computeModel(),c=d.portfolios.chatgpt,cl=d.portfolios.claude;
+  const cv=valueOf(c),clv=valueOf(cl),gap=cv-clv,open=unrealisedOf(c),focus=focusPosition(c);
+  const openLabel=c.positions.length===0
+    ?t('noOpenPositions')
+    :c.positions.length===1?c.positions[0].name:`${c.positions.length} ${t('positions')}`;
+  const metricLines=[
+    [t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100),''],
+    [t('activeCash'),euro(c.cash),`${num(cv?c.cash/cv*100:0,1)} % ${t('cashQuote')}`,''],
+    [t('openProfit'),signedEuro(open),openLabel,signClass(open)],
+    [t('gapClaude'),`${gap>=0?'+':''}${euro(gap)}`,gap>=0?`ChatGPT ${t('leads')}`:`Claude ${t('leads')}`,signClass(gap)]
+  ];
+  const metricsHtml=metricLines.map(x=>`<div class="metric-line"><span>${x[0]}</span><b class="${x[3]}">${x[1]}</b><small>${x[2]}</small></div>`).join('');
+  renderPositionFocus(focus);
   if(!m.candidate){
     $('briefingSalutation').textContent=state.language==='de'?'Alex, heute zählt Disziplin – nicht Aktivität.':'Alex, today discipline matters more than activity.';
     $('briefingHeadline').textContent=t('noEligibleCandidate');$('briefingSummary').textContent=t('noEligibleCandidateText');
     $('briefingPoints').innerHTML=`<div class="briefing-point">${t('noEligibleCandidateText')}</div>`;$('briefingTrigger').textContent=t('noEligibleCandidateText');
-    $('executiveMetrics').innerHTML=[[t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100)],[t('activeCash'),euro(c.cash),`${num(c.cash/cv*100,1)} % ${t('cashQuote')}`],[t('openProfit'),`+${euro(open)}`,'Microsoft'],[t('gapClaude'),`${gap>=0?'+':''}${euro(gap)}`,gap>=0?`ChatGPT ${t('leads')}`:`Claude ${t('leads')}`]].map((x,i)=>`<div class="metric-line"><span>${x[0]}</span><b class="${i===2?'positive':i===3?(gap>=0?'positive':'negative'):''}">${x[1]}</b><small>${x[2]}</small></div>`).join('');
+    $('executiveMetrics').innerHTML=metricsHtml;
     $('execCandidate').textContent=t('noEligibleCandidate');$('execVerdict').textContent=t('wait');$('execOS').textContent='–';$('execRAS').textContent='–';$('execGates').textContent='0/0';
     $('triggerZone').textContent=t('noEligibleCandidate');$('triggerDistance').textContent='–';$('priceZoneProgress').style.width='0%';$('execWhy').innerHTML=`<div class="why-item"><i>×</i><span>${t('noEligibleCandidateText')}</span></div>`;
     $('regimeLabel').textContent=loc(d.marketRegime.label);$('regimeScore').textContent=d.marketRegime.score;$('regimeRing').style.setProperty('--score',d.marketRegime.score);$('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
-    $('microsoftFocus').innerHTML='';renderDashboardWatchlist(m);return;
+    renderDashboardWatchlist(m);return;
   }
-  const passed=m.gates.filter(g=>g.pass).length,dist=(m.candidate.price/m.candidate.entryHigh-1)*100,targetDist=(msft.target1/msft.current-1)*100;
+  const passed=m.gates.filter(g=>g.pass).length,dist=(m.candidate.price/m.candidate.entryHigh-1)*100;
+  const focusDist=focus?(focus.target1/focus.current-1)*100:null;
   const stale=m.freshness.isStale;
   $('decisionKicker').textContent=stale?t('staleDecisionKicker'):t('todayDecision');
   $('briefingSalutation').textContent=state.language==='de'?'Alex, heute zählt Disziplin – nicht Aktivität.':'Alex, today discipline matters more than activity.';
   $('briefingHeadline').textContent=m.allPassed?t('buyReview'):t('noNewPosition');
   $('briefingSummary').textContent=state.language==='de'
-    ?`${m.candidate.name} führt die neuen Kandidaten mit ${m.candidate.customScore} Punkten an, erfüllt aber nur ${passed} von ${m.gates.length} Gates. Microsoft liegt ${num(targetDist,2)} % unter Ziel 1.`
-    :`${m.candidate.name} leads new candidates with a score of ${m.candidate.customScore}, but passes only ${passed} of ${m.gates.length} gates. Microsoft is ${num(targetDist,2)}% below target 1.`;
+    ?`${m.candidate.name} führt die neuen Kandidaten mit ${m.candidate.customScore} Punkten an, erfüllt aber nur ${passed} von ${m.gates.length} Gates.${focus?` ${focus.name} liegt ${num(focusDist,2)} % unter Ziel 1.`:''}`
+    :`${m.candidate.name} leads new candidates with a score of ${m.candidate.customScore}, but passes only ${passed} of ${m.gates.length} gates.${focus?` ${focus.name} is ${num(focusDist,2)}% below target 1.`:''}`;
   const points=[
     state.language==='de'?`Aktives Profil: ${profileLabel(profileName())}.`:`Active profile: ${profileLabel(profileName())}.`,
     state.language==='de'?`Cash-Vorsprung des Kandidaten: ${m.cashAdv>=0?'+':''}${m.cashAdv} Punkte.`:`Candidate advantage over cash: ${m.cashAdv>=0?'+':''}${m.cashAdv} points.`,
@@ -112,14 +157,9 @@ export function renderExecutive(){
   $('briefingTrigger').textContent=stale
     ?t('staleNoTrigger')
     :state.language==='de'
-      ?`${m.candidate.name} in Preiszone, relative Attraktivität höher und alle Gates erfüllt – oder Microsoft erreicht ${euro(msft.target1)}.`
-      :`${m.candidate.name} enters the price zone, relative attractiveness improves and all gates pass — or Microsoft reaches ${euro(msft.target1)}.`;
-  $('executiveMetrics').innerHTML=[
-    [t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100)],
-    [t('activeCash'),euro(c.cash),`${num(c.cash/cv*100,1)} % ${t('cashQuote')}`],
-    [t('openProfit'),`+${euro(open)}`,'Microsoft'],
-    [t('gapClaude'),`${gap>=0?'+':''}${euro(gap)}`,gap>=0?`ChatGPT ${t('leads')}`:`Claude ${t('leads')}`]
-  ].map((x,i)=>`<div class="metric-line"><span>${x[0]}</span><b class="${i===2?'positive':i===3?(gap>=0?'positive':'negative'):''}">${x[1]}</b><small>${x[2]}</small></div>`).join('');
+      ?`${m.candidate.name} in Preiszone, relative Attraktivität höher und alle Gates erfüllt${focus?` – oder ${focus.name} erreicht ${euro(focus.target1)}`:''}.`
+      :`${m.candidate.name} enters the price zone, relative attractiveness improves and all gates pass${focus?` — or ${focus.name} reaches ${euro(focus.target1)}`:''}.`;
+  $('executiveMetrics').innerHTML=metricsHtml;
   $('execCandidate').innerHTML=`${m.candidate.name} · ${m.candidate.customScore}<span class="calculated-score-label">${state.language==='de'?'Berechneter OS':'Calculated OS'}</span>`;
   $('execVerdict').textContent=m.allPassed?t('reviewBuy'):t('wait');$('execOS').textContent=m.candidate.customScore;$('execRAS').textContent=m.ras;$('execGates').textContent=`${passed}/${m.gates.length}`;
   $('triggerZone').textContent=`${t('entryZone')} ${euro(m.candidate.entryLow)}–${euro(m.candidate.entryHigh)}`;
@@ -130,11 +170,6 @@ export function renderExecutive(){
   $('execWhy').innerHTML=(why.length?why:[state.language==='de'?'Alle Gates erfüllt; finalen Broker-Check durchführen.':'All gates passed; perform the final broker check.']).map(w=>`<div class="why-item"><i>${why.length?'×':'✓'}</i><span>${w}</span></div>`).join('');
   $('regimeLabel').textContent=loc(d.marketRegime.label);$('regimeScore').textContent=d.marketRegime.score;$('regimeRing').style.setProperty('--score',d.marketRegime.score);
   $('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
-  const progress=clamp((msft.current-msft.entry)/(msft.target1-msft.entry)*100,0,100);
-  const focusDistance=stale
-    ?`${t('staleZoneHidden')} · ${t('staleHistoric')}`
-    :`${num(targetDist,2)} % ${state.language==='de'?'bis Ziel 1':'to target 1'}`;
-  $('microsoftFocus').innerHTML=`<div class="msft-progress${stale?' is-stale':''}"><div class="msft-line"><strong>${euro(msft.current)}</strong><span>${focusDistance}</span></div><div class="distance-bar"><i style="width:${stale?0:progress}%"></i></div><div class="msft-labels"><span>${t('entry')} ${euro(msft.entry)}</span><span>${t('target')} 1 ${euro(msft.target1)}</span></div></div>`;
   renderDashboardWatchlist(m);
 }
 
@@ -171,7 +206,7 @@ function renderDecisionControls(selection){
   select.disabled=state.decisionMode==='auto';
   if(state.decisionMode==='auto'){
     const x=selection.scored;
-    $('candidateSelectionReason').innerHTML=x?`${t('automaticSelectionReason')}<span class="selection-explanation"><div><i>1</i><span>${x.name}: ${t('strategyScore')} ${x.strategyScore}, OS ${x.customScore}.</span></div><div><i>2</i><span>${state.language==='de'?'Microsoft wird als bestehende Position nicht als neue Chance gewertet.':'Microsoft is already held and is excluded from new-opportunity selection.'}</span></div><div><i>3</i><span>${t('autoChangesWhen')}</span></div></span>`:`<b>${t('noEligibleCandidate')}</b><span class="selection-explanation">${t('noEligibleCandidateText')}</span>`;
+    $('candidateSelectionReason').innerHTML=x?`${t('automaticSelectionReason')}<span class="selection-explanation"><div><i>1</i><span>${x.name}: ${t('strategyScore')} ${x.strategyScore}, OS ${x.customScore}.</span></div><div><i>2</i><span>${heldExclusionText()}</span></div><div><i>3</i><span>${t('autoChangesWhen')}</span></div></span>`:`<b>${t('noEligibleCandidate')}</b><span class="selection-explanation">${t('noEligibleCandidateText')}</span>`;
   }else{
     $('candidateSelectionReason').textContent=t('manualSelectionReason');
   }
@@ -432,14 +467,83 @@ export function renderTimeline(){
   $('timelineMovers').innerHTML=m.opportunities.filter(x=>movement(x,x.customRank).delta!==0).map(x=>{const mv=movement(x,x.customRank);return`<div class="mover-row"><b>${x.name}</b><span>${x.customScore}</span><span class="${mv.cls}">${mv.label}</span></div>`}).join('');
 }
 function donutGradient(parts){let acc=0;return`conic-gradient(${parts.map(p=>{const start=acc;acc+=p.value;return`${p.color} ${start}% ${acc}%`}).join(',')})`}
+const SLICE_COLORS=['var(--green)','var(--blue)','var(--cyan)','var(--amber)','var(--violet)','var(--red)'];
+const sliceColor=index=>SLICE_COLORS[index%SLICE_COLORS.length];
+const signedEuro=value=>`${value>=0?'+':''}${euro(value)}`;
+const signClass=value=>value>=0?'positive':'negative';
+function allocationLegend(parts){
+  return parts.map(part=>`<div class="allocation-legend"><i style="background:${part.color}"></i><span>${part.label}</span><b>${num(part.value,1)} %</b></div>`).join('');
+}
+function breakdownDonut(parts,center,legendCaption){
+  const value=Number.isFinite(center?.value)?`${num(center.value,0)}%`:'–';
+  return`<div class="donut-row"><div class="donut" style="background:${donutGradient(parts)}"><div class="donut-center"><b>${value}</b><span>${center?.label??'–'}</span></div></div><div class="legend-list">${legendCaption?`<div class="legend-caption">${legendCaption}</div>`:''}${allocationLegend(parts)}</div></div>`;
+}
+function positionCard(position){
+  const value=position.current*position.shares;
+  const changePct=(position.current/position.entry-1)*100;
+  const targetDist=Number.isFinite(position.target1)?(position.target1/position.current-1)*100:null;
+  const levels=[
+    [t('entry').toUpperCase(),euro(position.entry),wholeShareLabel(position.shares)],
+    [t('stop').toUpperCase(),euro(position.stop),position.stop>=position.entry
+      ?(state.language==='de'?'über Einstand':'above entry')
+      :(state.language==='de'?'unter Einstand':'below entry')],
+    ...(targetDist===null?[]:[[`${t('target').toUpperCase()} 1`,euro(position.target1),`${num(targetDist,2)} %`]]),
+    ...(Number.isFinite(position.trailingStopPct)?[['TRAILING',`${position.trailingStopPct} %`,state.language==='de'?'Restposition':'remaining position']]:[])
+  ];
+  const copy=[
+    ...(position.strategy?[[t('currentStrategy'),loc(position.strategy)]]:[]),
+    ...(position.thesis?[[t('investmentThesis'),loc(position.thesis)]]:[])
+  ];
+  return`<article class="position-card"><div class="position-head"><div><h2>${position.name}</h2><p>${position.ticker}${position.isin?` · ${position.isin}`:''} · ${sectorName(position.sector)} · ${position.country}</p></div><div class="position-value"><b>${euro(value)}</b><span class="${signClass(changePct)}">${pct(changePct)}</span></div></div><div class="position-strategy"><div class="strategy-levels">${levels.map(level=>`<div class="strategy-level"><span>${level[0]}</span><b>${level[1]}</b><small>${level[2]}</small></div>`).join('')}</div>${copy.length?`<div class="strategy-copy">${copy.map(block=>`<h3>${block[0]}</h3><p>${block[1]}</p>`).join('')}</div>`:''}</div></article>`;
+}
+
 export function renderPortfolio(){
-  const p=state.data.portfolios.chatgpt,x=p.positions[0],value=valueOf(p),open=(x.current-x.entry)*x.shares,real=realisedOf(p),ifStop=(x.stop-x.entry)*x.shares,giveback=(x.current-x.stop)*x.shares,targetDist=(x.target1/x.current-1)*100;
-  $('portfolioMetrics').innerHTML=[[t('portfolioValue'),euro(value),pct((value/p.startCapital-1)*100)],[t('cash'),euro(p.cash),`${num(p.cash/value*100,1)} %`],[t('unrealised'),`+${euro(open)}`,`Microsoft ${pct((x.current/x.entry-1)*100)}`],[t('realisedLabel'),euro(real),'Meta + TSMC']].map((a,i)=>`<div class="portfolio-metric"><span>${a[0]}</span><b class="${i===2?'positive':i===3?'negative':''}">${a[1]}</b><small>${a[2]}</small></div>`).join('');
-  $('positionIntelligence').innerHTML=`<div class="position-head"><div><small>${t('activePosition')}</small><h2>${x.name}</h2><p>${x.ticker} · ${x.isin} · ${sectorName(x.sector)} · ${x.country}</p></div><div class="position-value"><b>${euro(x.current*x.shares)}</b><span class="positive">${pct((x.current/x.entry-1)*100)}</span></div></div><div class="position-strategy"><div class="strategy-levels"><div class="strategy-level"><span>${t('entry').toUpperCase()}</span><b>${euro(x.entry)}</b><small>${wholeShareLabel(x.shares)}</small></div><div class="strategy-level"><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b><small>${state.language==='de'?'über Einstand':'above entry'}</small></div><div class="strategy-level"><span>${t('target').toUpperCase()} 1</span><b>${euro(x.target1)}</b><small>${num(targetDist,2)} %</small></div><div class="strategy-level"><span>TRAILING</span><b>${x.trailingStopPct} %</b><small>${state.language==='de'?'Restposition':'remaining position'}</small></div></div><div class="strategy-copy"><h3>${t('currentStrategy')}</h3><p>${loc(x.strategy)}</p><h3>${t('investmentThesis')}</h3><p>${loc(x.thesis)}</p></div></div>`;
-  const cashPct=p.cash/value*100,invPct=100-cashPct;
-  $('allocationVisuals').innerHTML=`<div class="donut-row"><div class="donut" style="background:${donutGradient([{value:cashPct,color:'var(--violet)'},{value:invPct,color:'var(--green)'}])}"><div class="donut-center"><b>${num(cashPct,0)}%</b><span>CASH</span></div></div><div class="legend-list"><div class="allocation-legend"><i style="background:var(--violet)"></i><span>${t('cash')}</span><b>${num(cashPct,1)} %</b></div><div class="allocation-legend"><i style="background:var(--green)"></i><span>Microsoft</span><b>${num(invPct,1)} %</b></div></div></div><div class="donut-row"><div class="donut" style="background:conic-gradient(var(--blue) 0 100%)"><div class="donut-center"><b>100%</b><span>USA</span></div></div><div class="legend-list"><div class="allocation-legend"><i style="background:var(--blue)"></i><span>${state.language==='de'?'Land, nur investiert':'Country, invested only'}</span><b>USA 100 %</b></div><div class="allocation-legend"><i style="background:var(--cyan)"></i><span>${state.language==='de'?'Sektor, nur investiert':'Sector, invested only'}</span><b>${sectorName('Technology')} 100 %</b></div></div></div>`;
-  const marker=clamp((x.stop-x.entry)/(x.current-x.entry)*100,0,100);
-  $('riskScenario').innerHTML=`<div class="risk-bar-wrap"><div class="risk-scale"><i class="risk-marker" style="left:${marker}%"></i></div><div class="risk-labels"><span>${t('entry')} ${euro(x.entry)}</span><span>${t('stop')} ${euro(x.stop)}</span><span>${t('current')} ${euro(x.current)}</span></div></div><div class="risk-numbers"><div class="risk-number"><span>${t('resultAtStop').toUpperCase()}</span><b class="positive">+${euro(ifStop)}</b><small>${state.language==='de'?'gegenüber Einstand':'versus entry'}</small></div><div class="risk-number"><span>${t('profitGiveback').toUpperCase()}</span><b class="warning-text">-${euro(giveback)}</b><small>${state.language==='de'?'vom aktuellen Kurs':'from current price'}</small></div><div class="risk-number"><span>${t('portfolioAtStop').toUpperCase()}</span><b>${euro(p.cash+x.stop*x.shares)}</b><small>${state.language==='de'?'ohne Kosten':'before costs'}</small></div><div class="risk-number"><span>${t('stopRisk').toUpperCase()}</span><b>${num(giveback/value*100,2)} %</b><small>${state.language==='de'?'des Depotwerts':'of portfolio value'}</small></div></div>`;
+  const p=state.data.portfolios.chatgpt;
+  const value=valueOf(p),invested=investedOf(p),cost=costBasisOf(p);
+  const open=unrealisedOf(p),real=realisedOf(p),risk=portfolioRisk(p);
+  const closedLabel=p.closedTrades.length?p.closedTrades.map(trade=>trade.ticker).join(' + '):t('noClosedTrades');
+  const openLabel=cost
+    ?`${pct(open/cost*100)} ${t('acrossPositions')}`
+    :t('noOpenPositions');
+
+  $('portfolioMetrics').innerHTML=[
+    [t('portfolioValue'),euro(value),pct((value/p.startCapital-1)*100),''],
+    [t('cash'),euro(p.cash),value?`${num(p.cash/value*100,1)} %`:'–',''],
+    [t('unrealised'),signedEuro(open),openLabel,signClass(open)],
+    [t('realisedLabel'),signedEuro(real),closedLabel,signClass(real)]
+  ].map(a=>`<div class="portfolio-metric"><span>${a[0]}</span><b class="${a[3]}">${a[1]}</b><small>${a[2]}</small></div>`).join('');
+
+  if(!p.positions.length){
+    $('positionIntelligence').innerHTML=`<div class="pending-score"><div><strong>${t('noOpenPositions')}</strong><span>${t('noOpenPositionsText')}</span></div></div>`;
+    $('allocationVisuals').innerHTML=breakdownDonut([{label:t('cash'),value:100,color:'var(--violet)'}],{label:'CASH',value:100},'');
+    $('riskScenario').innerHTML=`<div class="pending-score"><div><strong>${t('noOpenPositions')}</strong><span>${t('noOpenPositionsText')}</span></div></div>`;
+    return;
+  }
+
+  $('positionIntelligence').innerHTML=`<small class="position-group-label">${p.positions.length===1?t('activePosition'):t('activePositions')}</small>${p.positions.map(positionCard).join('')}`;
+
+  const cashPct=value?p.cash/value*100:0;
+  const holdingParts=[
+    ...p.positions.map((position,index)=>({
+      label:position.name,
+      value:value?position.current*position.shares/value*100:0,
+      color:sliceColor(index)
+    })),
+    {label:t('cash'),value:cashPct,color:'var(--violet)'}
+  ];
+  const countryParts=exposureBreakdown(p.positions,'country').map((part,index)=>({label:part.name,value:part.pct,color:sliceColor(index)}));
+  const sectorParts=exposureBreakdown(p.positions,'sector').map((part,index)=>({label:sectorName(part.name),value:part.pct,color:sliceColor(index)}));
+  $('allocationVisuals').innerHTML=[
+    breakdownDonut(holdingParts,{label:'CASH',value:cashPct},''),
+    breakdownDonut(countryParts,countryParts[0],t('countryInvested')),
+    breakdownDonut(sectorParts,sectorParts[0],t('sectorInvested'))
+  ].join('');
+
+  $('riskScenario').innerHTML=`<div class="risk-rows">${p.positions.map(position=>{
+    const span=position.current-position.entry;
+    const marker=clamp(span?(position.stop-position.entry)/span*100:0,0,100);
+    return`<div class="risk-bar-wrap"><div class="risk-position-label"><b>${position.name}</b></div><div class="risk-scale"><i class="risk-marker" style="left:${marker}%"></i></div><div class="risk-labels"><span>${t('entry')} ${euro(position.entry)}</span><span>${t('stop')} ${euro(position.stop)}</span><span>${t('current')} ${euro(position.current)}</span></div></div>`;
+  }).join('')}</div><div class="risk-numbers"><div class="risk-number"><span>${t('resultAtStop').toUpperCase()}</span><b class="${signClass(risk.ifStop)}">${signedEuro(risk.ifStop)}</b><small>${state.language==='de'?'gegenüber Einstand':'versus entry'} · ${t('aggregated')}</small></div><div class="risk-number"><span>${t('profitGiveback').toUpperCase()}</span><b class="${risk.giveback>0?'warning-text':signClass(risk.giveback)}">${signedEuro(-risk.giveback)}</b><small>${state.language==='de'?'vom aktuellen Kurs':'from current price'}</small></div><div class="risk-number"><span>${t('portfolioAtStop').toUpperCase()}</span><b>${euro(risk.valueAtStop)}</b><small>${state.language==='de'?'ohne Kosten':'before costs'}</small></div><div class="risk-number"><span>${t('stopRisk').toUpperCase()}</span><b>${value?num(risk.giveback/value*100,2):'0,00'} %</b><small>${state.language==='de'?'des Depotwerts':'of portfolio value'}</small></div></div>`;
 }
 export function renderCompetition(){
   const arr=[state.data.portfolios.chatgpt,state.data.portfolios.claude],max=Math.max(...arr.map(valueOf));
@@ -451,8 +555,8 @@ export function renderJournal(){
   $('historySummary').innerHTML=[[t('transactions'),p.positions.length+p.closedTrades.length],[t('openPositions'),p.positions.length],[t('realisedResult'),`${realised>=0?'+':''}${euro(realised)}`]].map((item,index)=>`<div class="history-summary-card"><span>${item[0]}</span><b class="${index===2?(realised>=0?'positive':'negative'):''}">${item[1]}</b></div>`).join('');
   const open=p.positions.map(position=>({date:position.openedAt,title:position.name,detail:`${wholeShareLabel(position.shares)} · ${t('entry')} ${euro(position.entry)}`,label:t('statusOpen'),result:''}));
   const closed=p.closedTrades.map(trade=>({date:trade.date,title:trade.name,detail:`${trade.ticker} · ${trade.days} ${t('days')} · ${trade.reason}`,label:t('sale'),result:`${trade.result>=0?'+':''}${euro(trade.result)}`}));
-  const entries=[...open,...closed].sort((a,b)=>b.date.localeCompare(a.date));
-  $('journalFeed').innerHTML=entries.map(entry=>`<div class="journal-entry"><time>${new Intl.DateTimeFormat(locale()).format(new Date(entry.date+'T12:00:00'))}</time><div><b>${entry.title}</b><p>${entry.detail}</p></div>${entry.result?`<strong class="${entry.result.startsWith('+')?'positive':'negative'}">${entry.result}</strong>`:''}<span class="status-pill neutral">${entry.label}</span></div>`).join('');
+  const entries=[...open,...closed].sort((a,b)=>String(b.date??'').localeCompare(String(a.date??'')));
+  $('journalFeed').innerHTML=entries.map(entry=>`<div class="journal-entry"><time>${entry.date?new Intl.DateTimeFormat(locale()).format(new Date(`${entry.date}T12:00:00`)):'–'}</time><div><b>${entry.title}</b><p>${entry.detail}</p></div>${entry.result?`<strong class="${entry.result.startsWith('+')?'positive':'negative'}">${entry.result}</strong>`:''}<span class="status-pill neutral">${entry.label}</span></div>`).join('');
 }
 export function renderModelHistory(){
   $('modelHistoryFeed').innerHTML=state.data.modelChanges.map(entry=>`<div class="journal-entry"><time>${new Intl.DateTimeFormat(locale()).format(new Date(entry.date+'T12:00:00'))}</time><div><b>${loc(entry.title)}</b><p>${loc(entry.detail)}</p></div><span class="status-pill neutral">${loc(entry.category)}</span></div>`).join('');
