@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.7.0 – One portfolio
+
+### Changed
+- replaced the ChatGPT/Claude portfolio competition with the single real Scalable Capital account
+- removed the comparison view, its subnavigation entry and the gap-to-benchmark metric
+- rebuilt the portfolio ledger with buys, sales, partial sales, fees, taxes, dividends and deposits
+- anchored cash tracking to a configured date so pre-existing holdings are not deducted twice
+- surfaced the unexplained 4.81 EUR gap between the derived and the broker-reported cash balance
+- excluded positions without a recorded stop from the stop scenario and named them explicitly
+
+### Data
+- replaced the two model portfolios with the documented Scalable account: 51 Biomarin, 2 Microsoft, 18 NIKE B, 14 Deutsche Telekom and 1 JPMorgan Chase
+- sourced every position from purchase settlements and the July account statement; no value is estimated
+- updated the snapshot to 08.08.2026 11:57 with the prices reported by the broker at that time
+
+### Tests
+- replaced the v0.6.0 and v0.6.2 fixtures with a v0.7.0 reference generated from the corrected data
+- added ledger coverage for partial and full sales, oversized sales, missing prices and cash reconciliation
+
 ## v0.6.7 – Operational Safety
 
 ### Added

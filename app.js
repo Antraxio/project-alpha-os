@@ -1,10 +1,10 @@
-import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.6.7';
-import {profileName} from './src/scoring.js?v=0.6.7';
-import {computeModel} from './src/strategy-ranking.js?v=0.6.7';
-import {regionName,sectorName,t} from './src/translations.js?v=0.6.7';
-import {loadAlphaData} from './src/data-loader.js?v=0.6.7';
-import {snapshotFreshness} from './src/freshness.js?v=0.6.7';
-import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderCompetition,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.6.7';
+import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.7.0';
+import {profileName} from './src/scoring.js?v=0.7.0';
+import {computeModel} from './src/strategy-ranking.js?v=0.7.0';
+import {regionName,sectorName,t} from './src/translations.js?v=0.7.0';
+import {loadAlphaData} from './src/data-loader.js?v=0.7.0';
+import {snapshotFreshness} from './src/freshness.js?v=0.7.0';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.7.0';
 
 const controlDefs={
   weights:[
@@ -32,7 +32,7 @@ const controlDefs={
 };
 const viewGroups={
   dashboard:{root:'dashboard',items:[]},
-  portfolio:{root:'portfolio',items:[['portfolio','subnavOverview'],['competition','subnavComparison'],['journal','subnavHistory']]},
+  portfolio:{root:'portfolio',items:[['portfolio','subnavOverview'],['journal','subnavHistory']]},
   opportunities:{root:'scanner',items:[['scanner','subnavRanking'],['universe','subnavUniverse'],['research','subnavResearch'],['timeline','subnavTimeline']]},
   analysis:{root:'decision',items:[]},
   model:{root:'settings',items:[['settings','subnavStrategy'],['methodology','subnavMethodology'],['model-history','subnavModelHistory']]}
@@ -107,7 +107,7 @@ function updateProfileUI(){
   document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===p));
 }
 function renderModelViews(){
-  renderExecutive();renderDecision();renderScanner();renderUniverse();renderResearch();renderTimeline();renderPortfolio();renderCompetition();renderJournal();renderMethod();renderModelHistory();
+  renderExecutive();renderDecision();renderScanner();renderUniverse();renderResearch();renderTimeline();renderPortfolio();renderJournal();renderMethod();renderModelHistory();
 }
 function switchView(id){
   const group=groupByView[id]||'dashboard';

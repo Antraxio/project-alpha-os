@@ -1,11 +1,11 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.7';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.7';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.7';
-import {computeModel} from '../strategy-ranking.js?v=0.6.7';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.7';
-import {researchRecord} from '../research-pipeline.js?v=0.6.7';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.7';
-import {snapshotFreshness} from '../freshness.js?v=0.6.7';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.7.0';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.7.0';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,hasStop,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.7.0';
+import {computeModel} from '../strategy-ranking.js?v=0.7.0';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.7.0';
+import {researchRecord} from '../research-pipeline.js?v=0.7.0';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.7.0';
+import {snapshotFreshness} from '../freshness.js?v=0.7.0';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
@@ -44,7 +44,7 @@ export function applyStaticTranslations(){
   const titles={
     dashboard:['dashboardEyebrow','dashboardTitle'],decision:['analysisEyebrow','analysisTitle'],scanner:['opportunitiesEyebrow','rankingTitle'],
     universe:['opportunitiesEyebrow','universeSimpleTitle'],research:['opportunitiesEyebrow','researchStatusTitle'],
-    timeline:['opportunitiesEyebrow','historyTitle'],portfolio:['depotEyebrow','depotTitle'],competition:['depotEyebrow','comparisonTitle'],
+    timeline:['opportunitiesEyebrow','historyTitle'],portfolio:['depotEyebrow','depotTitle'],
     journal:['depotEyebrow','journalTitle'],methodology:['modelEyebrow','methodologyTitle'],settings:['modelEyebrow','modelSettingsTitle'],'model-history':['modelHistoryEyebrow','modelChangeHistory']
   };
   $('eyebrow').textContent=t(titles[state.view][0]);$('title').textContent=t(titles[state.view][1]);
@@ -82,7 +82,7 @@ function sparkline(values){
 }
 
 function heldExclusionText(){
-  const held=state.data.portfolios.chatgpt.positions.map(position=>position.name);
+  const held=state.data.portfolio.positions.map(position=>position.name);
   if(!held.length){
     return state.language==='de'
       ?'Es sind keine bestehenden Positionen vorhanden, die von der Auswahl ausgeschlossen wären.'
@@ -114,16 +114,19 @@ function renderPositionFocus(focus){
 }
 
 export function renderExecutive(){
-  const d=state.data,m=computeModel(),c=d.portfolios.chatgpt,cl=d.portfolios.claude;
-  const cv=valueOf(c),clv=valueOf(cl),gap=cv-clv,open=unrealisedOf(c),focus=focusPosition(c);
+  const d=state.data,m=computeModel(),c=d.portfolio;
+  const cv=valueOf(c),cost=costBasisOf(c),open=unrealisedOf(c),real=realisedOf(c),focus=focusPosition(c);
   const openLabel=c.positions.length===0
     ?t('noOpenPositions')
     :c.positions.length===1?c.positions[0].name:`${c.positions.length} ${t('positions')}`;
+  const closedLabel=c.closedTrades.length
+    ?`${c.closedTrades.length} ${c.closedTrades.length===1?t('closedTrade'):t('closedTradesLabel')}`
+    :t('noClosedTrades');
   const metricLines=[
-    [t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100),''],
+    [t('totalAssets'),euro(cv),`${num(c.positions.length,0)} ${t('positions')} + ${t('cash')}`,''],
     [t('activeCash'),euro(c.cash),`${num(cv?c.cash/cv*100:0,1)} % ${t('cashQuote')}`,''],
-    [t('openProfit'),signedEuro(open),openLabel,signClass(open)],
-    [t('gapClaude'),`${gap>=0?'+':''}${euro(gap)}`,gap>=0?`ChatGPT ${t('leads')}`:`Claude ${t('leads')}`,signClass(gap)]
+    [t('openProfit'),signedEuro(open),cost?`${pct(open/cost*100)} · ${openLabel}`:openLabel,signClass(open)],
+    [t('realisedLabel'),signedEuro(real),closedLabel,signClass(real)]
   ];
   const metricsHtml=metricLines.map(x=>`<div class="metric-line"><span>${x[0]}</span><b class="${x[3]}">${x[1]}</b><small>${x[2]}</small></div>`).join('');
   renderPositionFocus(focus);
@@ -484,9 +487,9 @@ function positionCard(position){
   const targetDist=Number.isFinite(position.target1)?(position.target1/position.current-1)*100:null;
   const levels=[
     [t('entry').toUpperCase(),euro(position.entry),wholeShareLabel(position.shares)],
-    [t('stop').toUpperCase(),euro(position.stop),position.stop>=position.entry
+    ...(hasStop(position)?[[t('stop').toUpperCase(),euro(position.stop),position.stop>=position.entry
       ?(state.language==='de'?'über Einstand':'above entry')
-      :(state.language==='de'?'unter Einstand':'below entry')],
+      :(state.language==='de'?'unter Einstand':'below entry')]]:[[t('stop').toUpperCase(),'–',t('noStopRecorded')]]),
     ...(targetDist===null?[]:[[`${t('target').toUpperCase()} 1`,euro(position.target1),`${num(targetDist,2)} %`]]),
     ...(Number.isFinite(position.trailingStopPct)?[['TRAILING',`${position.trailingStopPct} %`,state.language==='de'?'Restposition':'remaining position']]:[])
   ];
@@ -498,7 +501,7 @@ function positionCard(position){
 }
 
 export function renderPortfolio(){
-  const p=state.data.portfolios.chatgpt;
+  const p=state.data.portfolio;
   const value=valueOf(p),invested=investedOf(p),cost=costBasisOf(p);
   const open=unrealisedOf(p),real=realisedOf(p),risk=portfolioRisk(p);
   const closedLabel=p.closedTrades.length?p.closedTrades.map(trade=>trade.ticker).join(' + '):t('noClosedTrades');
@@ -507,7 +510,7 @@ export function renderPortfolio(){
     :t('noOpenPositions');
 
   $('portfolioMetrics').innerHTML=[
-    [t('portfolioValue'),euro(value),pct((value/p.startCapital-1)*100),''],
+    [t('totalAssets'),euro(value),cost?`${pct(open/cost*100)} ${t('acrossPositions')}`:'–',''],
     [t('cash'),euro(p.cash),value?`${num(p.cash/value*100,1)} %`:'–',''],
     [t('unrealised'),signedEuro(open),openLabel,signClass(open)],
     [t('realisedLabel'),signedEuro(real),closedLabel,signClass(real)]
@@ -539,22 +542,18 @@ export function renderPortfolio(){
     breakdownDonut(sectorParts,sectorParts[0],t('sectorInvested'))
   ].join('');
 
-  $('riskScenario').innerHTML=`<div class="risk-rows">${p.positions.map(position=>{
+  const stopped=p.positions.filter(hasStop);
+  $('riskScenario').innerHTML=`<div class="risk-rows">${stopped.map(position=>{
     const span=position.current-position.entry;
     const marker=clamp(span?(position.stop-position.entry)/span*100:0,0,100);
     return`<div class="risk-bar-wrap"><div class="risk-position-label"><b>${position.name}</b></div><div class="risk-scale"><i class="risk-marker" style="left:${marker}%"></i></div><div class="risk-labels"><span>${t('entry')} ${euro(position.entry)}</span><span>${t('stop')} ${euro(position.stop)}</span><span>${t('current')} ${euro(position.current)}</span></div></div>`;
-  }).join('')}</div><div class="risk-numbers"><div class="risk-number"><span>${t('resultAtStop').toUpperCase()}</span><b class="${signClass(risk.ifStop)}">${signedEuro(risk.ifStop)}</b><small>${state.language==='de'?'gegenüber Einstand':'versus entry'} · ${t('aggregated')}</small></div><div class="risk-number"><span>${t('profitGiveback').toUpperCase()}</span><b class="${risk.giveback>0?'warning-text':signClass(risk.giveback)}">${signedEuro(-risk.giveback)}</b><small>${state.language==='de'?'vom aktuellen Kurs':'from current price'}</small></div><div class="risk-number"><span>${t('portfolioAtStop').toUpperCase()}</span><b>${euro(risk.valueAtStop)}</b><small>${state.language==='de'?'ohne Kosten':'before costs'}</small></div><div class="risk-number"><span>${t('stopRisk').toUpperCase()}</span><b>${value?num(risk.giveback/value*100,2):'0,00'} %</b><small>${state.language==='de'?'des Depotwerts':'of portfolio value'}</small></div></div>`;
-}
-export function renderCompetition(){
-  const arr=[state.data.portfolios.chatgpt,state.data.portfolios.claude],max=Math.max(...arr.map(valueOf));
-  $('competitionCards').innerHTML=arr.map((p,i)=>{const v=valueOf(p),ret=v-p.startCapital,real=realisedOf(p);return`<article class="panel competition-card"><header><div><small>${i===0?t('mainPortfolio'):t('benchmark')}</small><h2>${p.name}</h2></div><span class="status-pill ${i===0?'neutral':'positive'}">${p.positions.length} ${p.positions.length===1?t('position'):t('positions')}</span></header><div class="portfolio-total">${euro(v)}</div><div class="${ret>=0?'positive':'negative'}">${ret>=0?'+':''}${euro(ret)} · ${pct(ret/p.startCapital*100)}</div><div class="competition-stats"><div><span>CASH</span><b>${euro(p.cash)}</b></div><div><span>${t('capitalInvested')}</span><b>${euro(p.positions.reduce((s,x)=>s+x.current*x.shares,0))}</b></div><div><span>${t('realised').toUpperCase()}</span><b class="${real>=0?'positive':'negative'}">${real>=0?'+':''}${euro(real)}</b></div></div></article>`}).join('');
-  $('comparisonBars').innerHTML=arr.map(p=>`<div class="comparison-row"><b>${p.name.replace(' Benchmark','')}</b><div class="comparison-track"><i style="width:${valueOf(p)/max*100}%"></i></div><b>${euro(valueOf(p))}</b></div>`).join('');
+  }).join('')}${risk.uncovered?`<div class="risk-uncovered">${t('withoutStop')}: ${p.positions.filter(item=>!hasStop(item)).map(item=>item.name).join(', ')}</div>`:''}</div><div class="risk-numbers"><div class="risk-number"><span>${t('resultAtStop').toUpperCase()}</span><b class="${signClass(risk.ifStop)}">${signedEuro(risk.ifStop)}</b><small>${state.language==='de'?'gegenüber Einstand':'versus entry'} · ${risk.covered} ${t('ofPositions')} ${p.positions.length}</small></div><div class="risk-number"><span>${t('profitGiveback').toUpperCase()}</span><b class="${risk.giveback>0?'warning-text':signClass(risk.giveback)}">${signedEuro(-risk.giveback)}</b><small>${state.language==='de'?'vom aktuellen Kurs':'from current price'}</small></div><div class="risk-number"><span>${t('portfolioAtStop').toUpperCase()}</span><b>${euro(risk.valueAtStop)}</b><small>${state.language==='de'?'ohne Kosten':'before costs'}</small></div><div class="risk-number"><span>${t('stopRisk').toUpperCase()}</span><b>${value?num(risk.giveback/value*100,2):'0,00'} %</b><small>${state.language==='de'?'des Depotwerts':'of portfolio value'}</small></div></div>`;
 }
 export function renderJournal(){
-  const p=state.data.portfolios.chatgpt,realised=realisedOf(p);
+  const p=state.data.portfolio,realised=realisedOf(p);
   $('historySummary').innerHTML=[[t('transactions'),p.positions.length+p.closedTrades.length],[t('openPositions'),p.positions.length],[t('realisedResult'),`${realised>=0?'+':''}${euro(realised)}`]].map((item,index)=>`<div class="history-summary-card"><span>${item[0]}</span><b class="${index===2?(realised>=0?'positive':'negative'):''}">${item[1]}</b></div>`).join('');
   const open=p.positions.map(position=>({date:position.openedAt,title:position.name,detail:`${wholeShareLabel(position.shares)} · ${t('entry')} ${euro(position.entry)}`,label:t('statusOpen'),result:''}));
-  const closed=p.closedTrades.map(trade=>({date:trade.date,title:trade.name,detail:`${trade.ticker} · ${trade.days} ${t('days')} · ${trade.reason}`,label:t('sale'),result:`${trade.result>=0?'+':''}${euro(trade.result)}`}));
+  const closed=p.closedTrades.map(trade=>({date:trade.date,title:trade.name,detail:`${trade.ticker} · ${wholeShareLabel(trade.shares)} · ${t('proceeds')} ${euro(trade.proceeds)}${trade.reason?` · ${trade.reason}`:''}`,label:t('sale'),result:`${trade.result>=0?'+':''}${euro(trade.result)}`}));
   const entries=[...open,...closed].sort((a,b)=>String(b.date??'').localeCompare(String(a.date??'')));
   $('journalFeed').innerHTML=entries.map(entry=>`<div class="journal-entry"><time>${entry.date?new Intl.DateTimeFormat(locale()).format(new Date(`${entry.date}T12:00:00`)):'–'}</time><div><b>${entry.title}</b><p>${entry.detail}</p></div>${entry.result?`<strong class="${entry.result.startsWith('+')?'positive':'negative'}">${entry.result}</strong>`:''}<span class="status-pill neutral">${entry.label}</span></div>`).join('');
 }

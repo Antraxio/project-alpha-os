@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.6.7';
+import {state} from './state.js?v=0.7.0';
 
 export const valueOf=p=>p.cash+p.positions.reduce((s,x)=>s+x.current*x.shares,0);
 export const realisedOf=p=>p.closedTrades.reduce((s,x)=>s+x.result,0);
@@ -19,20 +19,29 @@ export function exposureBreakdown(positions,key){
     .sort((a,b)=>b.value-a.value||String(a.name).localeCompare(String(b.name)));
 }
 
+export const hasStop=position=>Number.isFinite(position.stop);
+
 export function positionRisk(position){
+  if(!hasStop(position))return{ifStop:0,giveback:0,valueAtStop:position.current*position.shares,covered:false};
   return{
     ifStop:(position.stop-position.entry)*position.shares,
     giveback:(position.current-position.stop)*position.shares,
-    valueAtStop:position.stop*position.shares
+    valueAtStop:position.stop*position.shares,
+    covered:true
   };
 }
 
+// Positions without a recorded stop cannot contribute a stop scenario. They are valued at
+// the current price instead of being silently treated as if a stop existed, and the count
+// of uncovered positions is reported so the gap stays visible.
 export function portfolioRisk(p){
   const risks=p.positions.map(positionRisk);
   return{
     ifStop:risks.reduce((s,x)=>s+x.ifStop,0),
     giveback:risks.reduce((s,x)=>s+x.giveback,0),
-    valueAtStop:p.cash+risks.reduce((s,x)=>s+x.valueAtStop,0)
+    valueAtStop:p.cash+risks.reduce((s,x)=>s+x.valueAtStop,0),
+    covered:risks.filter(x=>x.covered).length,
+    uncovered:risks.filter(x=>!x.covered).length
   };
 }
 
@@ -43,7 +52,7 @@ export function focusPosition(p){
 }
 
 export function computeSizing(candidate){
-  const p=state.data.portfolios.chatgpt,portfolio=valueOf(p);
+  const p=state.data.portfolio,portfolio=valueOf(p);
   const reserve=portfolio*state.settings.cashReservePct/100;
   const spendable=Math.max(0,p.cash-reserve);
   const targetAmount=portfolio*state.settings.targetPositionPct/100;

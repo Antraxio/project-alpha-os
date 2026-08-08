@@ -1,12 +1,12 @@
-import {clamp,euro,num,state} from './state.js?v=0.6.7';
-import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.6.7';
-import {computeSizing,valueOf} from './portfolio-calculations.js?v=0.6.7';
-import {isRankingEligible} from './research-pipeline.js?v=0.6.7';
-import {snapshotFreshness} from './freshness.js?v=0.6.7';
-import {wholeShareLabel} from './translations.js?v=0.6.7';
+import {clamp,euro,num,state} from './state.js?v=0.7.0';
+import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.0';
+import {computeSizing,valueOf} from './portfolio-calculations.js?v=0.7.0';
+import {isRankingEligible} from './research-pipeline.js?v=0.7.0';
+import {snapshotFreshness} from './freshness.js?v=0.7.0';
+import {wholeShareLabel} from './translations.js?v=0.7.0';
 
 export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
-  const p=state.data.portfolios.chatgpt;
+  const p=state.data.portfolio;
   const portfolioValue=valueOf(p);
   const isHeld=held.has(o.ticker);
   const entryMid=(o.entryLow+o.entryHigh)/2;
@@ -90,7 +90,7 @@ export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
 }
 export function computeModel(){
   const held=new Set(
-    state.data.portfolios.chatgpt.positions.map(x=>x.ticker)
+    state.data.portfolio.positions.map(x=>x.ticker)
   );
 
   const opportunities=state.data.opportunities.filter(o=>isRankingEligible(o)).map(o=>{

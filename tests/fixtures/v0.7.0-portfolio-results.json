@@ -1,0 +1,767 @@
+{
+  "fixtureVersion": "v0.7.0",
+  "presets": {
+    "balanced": {
+      "securities": [
+        {
+          "ticker": "MSFT",
+          "opportunityScore": 86,
+          "strategyScore": 81,
+          "rank": 1,
+          "fitAdjustment": -4.629383345258667,
+          "crv": 2.7254901960784315,
+          "sizing": {
+            "shares": 2,
+            "amount": 865.16,
+            "allocationPct": 11.412907259904967,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 17.145054021703803,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "NOVO-B",
+          "opportunityScore": 79,
+          "strategyScore": 75,
+          "rank": 2,
+          "fitAdjustment": -4.191855981546937,
+          "crv": 2.736842105263158,
+          "sizing": {
+            "shares": 1,
+            "amount": 468.2,
+            "allocationPct": 6.176340999453864,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 59.543153099566226,
+            "regionPct": 8.490620783704973,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "HNR1",
+          "opportunityScore": 78,
+          "strategyScore": 73,
+          "rank": 3,
+          "fitAdjustment": -5.075358580670899,
+          "crv": 2.238095238095238,
+          "sizing": {
+            "shares": 2,
+            "amount": 518.8,
+            "allocationPct": 6.843839620924102,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 9.322685681016079,
+            "regionPct": 9.322685681016079,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "JPM",
+          "opportunityScore": 78,
+          "strategyScore": 73,
+          "rank": 4,
+          "fitAdjustment": -5.180232612192261,
+          "crv": 3,
+          "sizing": {
+            "shares": 1,
+            "amount": 309.32,
+            "allocationPct": 4.080448094726761,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 6.129858188073213,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "ASML",
+          "opportunityScore": 84,
+          "strategyScore": 72,
+          "rank": 5,
+          "fitAdjustment": -11.78411952324996,
+          "crv": 2.5675675675675675,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 0,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "ENEL",
+          "opportunityScore": 77,
+          "strategyScore": 72,
+          "rank": 6,
+          "fitAdjustment": -4.503603540380546,
+          "crv": 2.3043478260869548,
+          "sizing": {
+            "shares": 89,
+            "amount": 639.02,
+            "allocationPct": 8.429742472172167,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 11.240180540848598,
+            "regionPct": 11.240180540848598,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "TSM",
+          "opportunityScore": 77,
+          "strategyScore": 72,
+          "rank": 7,
+          "fitAdjustment": -5.329453289633906,
+          "crv": 2.4193548387096775,
+          "sizing": {
+            "shares": 3,
+            "amount": 529.2,
+            "allocationPct": 6.9810330134792515,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 9.4918318589785,
+            "regionPct": 9.4918318589785,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "DTE",
+          "opportunityScore": 76,
+          "strategyScore": 72,
+          "rank": 8,
+          "fitAdjustment": -4.126073102971557,
+          "crv": 2.1599999999999993,
+          "sizing": {
+            "shares": 14,
+            "amount": 406.28,
+            "allocationPct": 5.359512646856293,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 8.051334490658169,
+            "regionPct": 8.051334490658169,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "SHEL",
+          "opportunityScore": 73,
+          "strategyScore": 69,
+          "rank": 9,
+          "fitAdjustment": -4.403203896816568,
+          "crv": 2.6249999999999964,
+          "sizing": {
+            "shares": 20,
+            "amount": 622,
+            "allocationPct": 8.205220208586724,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 10.973656168182748,
+            "regionPct": 10.973656168182748,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "BKNG",
+          "opportunityScore": 83,
+          "strategyScore": 68,
+          "rank": 10,
+          "fitAdjustment": -15.442947463724376,
+          "crv": 1.9454545454545455,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 639.2850000000001,
+            "reserve": 1895.135,
+            "sectorPct": 12.884354712135265,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        }
+      ],
+      "selectedCandidate": "NOVO-B",
+      "ras": 34,
+      "gates": [
+        {
+          "key": "freshnessGate",
+          "pass": true,
+          "detail": "1,0 h / 24 h"
+        },
+        {
+          "key": "scoreGate",
+          "pass": false,
+          "detail": "79 ≥ 85"
+        },
+        {
+          "key": "cashGate",
+          "pass": false,
+          "detail": "-3 / +5"
+        },
+        {
+          "key": "switchGate",
+          "pass": false,
+          "detail": "-6 / +5"
+        },
+        {
+          "key": "priceGate",
+          "pass": false,
+          "detail": "450,00 €–462,00 €"
+        },
+        {
+          "key": "crvGate",
+          "pass": true,
+          "detail": "2,74 / 2,0"
+        },
+        {
+          "key": "sizingGate",
+          "pass": true,
+          "detail": "1 ganze Aktie"
+        }
+      ],
+      "portfolioValue": 7580.54
+    },
+    "defensive": {
+      "securities": [
+        {
+          "ticker": "MSFT",
+          "opportunityScore": 86,
+          "strategyScore": 79,
+          "rank": 1,
+          "fitAdjustment": -6.587083518857392,
+          "crv": 2.7254901960784315,
+          "sizing": {
+            "shares": 2,
+            "amount": 865.16,
+            "allocationPct": 11.412907259904967,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 17.145054021703803,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "DTE",
+          "opportunityScore": 76,
+          "strategyScore": 74,
+          "rank": 2,
+          "fitAdjustment": -1.6260731029715578,
+          "crv": 2.1599999999999993,
+          "sizing": {
+            "shares": 14,
+            "amount": 406.28,
+            "allocationPct": 5.359512646856293,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 8.051334490658169,
+            "regionPct": 8.051334490658169,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "JPM",
+          "opportunityScore": 78,
+          "strategyScore": 73,
+          "rank": 3,
+          "fitAdjustment": -5.137932785790985,
+          "crv": 3,
+          "sizing": {
+            "shares": 1,
+            "amount": 309.32,
+            "allocationPct": 4.080448094726761,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 6.129858188073213,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "ASML",
+          "opportunityScore": 84,
+          "strategyScore": 71,
+          "rank": 4,
+          "fitAdjustment": -12.78411952324996,
+          "crv": 2.5675675675675675,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 0,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "NOVO-B",
+          "opportunityScore": 79,
+          "strategyScore": 66,
+          "rank": 5,
+          "fitAdjustment": -12.736716919579452,
+          "crv": 2.736842105263158,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 55.78939858742956,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": true,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "BKNG",
+          "opportunityScore": 83,
+          "strategyScore": 65,
+          "rank": 6,
+          "fitAdjustment": -17.9006476373231,
+          "crv": 1.9454545454545455,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 12.884354712135265,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "ENEL",
+          "opportunityScore": 77,
+          "strategyScore": 65,
+          "rank": 7,
+          "fitAdjustment": -11.51806491120637,
+          "crv": 2.3043478260869548,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 0,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "HNR1",
+          "opportunityScore": 78,
+          "strategyScore": 65,
+          "rank": 8,
+          "fitAdjustment": -12.851934523809515,
+          "crv": 2.238095238095238,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 0,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "TSM",
+          "opportunityScore": 77,
+          "strategyScore": 64,
+          "rank": 9,
+          "fitAdjustment": -13.126608241655793,
+          "crv": 2.4193548387096775,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 0,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "SHEL",
+          "opportunityScore": 73,
+          "strategyScore": 62,
+          "rank": 10,
+          "fitAdjustment": -11.383986928104576,
+          "crv": 2.6249999999999964,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 0,
+            "reserve": 3032.216,
+            "sectorPct": 0,
+            "regionPct": 0,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        }
+      ],
+      "selectedCandidate": "ASML",
+      "ras": 47,
+      "gates": [
+        {
+          "key": "freshnessGate",
+          "pass": true,
+          "detail": "1,0 h / 24 h"
+        },
+        {
+          "key": "scoreGate",
+          "pass": false,
+          "detail": "84 ≥ 88"
+        },
+        {
+          "key": "cashGate",
+          "pass": false,
+          "detail": "+0 / +7"
+        },
+        {
+          "key": "switchGate",
+          "pass": false,
+          "detail": "-8 / +6"
+        },
+        {
+          "key": "priceGate",
+          "pass": false,
+          "detail": "790,00 €–805,00 €"
+        },
+        {
+          "key": "crvGate",
+          "pass": true,
+          "detail": "2,57 / 2,5"
+        },
+        {
+          "key": "sizingGate",
+          "pass": false,
+          "detail": "0 ganze Aktien"
+        }
+      ],
+      "portfolioValue": 7580.54
+    },
+    "offensive": {
+      "securities": [
+        {
+          "ticker": "MSFT",
+          "opportunityScore": 86,
+          "strategyScore": 82,
+          "rank": 1,
+          "fitAdjustment": -3.9913194342444127,
+          "crv": 2.7254901960784315,
+          "sizing": {
+            "shares": 2,
+            "amount": 865.16,
+            "allocationPct": 11.412907259904967,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 17.145054021703803,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "ASML",
+          "opportunityScore": 84,
+          "strategyScore": 80,
+          "rank": 2,
+          "fitAdjustment": -4.184119523249958,
+          "crv": 2.5675675675675675,
+          "sizing": {
+            "shares": 1,
+            "amount": 812.4,
+            "allocationPct": 10.716914626134812,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 13.866983470227975,
+            "regionPct": 13.866983470227975,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "NOVO-B",
+          "opportunityScore": 79,
+          "strategyScore": 75,
+          "rank": 3,
+          "fitAdjustment": -4.165404831628859,
+          "crv": 2.736842105263158,
+          "sizing": {
+            "shares": 2,
+            "amount": 936.4,
+            "allocationPct": 12.352681998907729,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 62.70935993527812,
+            "regionPct": 15.652266937678439,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "JPM",
+          "opportunityScore": 78,
+          "strategyScore": 73,
+          "rank": 4,
+          "fitAdjustment": -5.442299826401276,
+          "crv": 3,
+          "sizing": {
+            "shares": 1,
+            "amount": 309.32,
+            "allocationPct": 4.080448094726761,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 6.129858188073213,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "TSM",
+          "opportunityScore": 77,
+          "strategyScore": 72,
+          "rank": 5,
+          "fitAdjustment": -4.833246686938056,
+          "crv": 2.4193548387096775,
+          "sizing": {
+            "shares": 7,
+            "amount": 1234.8,
+            "allocationPct": 16.289077031451583,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 19.659540322118417,
+            "regionPct": 19.659540322118417,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "ENEL",
+          "opportunityScore": 77,
+          "strategyScore": 72,
+          "rank": 6,
+          "fitAdjustment": -4.91182327142873,
+          "crv": 2.3043478260869548,
+          "sizing": {
+            "shares": 194,
+            "amount": 1392.9199999999998,
+            "allocationPct": 18.374944265184272,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 21.63241725474605,
+            "regionPct": 21.63241725474605,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "HNR1",
+          "opportunityScore": 78,
+          "strategyScore": 72,
+          "rank": 7,
+          "fitAdjustment": -6.435494665962976,
+          "crv": 2.238095238095238,
+          "sizing": {
+            "shares": 5,
+            "amount": 1297,
+            "allocationPct": 17.109599052310255,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 20.44735083050612,
+            "regionPct": 20.44735083050612,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "DTE",
+          "opportunityScore": 76,
+          "strategyScore": 71,
+          "rank": 8,
+          "fitAdjustment": -5.080000000000002,
+          "crv": 2.1599999999999993,
+          "sizing": {
+            "shares": 14,
+            "amount": 406.28,
+            "allocationPct": 5.359512646856293,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 8.051334490658169,
+            "regionPct": 8.051334490658169,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        },
+        {
+          "ticker": "BKNG",
+          "opportunityScore": 83,
+          "strategyScore": 69,
+          "rank": 9,
+          "fitAdjustment": -14.342947463724375,
+          "crv": 1.9454545454545455,
+          "sizing": {
+            "shares": 0,
+            "amount": 0,
+            "allocationPct": 0,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 12.884354712135265,
+            "regionPct": 91.94866550934184,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": true
+          }
+        },
+        {
+          "ticker": "SHEL",
+          "opportunityScore": 73,
+          "strategyScore": 68,
+          "rank": 10,
+          "fitAdjustment": -4.826264259270957,
+          "crv": 2.6249999999999964,
+          "sizing": {
+            "shares": 44,
+            "amount": 1368.4,
+            "allocationPct": 18.051484458890794,
+            "aboveTarget": false,
+            "spendable": 1397.339,
+            "reserve": 1137.0810000000001,
+            "sectorPct": 21.332851094080304,
+            "regionPct": 21.332851094080304,
+            "concentrationWarning": false,
+            "sectorWarning": false,
+            "regionWarning": false
+          }
+        }
+      ],
+      "selectedCandidate": "ASML",
+      "ras": 71,
+      "gates": [
+        {
+          "key": "freshnessGate",
+          "pass": true,
+          "detail": "1,0 h / 24 h"
+        },
+        {
+          "key": "scoreGate",
+          "pass": true,
+          "detail": "84 ≥ 82"
+        },
+        {
+          "key": "cashGate",
+          "pass": true,
+          "detail": "+6 / +3"
+        },
+        {
+          "key": "switchGate",
+          "pass": false,
+          "detail": "-2 / +3"
+        },
+        {
+          "key": "priceGate",
+          "pass": false,
+          "detail": "790,00 €–805,00 €"
+        },
+        {
+          "key": "crvGate",
+          "pass": true,
+          "detail": "2,57 / 1,7"
+        },
+        {
+          "key": "sizingGate",
+          "pass": true,
+          "detail": "1 ganze Aktie"
+        }
+      ],
+      "portfolioValue": 7580.54
+    }
+  }
+}

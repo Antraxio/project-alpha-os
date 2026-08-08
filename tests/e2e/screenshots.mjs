@@ -81,7 +81,6 @@ async function switchView(page, view) {
       universe: "opportunities",
       research: "opportunities",
       timeline: "opportunities",
-      competition: "portfolio",
       journal: "portfolio",
       methodology: "model",
       "model-history": "model"
@@ -189,7 +188,7 @@ async function assertSeparatedHistories() {
   await setLanguage(page, "de");
   await switchView(page, "journal");
   const transactions = await page.locator("#journalFeed").innerText();
-  if (!["Microsoft", "Meta Platforms A", "TSMC ADR"].every(item => transactions.includes(item))) {
+  if (!["Biomarin Pharmaceutical", "NIKE B", "Microsoft", "Meta Platforms A", "Taiwan Semiconductor Manufact. ADR"].every(item => transactions.includes(item))) {
     throw new Error(`Transaction history is incomplete: ${transactions}`);
   }
   if (["Strategy Studio", "Zweisprachige Oberfläche", "DISZIPLIN-SCORE"].some(item => transactions.includes(item))) {
@@ -200,7 +199,7 @@ async function assertSeparatedHistories() {
   if (!["Navigation vereinfacht", "Strategy Studio eingeführt", "Zweisprachige Oberfläche"].every(item => changes.includes(item))) {
     throw new Error(`Model change history is incomplete: ${changes}`);
   }
-  if (["Microsoft", "Meta Platforms A", "TSMC ADR"].some(item => changes.includes(item))) {
+  if (["Biomarin Pharmaceutical", "Meta Platforms A", "Taiwan Semiconductor Manufact. ADR"].some(item => changes.includes(item))) {
     throw new Error(`Model change history contains portfolio transactions: ${changes}`);
   }
   if (errors.length) throw new Error(`Browser errors in separated histories: ${errors.join(" | ")}`);
@@ -215,7 +214,7 @@ async function assertDashboardOpportunities(page, language) {
   }
 
   const order = await rows.evaluateAll(items => items.map(item => item.dataset.watchlistTicker));
-  const expectedTopThree = ["ASML", "MSFT", "NOVO-B"];
+  const expectedTopThree = ["MSFT", "NOVO-B", "HNR1"];
   if (order.join("|") !== expectedTopThree.join("|")) {
     throw new Error(`Dashboard opportunities ranking regression: ${order.join("|")}`);
   }
@@ -240,10 +239,10 @@ async function assertDashboardOpportunities(page, language) {
 async function assertWatchlistNavigation() {
   const { page, errors } = await openPage(1440, 1000);
   await setLanguage(page, "de");
-  await page.locator('[data-watchlist-ticker="ASML"]').click();
+  await page.locator('[data-watchlist-ticker="NOVO-B"]').click();
   await page.waitForSelector("#decision.active");
   const candidate = await page.locator("#decisionCandidate").innerText();
-  if (!candidate.includes("ASML")) {
+  if (!candidate.includes("Novo")) {
     throw new Error(`Watchlist navigation regression: ${candidate}`);
   }
   if (errors.length) throw new Error(`Browser errors in Watchlist navigation: ${errors.join(" | ")}`);
@@ -317,7 +316,7 @@ async function assertImmediateStrategySliderAndReset() {
     input.value = "0";
     input.dispatchEvent(new Event("input", { bubbles: true }));
   });
-  await page.waitForFunction(() => document.querySelector('[data-settings-rank-ticker="NOVO-B"]')?.dataset.strategyScore === "80");
+  await page.waitForFunction(() => document.querySelector('[data-settings-rank-ticker="NOVO-B"]')?.dataset.strategyScore === "78");
 
   const updated = await rows.evaluateAll(items => items.map(item => ({
     ticker: item.dataset.settingsRankTicker,
@@ -326,7 +325,12 @@ async function assertImmediateStrategySliderAndReset() {
     strategyScore: item.dataset.strategyScore
   })));
   const updatedNovo = updated.find(item => item.ticker === "NOVO-B");
-  const osChanged = initial.some(before => updated.find(after => after.ticker === before.ticker)?.opportunityScore !== before.opportunityScore);
+  // Only securities visible in both lists can be compared: the slider changes which
+  // securities make the top five, and a ticker that dropped out is not a score change.
+  const osChanged = initial.some(before => {
+    const after = updated.find(item => item.ticker === before.ticker);
+    return after !== undefined && after.opportunityScore !== before.opportunityScore;
+  });
   if (osChanged) {
     throw new Error(`Opportunity Score changed with a strategy slider: ${JSON.stringify({ initial, updated })}`);
   }

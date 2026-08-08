@@ -1,6 +1,21 @@
 {
-  "version": "0.6.7",
+  "version": "0.7.0",
   "modelChanges": [
+    {
+      "date": "2026-08-08",
+      "title": {
+        "de": "Ein Depot statt Wettbewerb",
+        "en": "One portfolio instead of a competition"
+      },
+      "detail": {
+        "de": "Der Vergleich zweier Modell-Depots entfällt. Dargestellt wird das reale Scalable-Capital-Depot, abgeleitet aus belegten Kaufabrechnungen und dem Kontoauszug.",
+        "en": "The comparison of two model portfolios is gone. The application shows the real Scalable Capital portfolio, derived from documented purchase settlements and the account statement."
+      },
+      "category": {
+        "de": "Datenqualität",
+        "en": "Data quality"
+      }
+    },
     {
       "date": "2026-08-08",
       "title": {
@@ -92,10 +107,10 @@
       }
     }
   ],
-  "snapshotDate": "2026-08-02T21:27:00+02:00",
+  "snapshotDate": "2026-08-08T11:57:00+02:00",
   "dataMode": {
-    "de": "Manueller Modell-Snapshot · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",
-    "en": "Manual model snapshot · 10 scored · 5 in active research · 35 queued"
+    "de": "Manueller Modell-Snapshot · Depot Scalable Capital · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",
+    "en": "Manual model snapshot · Scalable Capital portfolio · 10 scored · 5 in active research · 35 queued"
   },
   "dailyBriefing": {
     "salutation": {
@@ -372,214 +387,634 @@
     "de": "Global Liquid 50 ist eine manuell kuratierte Startauswahl großer, liquider Unternehmen aus Nordamerika, Europa und Asien. Sie ist kein offizieller Index und keine Kaufempfehlung. Nur vollständig recherchierte Titel erhalten Scores und können automatisch ausgewählt werden.",
     "en": "Global Liquid 50 is a manually curated starting universe of large, liquid companies from North America, Europe and Asia. It is not an official index or a recommendation. Only fully researched securities receive scores and can be selected automatically."
   },
-  "portfolios": {
-    "chatgpt": {
-      "name": "ChatGPT",
-      "startCapital": 2500,
-      "transactions": [
-        {
-          "id": "chatgpt-msft-buy-2026-07-15",
-          "type": "BUY",
-          "date": "2026-07-15",
-          "ticker": "MSFT",
-          "isin": "US5949181045",
-          "name": "Microsoft",
-          "shares": 2,
-          "price": 337.15,
-          "current": 402.58,
-          "stop": 370,
-          "target1": 404.6,
-          "trailingStopPct": 5,
-          "strategy": {
-            "de": "Bei 404,60 € eine Aktie verkaufen; die Restposition anschließend mit 5 % Trailing-Stop laufen lassen.",
-            "en": "Sell one share at €404.60; then manage the remaining share with a 5% trailing stop."
-          },
-          "thesis": {
-            "de": "Azure-, Cloud- und AI-Wachstum; Trend intakt, Teilgewinnziel fast erreicht.",
-            "en": "Azure, cloud and AI growth; trend intact and partial-profit target nearly reached."
-          },
-          "sector": "Technology",
-          "country": "USA",
-          "currency": "USD"
-        },
-        {
-          "id": "chatgpt-meta-close-2026-07-29",
-          "type": "CLOSE",
-          "date": "2026-07-29",
-          "ticker": "META",
-          "name": "Meta Platforms A",
-          "result": -83.6,
-          "resultPct": -14.47,
-          "days": 14,
-          "reason": "Stop-Loss"
-        },
-        {
-          "id": "chatgpt-tsm-close-2026-07-29",
-          "type": "CLOSE",
-          "date": "2026-07-29",
-          "ticker": "TSM",
-          "name": "TSMC ADR",
-          "result": -88,
-          "resultPct": -11.76,
-          "days": 14,
-          "reason": "Stop-Loss"
-        }
-      ],
-      "cash": 1654.1,
-      "positions": [
-        {
-          "ticker": "MSFT",
-          "isin": "US5949181045",
-          "name": "Microsoft",
-          "shares": 2,
-          "current": 402.58,
-          "stop": 370,
-          "target1": 404.6,
-          "trailingStopPct": 5,
-          "strategy": {
-            "de": "Bei 404,60 € eine Aktie verkaufen; die Restposition anschließend mit 5 % Trailing-Stop laufen lassen.",
-            "en": "Sell one share at €404.60; then manage the remaining share with a 5% trailing stop."
-          },
-          "thesis": {
-            "de": "Azure-, Cloud- und AI-Wachstum; Trend intakt, Teilgewinnziel fast erreicht.",
-            "en": "Azure, cloud and AI growth; trend intact and partial-profit target nearly reached."
-          },
-          "sector": "Technology",
-          "country": "USA",
-          "currency": "USD",
-          "openedAt": "2026-07-15",
-          "entry": 337.15
-        }
-      ],
-      "closedTrades": [
-        {
-          "date": "2026-07-29",
-          "ticker": "META",
-          "name": "Meta Platforms A",
-          "result": -83.6,
-          "resultPct": -14.47,
-          "days": 14,
-          "reason": "Stop-Loss"
-        },
-        {
-          "date": "2026-07-29",
-          "ticker": "TSM",
-          "name": "TSMC ADR",
-          "result": -88,
-          "resultPct": -11.76,
-          "days": 14,
-          "reason": "Stop-Loss"
-        }
-      ]
+  "portfolio": {
+    "name": "Scalable Capital",
+    "currency": "EUR",
+    "costBasisMethod": "average",
+    "cashTrackedFrom": "2026-07-01",
+    "statement": {
+      "source": {
+        "de": "Scalable Capital Kontoauszug 01.07.2026 – 31.07.2026, Auszug Nr. 5452520729",
+        "en": "Scalable Capital account statement 01.07.2026 – 31.07.2026, statement no. 5452520729"
+      },
+      "reportedCashDate": "2026-07-31",
+      "reportedCash": 2534.6
     },
-    "claude": {
-      "name": "Claude Benchmark",
-      "startCapital": 2500,
-      "transactions": [
-        {
-          "id": "claude-dte-buy-date-unconfirmed",
-          "type": "BUY",
-          "date": null,
-          "ticker": "DTE",
-          "isin": "DE0005557508",
-          "name": "Deutsche Telekom",
-          "shares": 14,
-          "price": 26.42,
-          "current": 26.86,
-          "stop": 23.78,
-          "target1": 31.7,
-          "sector": "Telecom",
-          "country": "Germany",
-          "currency": "EUR"
+    "marketData": {
+      "asOf": "2026-08-08T11:57:00+02:00",
+      "source": {
+        "de": "Scalable Capital App, Depotübersicht vom 08.08.2026, 11:57 Uhr",
+        "en": "Scalable Capital app, portfolio overview of 08.08.2026, 11:57"
+      },
+      "reportedCash": 2529.61,
+      "prices": {
+        "BMRN": 55.2,
+        "NKE": 36.12,
+        "MSFT": 432.58,
+        "DTE": 29.02,
+        "JPM": 309.32
+      }
+    },
+    "plans": {
+      "MSFT": {
+        "stop": 370,
+        "target1": 404.6,
+        "trailingStopPct": 5,
+        "strategy": {
+          "de": "Bei 404,60 € eine Aktie verkaufen; die Restposition anschließend mit 5 % Trailing-Stop laufen lassen.",
+          "en": "Sell one share at €404.60; then manage the remaining share with a 5% trailing stop."
         },
-        {
-          "id": "claude-jpm-buy-date-unconfirmed",
-          "type": "BUY",
-          "date": null,
-          "ticker": "JPM",
-          "isin": "US46625H1005",
-          "name": "JPMorgan Chase",
-          "shares": 1,
-          "price": 300.3,
-          "current": 304.72,
-          "stop": 287,
-          "target1": 360.36,
-          "sector": "Financials",
-          "country": "USA",
-          "currency": "USD"
-        },
-        {
-          "id": "claude-tte-close-2026-07-27",
-          "type": "CLOSE",
-          "date": "2026-07-27",
-          "ticker": "TTE",
-          "name": "TotalEnergies",
-          "result": 19.86,
-          "resultPct": 4.01,
-          "days": 12,
-          "reason": "Trailing-Stop"
-        },
-        {
-          "id": "claude-shel-close-2026-07-27",
-          "type": "CLOSE",
-          "date": "2026-07-27",
-          "ticker": "SHEL",
-          "name": "Shell",
-          "result": 5.6,
-          "resultPct": 1.88,
-          "days": 12,
-          "reason": "Trailing-Stop"
+        "thesis": {
+          "de": "Azure-, Cloud- und AI-Wachstum; Trend intakt, Teilgewinnziel fast erreicht.",
+          "en": "Azure, cloud and AI growth; trend intact and partial-profit target nearly reached."
         }
-      ],
-      "cash": 1855.28,
-      "positions": [
-        {
-          "ticker": "DTE",
-          "isin": "DE0005557508",
-          "name": "Deutsche Telekom",
-          "shares": 14,
-          "current": 26.86,
-          "stop": 23.78,
-          "target1": 31.7,
-          "sector": "Telecom",
-          "country": "Germany",
-          "currency": "EUR",
-          "entry": 26.42
-        },
-        {
-          "ticker": "JPM",
-          "isin": "US46625H1005",
-          "name": "JPMorgan Chase",
-          "shares": 1,
-          "current": 304.72,
-          "stop": 287,
-          "target1": 360.36,
-          "sector": "Financials",
-          "country": "USA",
-          "currency": "USD",
-          "entry": 300.3
+      },
+      "DTE": {
+        "stop": 23.78,
+        "target1": 31.7
+      },
+      "JPM": {
+        "stop": 287,
+        "target1": 360.36
+      }
+    },
+    "transactions": [
+      {
+        "id": "buy-bmrn-2022-12-15",
+        "type": "BUY",
+        "date": "2022-12-15",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 14,
+        "price": 101.44,
+        "amount": 1420.16,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2022-12-15",
+          "en": "Purchase settlement dated 2022-12-15"
         }
-      ],
-      "closedTrades": [
-        {
-          "date": "2026-07-27",
-          "ticker": "TTE",
-          "name": "TotalEnergies",
-          "result": 19.86,
-          "resultPct": 4.01,
-          "days": 12,
-          "reason": "Trailing-Stop"
-        },
-        {
-          "date": "2026-07-27",
-          "ticker": "SHEL",
-          "name": "Shell",
-          "result": 5.6,
-          "resultPct": 1.88,
-          "days": 12,
-          "reason": "Trailing-Stop"
+      },
+      {
+        "id": "buy-bmrn-2023-03-03",
+        "type": "BUY",
+        "date": "2023-03-03",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 3,
+        "price": 94.73,
+        "amount": 284.19,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2023-03-03",
+          "en": "Purchase settlement dated 2023-03-03"
         }
-      ]
+      },
+      {
+        "id": "buy-bmrn-2023-06-22",
+        "type": "BUY",
+        "date": "2023-06-22",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 11,
+        "price": 87.54,
+        "amount": 962.94,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2023-06-22",
+          "en": "Purchase settlement dated 2023-06-22"
+        }
+      },
+      {
+        "id": "buy-bmrn-2024-03-27",
+        "type": "BUY",
+        "date": "2024-03-27",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 6,
+        "price": 81.3,
+        "amount": 487.8,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2024-03-27",
+          "en": "Purchase settlement dated 2024-03-27"
+        }
+      },
+      {
+        "id": "buy-nke-2024-03-27",
+        "type": "BUY",
+        "date": "2024-03-27",
+        "ticker": "NKE",
+        "isin": "US6541061031",
+        "name": "NIKE B",
+        "shares": 12,
+        "price": 85.99,
+        "amount": 1031.88,
+        "sector": "Consumer",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2024-03-27",
+          "en": "Purchase settlement dated 2024-03-27"
+        }
+      },
+      {
+        "id": "buy-bmrn-2024-04-25",
+        "type": "BUY",
+        "date": "2024-04-25",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 10,
+        "price": 76.88,
+        "amount": 768.8,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2024-04-25",
+          "en": "Purchase settlement dated 2024-04-25"
+        }
+      },
+      {
+        "id": "buy-bmrn-2024-05-28",
+        "type": "BUY",
+        "date": "2024-05-28",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 7,
+        "price": 69.06,
+        "amount": 483.42,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2024-05-28",
+          "en": "Purchase settlement dated 2024-05-28"
+        }
+      },
+      {
+        "id": "buy-nke-2024-06-28",
+        "type": "BUY",
+        "date": "2024-06-28",
+        "ticker": "NKE",
+        "isin": "US6541061031",
+        "name": "NIKE B",
+        "shares": 6,
+        "price": 75.74,
+        "amount": 454.44,
+        "sector": "Consumer",
+        "country": "USA",
+        "currency": "USD",
+        "source": {
+          "de": "Wertpapierabrechnung Kauf vom 2024-06-28",
+          "en": "Purchase settlement dated 2024-06-28"
+        }
+      },
+      {
+        "id": "opening-cash-2026-07-01",
+        "type": "OPENING_CASH",
+        "date": "2026-07-01",
+        "amount": 45.92,
+        "note": {
+          "de": "Kontostand am 01.07.2026 laut Kontoauszug.",
+          "en": "Account balance on 01.07.2026 per the account statement."
+        }
+      },
+      {
+        "id": "tax-soli-2026-07-01",
+        "type": "TAX",
+        "date": "2026-07-01",
+        "amount": 0.04,
+        "label": {
+          "de": "Solidaritätszuschlag",
+          "en": "Solidarity surcharge"
+        }
+      },
+      {
+        "id": "tax-kap-2026-07-01",
+        "type": "TAX",
+        "date": "2026-07-01",
+        "amount": 0.65,
+        "label": {
+          "de": "Kapitalertragsteuer",
+          "en": "Capital gains tax"
+        }
+      },
+      {
+        "id": "dividend-nke-2026-07-01",
+        "type": "DIVIDEND",
+        "date": "2026-07-01",
+        "ticker": "NKE",
+        "amount": 6.47,
+        "label": {
+          "de": "Ausschüttung NIKE B",
+          "en": "NIKE B distribution"
+        }
+      },
+      {
+        "id": "tax-us-2026-07-01",
+        "type": "TAX",
+        "date": "2026-07-01",
+        "amount": 0.97,
+        "label": {
+          "de": "US-Quellensteuer",
+          "en": "US withholding tax"
+        }
+      },
+      {
+        "id": "deposit-2026-07-05",
+        "type": "DEPOSIT",
+        "date": "2026-07-05",
+        "amount": 2000,
+        "label": {
+          "de": "Lastschrift",
+          "en": "Direct debit"
+        }
+      },
+      {
+        "id": "fee-2026-07-05",
+        "type": "FEE",
+        "date": "2026-07-05",
+        "amount": 13.8,
+        "label": {
+          "de": "Sofortige Gebühr",
+          "en": "Instant order fee"
+        }
+      },
+      {
+        "id": "deposit-transfer-2026-07-15",
+        "type": "DEPOSIT",
+        "date": "2026-07-15",
+        "amount": 1000,
+        "label": {
+          "de": "Überweisung",
+          "en": "Bank transfer"
+        }
+      },
+      {
+        "id": "deposit-debit-2026-07-15",
+        "type": "DEPOSIT",
+        "date": "2026-07-15",
+        "amount": 1000,
+        "label": {
+          "de": "Lastschrift",
+          "en": "Direct debit"
+        }
+      },
+      {
+        "id": "buy-msft-1-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "MSFT",
+        "isin": "US5949181045",
+        "name": "Microsoft",
+        "shares": 1,
+        "amount": 337.2,
+        "sector": "Technology",
+        "country": "USA",
+        "currency": "USD"
+      },
+      {
+        "id": "fee-2026-07-15",
+        "type": "FEE",
+        "date": "2026-07-15",
+        "amount": 6.9,
+        "label": {
+          "de": "Sofortige Gebühr",
+          "en": "Instant order fee"
+        }
+      },
+      {
+        "id": "buy-msft-2-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "MSFT",
+        "isin": "US5949181045",
+        "name": "Microsoft",
+        "shares": 1,
+        "amount": 337.1,
+        "sector": "Technology",
+        "country": "USA",
+        "currency": "USD"
+      },
+      {
+        "id": "buy-meta-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "META",
+        "isin": "US30303M1027",
+        "name": "Meta Platforms A",
+        "shares": 1,
+        "amount": 577.9,
+        "sector": "Technology",
+        "country": "USA",
+        "currency": "USD"
+      },
+      {
+        "id": "buy-tsm-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "TSM",
+        "isin": "US8740391003",
+        "name": "Taiwan Semiconductor Manufact. ADR",
+        "shares": 2,
+        "amount": 748,
+        "sector": "Technology",
+        "country": "Taiwan",
+        "currency": "USD"
+      },
+      {
+        "id": "buy-tte-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "TTE",
+        "isin": "FR0000120271",
+        "name": "TotalEnergies",
+        "shares": 7,
+        "amount": 495.18,
+        "sector": "Energy",
+        "country": "France",
+        "currency": "EUR"
+      },
+      {
+        "id": "tax-fr-2026-07-15",
+        "type": "TAX",
+        "date": "2026-07-15",
+        "amount": 1.98,
+        "label": {
+          "de": "Französische Finanztransaktionssteuer",
+          "en": "French financial transaction tax"
+        }
+      },
+      {
+        "id": "buy-shel-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "SHEL",
+        "isin": "GB00BP6MXD84",
+        "name": "Shell",
+        "shares": 8,
+        "amount": 297.16,
+        "sector": "Energy",
+        "country": "United Kingdom",
+        "currency": "EUR"
+      },
+      {
+        "id": "buy-dte-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "DTE",
+        "isin": "DE0005557508",
+        "name": "Deutsche Telekom",
+        "shares": 14,
+        "amount": 369.88,
+        "sector": "Telecom",
+        "country": "Germany",
+        "currency": "EUR"
+      },
+      {
+        "id": "buy-jpm-2026-07-15",
+        "type": "BUY",
+        "date": "2026-07-15",
+        "ticker": "JPM",
+        "isin": "US46625H1005",
+        "name": "JPMorgan Chase",
+        "shares": 1,
+        "amount": 300.3,
+        "sector": "Financials",
+        "country": "USA",
+        "currency": "USD"
+      },
+      {
+        "id": "sell-tte-2026-07-27",
+        "type": "SELL",
+        "date": "2026-07-27",
+        "ticker": "TTE",
+        "name": "TotalEnergies",
+        "shares": 7,
+        "amount": 517.02,
+        "reason": "Trailing-Stop"
+      },
+      {
+        "id": "sell-shel-2026-07-27",
+        "type": "SELL",
+        "date": "2026-07-27",
+        "ticker": "SHEL",
+        "name": "Shell",
+        "shares": 8,
+        "amount": 302.76,
+        "reason": "Trailing-Stop"
+      },
+      {
+        "id": "sell-tsm-2026-07-29",
+        "type": "SELL",
+        "date": "2026-07-29",
+        "ticker": "TSM",
+        "name": "Taiwan Semiconductor Manufact. ADR",
+        "shares": 2,
+        "amount": 660,
+        "reason": "Stop-Loss"
+      },
+      {
+        "id": "sell-meta-2026-07-29",
+        "type": "SELL",
+        "date": "2026-07-29",
+        "ticker": "META",
+        "name": "Meta Platforms A",
+        "shares": 1,
+        "amount": 494.3,
+        "reason": "Stop-Loss"
+      },
+      {
+        "id": "fee-prime-2026-08-04",
+        "type": "FEE",
+        "date": "2026-08-04",
+        "amount": 4.99,
+        "label": {
+          "de": "Scalable Prime+ Abogebühr",
+          "en": "Scalable Prime+ subscription fee"
+        },
+        "source": {
+          "de": "Vom Depotinhaber bestätigt; Buchung nach dem Auszugszeitraum.",
+          "en": "Confirmed by the account holder; booked after the statement period."
+        }
+      }
+    ],
+    "cash": 2534.42,
+    "positions": [
+      {
+        "date": "2022-12-15",
+        "ticker": "BMRN",
+        "isin": "US09061G1013",
+        "name": "Biomarin Pharmaceutical",
+        "shares": 51,
+        "sector": "Healthcare",
+        "country": "USA",
+        "currency": "USD",
+        "openedAt": "2022-12-15",
+        "cost": 4407.31,
+        "entry": 86.42,
+        "current": 55.2,
+        "orders": [
+          "buy-bmrn-2022-12-15",
+          "buy-bmrn-2023-03-03",
+          "buy-bmrn-2023-06-22",
+          "buy-bmrn-2024-03-27",
+          "buy-bmrn-2024-04-25",
+          "buy-bmrn-2024-05-28"
+        ]
+      },
+      {
+        "date": "2026-07-15",
+        "ticker": "MSFT",
+        "isin": "US5949181045",
+        "name": "Microsoft",
+        "shares": 2,
+        "sector": "Technology",
+        "country": "USA",
+        "currency": "USD",
+        "openedAt": "2026-07-15",
+        "stop": 370,
+        "target1": 404.6,
+        "trailingStopPct": 5,
+        "strategy": {
+          "de": "Bei 404,60 € eine Aktie verkaufen; die Restposition anschließend mit 5 % Trailing-Stop laufen lassen.",
+          "en": "Sell one share at €404.60; then manage the remaining share with a 5% trailing stop."
+        },
+        "thesis": {
+          "de": "Azure-, Cloud- und AI-Wachstum; Trend intakt, Teilgewinnziel fast erreicht.",
+          "en": "Azure, cloud and AI growth; trend intact and partial-profit target nearly reached."
+        },
+        "cost": 674.3,
+        "entry": 337.15,
+        "current": 432.58,
+        "orders": [
+          "buy-msft-1-2026-07-15",
+          "buy-msft-2-2026-07-15"
+        ]
+      },
+      {
+        "date": "2024-03-27",
+        "ticker": "NKE",
+        "isin": "US6541061031",
+        "name": "NIKE B",
+        "shares": 18,
+        "sector": "Consumer",
+        "country": "USA",
+        "currency": "USD",
+        "openedAt": "2024-03-27",
+        "cost": 1486.32,
+        "entry": 82.57,
+        "current": 36.12,
+        "orders": [
+          "buy-nke-2024-03-27",
+          "buy-nke-2024-06-28"
+        ]
+      },
+      {
+        "date": "2026-07-15",
+        "ticker": "DTE",
+        "isin": "DE0005557508",
+        "name": "Deutsche Telekom",
+        "shares": 14,
+        "sector": "Telecom",
+        "country": "Germany",
+        "currency": "EUR",
+        "openedAt": "2026-07-15",
+        "stop": 23.78,
+        "target1": 31.7,
+        "cost": 369.88,
+        "entry": 26.42,
+        "current": 29.02,
+        "orders": [
+          "buy-dte-2026-07-15"
+        ]
+      },
+      {
+        "date": "2026-07-15",
+        "ticker": "JPM",
+        "isin": "US46625H1005",
+        "name": "JPMorgan Chase",
+        "shares": 1,
+        "sector": "Financials",
+        "country": "USA",
+        "currency": "USD",
+        "openedAt": "2026-07-15",
+        "stop": 287,
+        "target1": 360.36,
+        "cost": 300.3,
+        "entry": 300.3,
+        "current": 309.32,
+        "orders": [
+          "buy-jpm-2026-07-15"
+        ]
+      }
+    ],
+    "closedTrades": [
+      {
+        "ticker": "TTE",
+        "name": "TotalEnergies",
+        "date": "2026-07-27",
+        "shares": 7,
+        "proceeds": 517.02,
+        "cost": 495.18,
+        "result": 21.84,
+        "reason": "Trailing-Stop",
+        "openedAt": "2026-07-15"
+      },
+      {
+        "ticker": "SHEL",
+        "name": "Shell",
+        "date": "2026-07-27",
+        "shares": 8,
+        "proceeds": 302.76,
+        "cost": 297.16,
+        "result": 5.6,
+        "reason": "Trailing-Stop",
+        "openedAt": "2026-07-15"
+      },
+      {
+        "ticker": "TSM",
+        "name": "Taiwan Semiconductor Manufact. ADR",
+        "date": "2026-07-29",
+        "shares": 2,
+        "proceeds": 660,
+        "cost": 748,
+        "result": -88,
+        "reason": "Stop-Loss",
+        "openedAt": "2026-07-15"
+      },
+      {
+        "ticker": "META",
+        "name": "Meta Platforms A",
+        "date": "2026-07-29",
+        "shares": 1,
+        "proceeds": 494.3,
+        "cost": 577.9,
+        "result": -83.6,
+        "reason": "Stop-Loss",
+        "openedAt": "2026-07-15"
+      }
+    ],
+    "cashFlow": {
+      "deposited": 4000,
+      "withdrawn": 0,
+      "fees": 25.69,
+      "taxes": 3.64,
+      "income": 6.47
     }
   },
   "opportunities": [

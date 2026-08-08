@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.6.7';
+import {state} from './state.js?v=0.7.0';
 
 export function normaliseWeights(weights){
   const total=Object.values(weights).reduce((a,b)=>a+b,0)||1;

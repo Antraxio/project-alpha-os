@@ -1,47 +1,116 @@
 {
-  "version": "0.6.7",
+  "version": "0.7.0",
   "modelChanges": [
     {
       "date": "2026-08-08",
-      "title": {"de": "Aktualitäts-Gate eingeführt", "en": "Freshness gate introduced"},
-      "detail": {"de": "Ist der Snapshot älter als 24 Stunden, fällt das Gate und jede Kaufempfehlung wird zurückgezogen.", "en": "Once the snapshot is older than 24 hours the gate fails and every buy verdict is withdrawn."},
-      "category": {"de": "Datenqualität", "en": "Data quality"}
+      "title": {
+        "de": "Ein Depot statt Wettbewerb",
+        "en": "One portfolio instead of a competition"
+      },
+      "detail": {
+        "de": "Der Vergleich zweier Modell-Depots entfällt. Dargestellt wird das reale Scalable-Capital-Depot, abgeleitet aus belegten Kaufabrechnungen und dem Kontoauszug.",
+        "en": "The comparison of two model portfolios is gone. The application shows the real Scalable Capital portfolio, derived from documented purchase settlements and the account statement."
+      },
+      "category": {
+        "de": "Datenqualität",
+        "en": "Data quality"
+      }
+    },
+    {
+      "date": "2026-08-08",
+      "title": {
+        "de": "Aktualitäts-Gate eingeführt",
+        "en": "Freshness gate introduced"
+      },
+      "detail": {
+        "de": "Ist der Snapshot älter als 24 Stunden, fällt das Gate und jede Kaufempfehlung wird zurückgezogen.",
+        "en": "Once the snapshot is older than 24 hours the gate fails and every buy verdict is withdrawn."
+      },
+      "category": {
+        "de": "Datenqualität",
+        "en": "Data quality"
+      }
     },
     {
       "date": "2026-08-07",
-      "title": {"de": "Portfolio-Ledger eingeführt", "en": "Portfolio ledger introduced"},
-      "detail": {"de": "Cash, offene Positionen und realisierte Ergebnisse werden aus bestätigten Transaktionen abgeleitet und nicht mehr doppelt gepflegt.", "en": "Cash, open positions and realised results are derived from confirmed transactions instead of being maintained twice."},
-      "category": {"de": "Datenqualität", "en": "Data quality"}
+      "title": {
+        "de": "Portfolio-Ledger eingeführt",
+        "en": "Portfolio ledger introduced"
+      },
+      "detail": {
+        "de": "Cash, offene Positionen und realisierte Ergebnisse werden aus bestätigten Transaktionen abgeleitet und nicht mehr doppelt gepflegt.",
+        "en": "Cash, open positions and realised results are derived from confirmed transactions instead of being maintained twice."
+      },
+      "category": {
+        "de": "Datenqualität",
+        "en": "Data quality"
+      }
     },
     {
       "date": "2026-08-07",
-      "title": {"de": "Navigation vereinfacht", "en": "Navigation simplified"},
-      "detail": {"de": "Fünf Hauptbereiche bündeln die bestehenden Spezialansichten in einer klaren Unternavigation.", "en": "Five primary areas group the existing specialist views in clear subnavigation."},
-      "category": {"de": "Produkt", "en": "Product"}
+      "title": {
+        "de": "Navigation vereinfacht",
+        "en": "Navigation simplified"
+      },
+      "detail": {
+        "de": "Fünf Hauptbereiche bündeln die bestehenden Spezialansichten in einer klaren Unternavigation.",
+        "en": "Five primary areas group the existing specialist views in clear subnavigation."
+      },
+      "category": {
+        "de": "Produkt",
+        "en": "Product"
+      }
     },
     {
       "date": "2026-08-07",
-      "title": {"de": "Cache-sichere Veröffentlichung", "en": "Cache-safe release"},
-      "detail": {"de": "Die Versionskennung gilt für die vollständige Modulstruktur und verhindert gemischte Releases.", "en": "The version key covers the complete module graph and prevents mixed releases."},
-      "category": {"de": "Qualität", "en": "Quality"}
+      "title": {
+        "de": "Cache-sichere Veröffentlichung",
+        "en": "Cache-safe release"
+      },
+      "detail": {
+        "de": "Die Versionskennung gilt für die vollständige Modulstruktur und verhindert gemischte Releases.",
+        "en": "The version key covers the complete module graph and prevents mixed releases."
+      },
+      "category": {
+        "de": "Qualität",
+        "en": "Quality"
+      }
     },
     {
       "date": "2026-08-01",
-      "title": {"de": "Strategy Studio eingeführt", "en": "Strategy Studio introduced"},
-      "detail": {"de": "Score-Gewichte, Ausführungsschwellen und Portfolio-Präferenzen sind transparent anpassbar.", "en": "Score weights, execution thresholds and portfolio preferences are transparently configurable."},
-      "category": {"de": "Methodik", "en": "Methodology"}
+      "title": {
+        "de": "Strategy Studio eingeführt",
+        "en": "Strategy Studio introduced"
+      },
+      "detail": {
+        "de": "Score-Gewichte, Ausführungsschwellen und Portfolio-Präferenzen sind transparent anpassbar.",
+        "en": "Score weights, execution thresholds and portfolio preferences are transparently configurable."
+      },
+      "category": {
+        "de": "Methodik",
+        "en": "Methodology"
+      }
     },
     {
       "date": "2026-08-01",
-      "title": {"de": "Zweisprachige Oberfläche", "en": "Bilingual interface"},
-      "detail": {"de": "Deutsch und Englisch sind vollständig verfügbar; die Auswahl bleibt im Browser gespeichert.", "en": "German and English are fully available; the selection persists in the browser."},
-      "category": {"de": "Produkt", "en": "Product"}
+      "title": {
+        "de": "Zweisprachige Oberfläche",
+        "en": "Bilingual interface"
+      },
+      "detail": {
+        "de": "Deutsch und Englisch sind vollständig verfügbar; die Auswahl bleibt im Browser gespeichert.",
+        "en": "German and English are fully available; the selection persists in the browser."
+      },
+      "category": {
+        "de": "Produkt",
+        "en": "Product"
+      }
     }
   ],
-  "snapshotDate": "2026-08-02T21:27:00+02:00",
+  "snapshotDate": "2026-08-08T11:57:00+02:00",
   "dataMode": {
-    "de": "Manueller Modell-Snapshot · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",
-    "en": "Manual model snapshot · 10 scored · 5 in active research · 35 queued"
+    "de": "Manueller Modell-Snapshot · Depot Scalable Capital · 10 bewertet · 5 im aktiven Research · 35 vorgemerkt",
+    "en": "Manual model snapshot · Scalable Capital portfolio · 10 scored · 5 in active research · 35 queued"
   },
   "dailyBriefing": {
     "salutation": {

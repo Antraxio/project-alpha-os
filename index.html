@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080c16">
   <title>Project Alpha OS</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=0.6.7">
+  <link rel="stylesheet" href="style.css?v=0.7.0">
 </head>
 <body>
 <div class="shell">
@@ -36,7 +36,7 @@
         <p><span data-i18n="osThreshold">OS-Schwelle</span><strong id="sideThreshold">85</strong></p>
         <p><span data-i18n="cashMargin">Cash-Marge</span><strong id="sideCashMargin">+5</strong></p>
       </div>
-      <div class="version">v0.6.7 · Operational Safety</div>
+      <div class="version">v0.7.0 · Ein Depot</div>
     </div>
   </aside>
 
@@ -303,12 +303,6 @@
       <article class="panel risk-panel"><div class="panel-head"><div><small data-i18n="riskPicture">RISIKOBILD</small><h2 data-i18n="stopScenario">Was passiert bei Auslösen des Stops?</h2></div></div><div id="riskScenario" class="risk-scenario"></div></article>
     </section>
 
-    <section class="view" id="competition">
-      <div class="section-head"><div><small data-i18n="benchmark">BENCHMARK</small><h2>ChatGPT vs. Claude</h2></div></div>
-      <div id="competitionCards" class="competition-cards"></div>
-      <article class="panel comparison-panel"><div class="panel-head"><div><small data-i18n="relativePerformance">RELATIVE PERFORMANCE</small><h2 data-i18n="competitionStatus">Wettbewerbsstand</h2></div></div><div id="comparisonBars"></div></article>
-    </section>
-
     <section class="view" id="journal">
       <div class="section-head"><div><small data-i18n="journalEyebrow">DEPOT</small><h2 data-i18n="transactionHistory">Transaktionshistorie</h2><p class="history-intro" data-i18n="transactionHistoryIntro">Nur bestätigte Käufe, offene Positionen und abgeschlossene Trades.</p></div></div>
       <div id="historySummary" class="history-summary"></div>
@@ -369,6 +363,6 @@
   </main>
 </div>
 <div id="toast" class="toast" role="status"></div>
-<script type="module" src="app.js?v=0.6.7"></script>
+<script type="module" src="app.js?v=0.7.0"></script>
 </body>
 </html>
