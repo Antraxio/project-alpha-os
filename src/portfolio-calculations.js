@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.7.1';
+import {state} from './state.js?v=0.7.2';
 
 // A holding records its country ("Germany"), a candidate its region ("Europe"). Comparing
 // the two directly made every non-US region read as zero exposure. The mapping is derived

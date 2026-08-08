@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.7.1';
+import {state} from './state.js?v=0.7.2';
 
 export const REQUIRED_RESEARCH_CHECKLIST=Object.freeze([
   'identity','primarySources','fundamental','catalyst','risk',
@@ -34,17 +34,47 @@ function isCompleteLegacyScoredOpportunity(opportunity){
   );
 }
 
-export function isRankingEligible(opportunity,data=state.data){
+// Reports *why* a security may be ranked, not only whether it may. A ranking that rests on
+// the inherited exception is not the same as one backed by an approved dossier, and the
+// difference has to be visible wherever a score is shown.
+export function rankingBasis(opportunity,data=state.data){
   const universe=data.universe?.find(item=>item.ticker===opportunity?.ticker);
-  if(!universe||universe.coverageStatus!=='scored')return false;
+  if(!universe||universe.coverageStatus!=='scored')return{eligible:false,basis:null,reason:'notScored'};
 
   const dossier=researchRecord(opportunity.ticker,data);
-  if(dossier)return isResearchRecordComplete(dossier);
+  if(dossier){
+    return isResearchRecordComplete(dossier)
+      ?{eligible:true,basis:'dossier',reason:'dossierApproved'}
+      :{eligible:false,basis:null,reason:'dossierIncomplete'};
+  }
 
   // Only the scored records inherited from the v0.6.0 snapshot may use the
-  // compatibility path. Every new security must have an approved dossier.
+  // compatibility path. Every new security must have an approved dossier. Supplying a
+  // dossier supersedes the exception above, which is the migration path.
   return LEGACY_V060_SCORED_TICKERS.includes(opportunity.ticker)&&
-    isCompleteLegacyScoredOpportunity(opportunity);
+    isCompleteLegacyScoredOpportunity(opportunity)
+      ?{eligible:true,basis:'legacy',reason:'legacyInherited'}
+      :{eligible:false,basis:null,reason:'noDossier'};
+}
+
+export function isRankingEligible(opportunity,data=state.data){
+  return rankingBasis(opportunity,data).eligible;
+}
+
+// How far the inherited securities have been moved onto documented dossiers.
+export function legacyMigrationProgress(data=state.data){
+  const inherited=LEGACY_V060_SCORED_TICKERS.map(ticker=>({
+    ticker,
+    basis:rankingBasis(data.opportunities?.find(item=>item.ticker===ticker),data).basis
+  }));
+  const migrated=inherited.filter(item=>item.basis==='dossier');
+  const remaining=inherited.filter(item=>item.basis==='legacy');
+  return{
+    total:inherited.length,
+    migrated:migrated.map(item=>item.ticker),
+    remaining:remaining.map(item=>item.ticker),
+    complete:remaining.length===0
+  };
 }
 
 export function isResearchPending(ticker,data=state.data){

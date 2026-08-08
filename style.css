@@ -1032,3 +1032,18 @@ input[type="range"]{width:100%;min-width:0;padding:0;border:0;background:transpa
 }
 .ladder-stale{padding:14px;border:1px solid rgba(255,107,107,.35);border-radius:10px;background:rgba(255,107,107,.08);color:#ff9a9a;font-size:11px;font-weight:700}
 .msft-progress.is-stale .distance-bar{opacity:.35}.msft-progress.is-stale .msft-line span{color:#ff9a9a;font-weight:700}
+.basis-badge{display:inline-block;font-size:8px;font-weight:900;letter-spacing:.8px;padding:2px 5px;border-radius:4px;vertical-align:middle;margin-left:6px}
+.basis-badge.is-legacy{background:rgba(247,185,85,.16);color:var(--amber);border:1px solid rgba(247,185,85,.35)}
+.basis-badge.is-dossier{background:rgba(33,212,167,.13);color:var(--green);border:1px solid rgba(33,212,167,.3)}
+.governance-panel{margin-bottom:18px}
+.governance-bar{height:8px;border-radius:999px;background:rgba(247,185,85,.25);overflow:hidden;margin-bottom:16px}
+.governance-bar i{display:block;height:100%;background:var(--green);border-radius:999px}
+.governance-rows{display:grid;gap:12px}
+.governance-row{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:baseline}
+.governance-row b{font-size:20px}
+.governance-row.is-dossier b{color:var(--green)}.governance-row.is-legacy b{color:var(--amber)}
+.governance-row span{font-size:10px;color:var(--muted);grid-column:2}
+.governance-chips{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.governance-chip{font-size:10px;padding:3px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line)}
+.governance-warning{margin-top:16px;font-size:10px;line-height:1.55;color:var(--amber)}
+.governance-done{margin-top:16px;font-size:10px;color:var(--green)}

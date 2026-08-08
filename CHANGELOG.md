@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.7.2 – Research governance made visible
+
+### Added
+- every rating now reports whether it rests on an approved dossier or on the inherited v0.6.0 exception, shown as a badge in the ranking and the Decision Lab
+- a governance panel in the research status view showing migration progress and naming the securities still on the exception
+- `rankingBasis()` reports the reason for eligibility, not only the verdict; `legacyMigrationProgress()` reports how far the migration has come
+
+### Note
+All ten ranked securities currently rest on the inherited exception and none on a dossier, while the five documented dossiers belong to securities that cannot yet be ranked. The application previously presented all ten as fully governed.
+
 ## v0.7.1 – Model correctness
 
 ### Fixed
