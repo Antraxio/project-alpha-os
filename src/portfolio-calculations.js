@@ -1,4 +1,22 @@
-import {state} from './state.js?v=0.7.0';
+import {state} from './state.js?v=0.7.1';
+
+// A holding records its country ("Germany"), a candidate its region ("Europe"). Comparing
+// the two directly made every non-US region read as zero exposure. The mapping is derived
+// from the data itself, where each scored and universe security carries both fields, so a
+// new country needs no code change.
+const regionCache=new WeakMap();
+export function countryRegions(data=state.data){
+  if(!data)return new Map();
+  const cached=regionCache.get(data);
+  if(cached)return cached;
+  const map=new Map();
+  for(const item of [...(data.opportunities??[]),...(data.universe??[])]){
+    if(item.country&&item.region&&!map.has(item.country))map.set(item.country,item.region);
+  }
+  regionCache.set(data,map);
+  return map;
+}
+export const regionOf=(country,data=state.data)=>countryRegions(data).get(country)??country;
 
 export const valueOf=p=>p.cash+p.positions.reduce((s,x)=>s+x.current*x.shares,0);
 export const realisedOf=p=>p.closedTrades.reduce((s,x)=>s+x.result,0);
@@ -64,7 +82,7 @@ export function computeSizing(candidate){
   const currentInvested=p.positions.reduce((s,x)=>s+x.current*x.shares,0);
   const postInvested=currentInvested+amount;
   const sectorExisting=p.positions.filter(x=>x.sector===candidate.sector).reduce((s,x)=>s+x.current*x.shares,0);
-  const regionExisting=p.positions.filter(x=>x.country===(candidate.region==='USA'?'USA':candidate.region)).reduce((s,x)=>s+x.current*x.shares,0);
+  const regionExisting=p.positions.filter(x=>regionOf(x.country)===candidate.region).reduce((s,x)=>s+x.current*x.shares,0);
   const sectorPct=postInvested?((sectorExisting+amount)/postInvested*100):0;
   const regionPct=postInvested?((regionExisting+amount)/postInvested*100):0;
   return{

@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.7.0';
-import {I18N} from '../../src/translations.js?v=0.7.0';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.0';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.0';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.7.0';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.0';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.0';
-import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.0';
-import {snapshotFreshness} from '../../src/freshness.js?v=0.7.0';
+import {clone,state} from '../../src/state.js?v=0.7.1';
+import {I18N} from '../../src/translations.js?v=0.7.1';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.1';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.1';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.7.1';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.1';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.1';
+import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.1';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.7.1';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -36,7 +36,7 @@ test('all scored securities across all presets retain the committed v0.7.0 strat
     reset(preset);
     const model=computeModel();
     const expected=fixture.presets[preset];
-    assert.deepEqual(model.opportunities.map(item=>[item.ticker,item.strategyScore,item.customRank]),expected.securities.map(item=>[item.ticker,item.strategyScore,item.rank]),preset);
+    assert.deepEqual(model.opportunities.map(item=>[item.ticker,item.strategyScore,item.customRank,item.ras]),expected.securities.map(item=>[item.ticker,item.strategyScore,item.rank,item.ras]),preset);
     assert.equal(model.candidate?.ticker??null,expected.selectedCandidate,preset);
     assert.equal(model.ras,expected.ras,preset);
     assert.deepEqual(model.gates.map(gate=>[gate.key,gate.pass]),expected.gates.map(gate=>[gate.key,gate.pass]),preset);
@@ -355,4 +355,43 @@ test('focus position and aggregated risk use every position, not positions[0]',(
   assert.equal(risk.uncovered,2,'Biomarin and NIKE have no stop and must not be counted as covered');
   assert.equal(Math.round(risk.ifStop*100),Math.round(((370-337.15)*2+(23.78-26.42)*14+(287-300.3))*100));
   assert.equal(focusPosition({positions:[{ticker:'X',current:10}]}),null);
+});
+
+test('regional exposure maps a holding country onto the candidate region',()=>{
+  assert.equal(regionOf('Germany'),'Europe');
+  assert.equal(regionOf('Netherlands'),'Europe');
+  assert.equal(regionOf('Taiwan'),'Asia');
+  assert.equal(regionOf('USA'),'USA');
+  assert.equal(regionOf('Atlantis'),'Atlantis','an unmapped country falls back to itself rather than vanishing');
+  // Deutsche Telekom is the only European holding. Before the fix a European candidate
+  // compared "Germany" against "Europe", saw no match and reported zero exposure.
+  const asml=computeModel().opportunities.find(item=>item.ticker==='ASML');
+  assert.equal(asml.region,'Europe');
+  assert.ok(asml.sizing.regionPct>0,'a European candidate must see the German holding');
+  const telekom=state.data.portfolio.positions.find(item=>item.ticker==='DTE');
+  const invested=state.data.portfolio.positions.reduce((sum,item)=>sum+item.current*item.shares,0);
+  const share=telekom.current*telekom.shares;
+  assert.equal(Math.round(asml.sizing.regionPct*100)/100,Math.round((share+asml.sizing.amount)/(invested+asml.sizing.amount)*10000)/100);
+});
+
+test('the switch gate passes when there is no holding to beat',()=>{
+  const held=computeModel().gates.find(gate=>gate.key==='switchGate');
+  assert.equal(held.pass,false,'with holdings the candidate must still clear the margin');
+  state.data.portfolio.positions=[];
+  const empty=computeModel();
+  const gate=empty.gates.find(gate=>gate.key==='switchGate');
+  assert.equal(gate.pass,true,'an empty portfolio has no incumbent to beat');
+  assert.ok(!/\d/.test(gate.detail),'the detail states the absence instead of a numeric margin');
+});
+
+test('relative attractiveness is recalculated for every security and never read from stored data',()=>{
+  const model=computeModel();
+  assert.equal(model.ras,model.candidate.ras,'the model RAS is the candidate RAS, not a second calculation');
+  assert.ok(model.opportunities.every(item=>Number.isFinite(item.ras)));
+  const stored=Object.fromEntries(originalData.opportunities.map(item=>[item.ticker,item.ras]));
+  assert.ok(model.opportunities.some(item=>item.ras!==stored[item.ticker]),'the calculated value must be able to differ from the stored one');
+  const before=model.opportunities.find(item=>item.ticker==='NOVO-B').ras;
+  state.settings.cashHurdle=state.settings.cashHurdle-5;
+  const after=computeModel().opportunities.find(item=>item.ticker==='NOVO-B').ras;
+  assert.notEqual(after,before,'RAS must follow the active settings');
 });

@@ -1,5 +1,5 @@
-import {APP_VERSION} from './version.js?v=0.7.0';
-import {derivePortfolioData} from './portfolio-ledger.js?v=0.7.0';
+import {APP_VERSION} from './version.js?v=0.7.1';
+import {derivePortfolioData} from './portfolio-ledger.js?v=0.7.1';
 
 export async function loadAlphaData(){
   const files=['core','portfolio','opportunities','universe','research'];

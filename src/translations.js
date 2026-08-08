@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.7.0';
+import {state} from './state.js?v=0.7.1';
 
 export const I18N={
   de:{
@@ -26,7 +26,7 @@ export const I18N={
     current:'Aktuell',entry:'Einstieg',stop:'Stop',target:'Ziel',conviction:'Conviction',catalyst:'Katalysator',risk:'Risiko',decision:'Entscheidung',observe:'Beobachten',executeReview:'Ausführung prüfen',
     freshnessGate:'Datenaktualität',scoreGate:'Absolute Qualität',cashGate:'Cash-Sicherheitsmarge',switchGate:'Relative Führungsposition',priceGate:'Preiszone',crvGate:'Chance/Risiko',sizingGate:'Volle-Aktien-Finanzierbarkeit',
     staleSnapshot:'Snapshot veraltet',staleSnapshotWarning:'Snapshot veraltet – keine Handlung daraus ableiten.',
-    staleDecisionKicker:'LETZTE BEWERTUNG · VERALTET',staleNoTrigger:'Kein aktueller Trigger – der Snapshot ist veraltet.',staleNoSizing:'Keine Stückzahl-Empfehlung aus veralteten Kursen.',staleNoLadder:'Aus einem veralteten Snapshot werden keine Ausführungsschritte abgeleitet.',staleHistoric:'historisch',noStopRecorded:'kein Stop hinterlegt',withoutStop:'Ohne hinterlegten Stop',ofPositions:'von',proceeds:'Erlös',staleZoneHidden:'Abstand ausgeblendet',
+    staleDecisionKicker:'LETZTE BEWERTUNG · VERALTET',staleNoTrigger:'Kein aktueller Trigger – der Snapshot ist veraltet.',staleNoSizing:'Keine Stückzahl-Empfehlung aus veralteten Kursen.',staleNoLadder:'Aus einem veralteten Snapshot werden keine Ausführungsschritte abgeleitet.',staleHistoric:'historisch',noStopRecorded:'kein Stop hinterlegt',withoutStop:'Ohne hinterlegten Stop',ofPositions:'von',proceeds:'Erlös',staleZoneHidden:'Abstand ausgeblendet',noIncumbent:'kein Bestand zu schlagen',
     passed:'Bestanden',open:'Offen',fundamental:'Fundamental',technical:'Technik',macro:'Makro',diversification:'Diversifikation',
     monitorNow:'Jetzt beobachten',prepareAt:'Vorbereiten bei',executeOnly:'Nur ausführen bei',allGates:'allen Gates',weight:'Gewicht',
     sectorExposure:'Sektorexponierung',regionExposure:'Regionsexponierung',postTrade:'nach Kauf',warning:'Warnung',withinPreference:'innerhalb Präferenz',
@@ -90,7 +90,7 @@ export const I18N={
     current:'Current',entry:'Entry',stop:'Stop',target:'Target',conviction:'Conviction',catalyst:'Catalyst',risk:'Risk',decision:'Decision',observe:'Monitor',executeReview:'Review execution',
     freshnessGate:'Data freshness',scoreGate:'Absolute quality',cashGate:'Cash safety margin',switchGate:'Relative leadership',priceGate:'Price zone',crvGate:'Risk/reward',sizingGate:'Whole-share affordability',
     staleSnapshot:'Snapshot stale',staleSnapshotWarning:'Snapshot is stale — do not derive any action from it.',
-    staleDecisionKicker:'LAST ASSESSMENT · STALE',staleNoTrigger:'No current trigger — the snapshot is stale.',staleNoSizing:'No share-count recommendation from stale prices.',staleNoLadder:'No execution steps are derived from a stale snapshot.',staleHistoric:'historical',noStopRecorded:'no stop recorded',withoutStop:'Without a recorded stop',ofPositions:'of',proceeds:'Proceeds',staleZoneHidden:'Distance hidden',
+    staleDecisionKicker:'LAST ASSESSMENT · STALE',staleNoTrigger:'No current trigger — the snapshot is stale.',staleNoSizing:'No share-count recommendation from stale prices.',staleNoLadder:'No execution steps are derived from a stale snapshot.',staleHistoric:'historical',noStopRecorded:'no stop recorded',withoutStop:'Without a recorded stop',ofPositions:'of',proceeds:'Proceeds',staleZoneHidden:'Distance hidden',noIncumbent:'no holding to beat',
     passed:'Passed',open:'Open',fundamental:'Fundamental',technical:'Technical',macro:'Macro',diversification:'Diversification',
     monitorNow:'Monitor now',prepareAt:'Prepare at',executeOnly:'Execute only with',allGates:'all gates',weight:'Weight',
     sectorExposure:'Sector exposure',regionExposure:'Region exposure',postTrade:'after purchase',warning:'Warning',withinPreference:'within preference',
