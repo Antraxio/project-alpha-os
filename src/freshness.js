@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.7.1';
+import {state} from './state.js?v=0.7.2';
 
 export const DEFAULT_MAX_SNAPSHOT_AGE_HOURS=24;
 

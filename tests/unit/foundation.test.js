@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import test from 'node:test';
-import {clone,state} from '../../src/state.js?v=0.7.1';
-import {I18N} from '../../src/translations.js?v=0.7.1';
-import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.1';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.1';
-import {computeModel} from '../../src/strategy-ranking.js?v=0.7.1';
-import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.1';
-import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.1';
-import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.1';
-import {snapshotFreshness} from '../../src/freshness.js?v=0.7.1';
+import {clone,state} from '../../src/state.js?v=0.7.2';
+import {I18N} from '../../src/translations.js?v=0.7.2';
+import {opportunityScore,strategyComponentScore} from '../../src/scoring.js?v=0.7.2';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,investedOf,portfolioRisk,regionOf,unrealisedOf} from '../../src/portfolio-calculations.js?v=0.7.2';
+import {computeModel} from '../../src/strategy-ranking.js?v=0.7.2';
+import {activeDecisionSelection,buildWatchlist} from '../../src/universe.js?v=0.7.2';
+import {isRankingEligible,LEGACY_V060_SCORED_TICKERS,legacyMigrationProgress,rankingBasis,REQUIRED_RESEARCH_CHECKLIST} from '../../src/research-pipeline.js?v=0.7.2';
+import {cashReconciliation,derivePortfolio,derivePortfolioData} from '../../src/portfolio-ledger.js?v=0.7.2';
+import {snapshotFreshness} from '../../src/freshness.js?v=0.7.2';
 
 const root=new URL('../../',import.meta.url);
 const readJson=async path=>JSON.parse(await readFile(new URL(path,root),'utf8'));
@@ -394,4 +394,46 @@ test('relative attractiveness is recalculated for every security and never read 
   state.settings.cashHurdle=state.settings.cashHurdle-5;
   const after=computeModel().opportunities.find(item=>item.ticker==='NOVO-B').ras;
   assert.notEqual(after,before,'RAS must follow the active settings');
+});
+
+test('every ranked security reports whether it rests on a dossier or on the inherited exception',()=>{
+  const model=computeModel();
+  assert.ok(model.opportunities.length>0);
+  for(const item of model.opportunities){
+    const basis=rankingBasis(item);
+    assert.equal(basis.eligible,true,item.ticker);
+    assert.ok(['dossier','legacy'].includes(basis.basis),item.ticker);
+  }
+  // The current data set is entirely inherited: every ranked security is on the exception
+  // and every documented dossier belongs to a security that cannot yet be ranked.
+  const progress=legacyMigrationProgress();
+  assert.equal(progress.total,LEGACY_V060_SCORED_TICKERS.length);
+  assert.equal(progress.migrated.length,0);
+  assert.equal(progress.remaining.length,progress.total);
+  assert.equal(progress.complete,false);
+});
+
+test('supplying an approved dossier supersedes the inherited exception',()=>{
+  const before=rankingBasis(state.data.opportunities.find(item=>item.ticker==='MSFT'));
+  assert.equal(before.basis,'legacy');
+  const checklist=Object.fromEntries(REQUIRED_RESEARCH_CHECKLIST.map(key=>[key,true]));
+  state.data.researchPipeline.records.push({ticker:'MSFT',stage:'approved',checklist});
+  const after=rankingBasis(state.data.opportunities.find(item=>item.ticker==='MSFT'));
+  assert.equal(after.basis,'dossier');
+  assert.equal(after.eligible,true);
+  const progress=legacyMigrationProgress();
+  assert.deepEqual(progress.migrated,['MSFT']);
+  assert.equal(progress.remaining.includes('MSFT'),false);
+});
+
+test('an incomplete dossier withdraws the inherited exception rather than falling back to it',()=>{
+  const checklist=Object.fromEntries(REQUIRED_RESEARCH_CHECKLIST.map(key=>[key,true]));
+  checklist.review=false;
+  state.data.researchPipeline.records.push({ticker:'MSFT',stage:'approved',checklist});
+  const basis=rankingBasis(state.data.opportunities.find(item=>item.ticker==='MSFT'));
+  assert.equal(basis.eligible,false,'a started but unfinished dossier must fail closed');
+  assert.equal(basis.basis,null);
+  assert.equal(basis.reason,'dossierIncomplete');
+  assert.equal(isRankingEligible(state.data.opportunities.find(item=>item.ticker==='MSFT')),false);
+  assert.equal(computeModel().opportunities.some(item=>item.ticker==='MSFT'),false);
 });

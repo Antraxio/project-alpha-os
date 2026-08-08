@@ -1,11 +1,11 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.7.1';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.7.1';
-import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,hasStop,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.7.1';
-import {computeModel} from '../strategy-ranking.js?v=0.7.1';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.7.1';
-import {researchRecord} from '../research-pipeline.js?v=0.7.1';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.7.1';
-import {snapshotFreshness} from '../freshness.js?v=0.7.1';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.7.2';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.7.2';
+import {computeSizing,costBasisOf,exposureBreakdown,focusPosition,hasStop,investedOf,portfolioRisk,realisedOf,unrealisedOf,valueOf} from '../portfolio-calculations.js?v=0.7.2';
+import {computeModel} from '../strategy-ranking.js?v=0.7.2';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.7.2';
+import {legacyMigrationProgress,rankingBasis,researchRecord} from '../research-pipeline.js?v=0.7.2';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.7.2';
+import {snapshotFreshness} from '../freshness.js?v=0.7.2';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
@@ -79,6 +79,15 @@ function radarSvg(x,compact=false){
 function sparkline(values){
   const w=60,h=22,min=Math.min(...values)-1,max=Math.max(...values)+1,pts=values.map((v,i)=>`${i*w/(values.length-1)},${h-(v-min)/(max-min)*h}`).join(' ');
   return`<svg class="mini-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}"/></svg>`;
+}
+
+// Marks whether a rating rests on an approved dossier or on the inherited exception.
+function basisBadge(ticker){
+  const opportunity=state.data.opportunities?.find(item=>item.ticker===ticker);
+  const {basis}=rankingBasis(opportunity);
+  if(!basis)return'';
+  const legacy=basis==='legacy';
+  return`<span class="basis-badge ${legacy?'is-legacy':'is-dossier'}" title="${legacy?t('legacyBasisExplain'):t('dossierBasisExplain')}">${legacy?t('legacyBasisShort'):t('dossierBasis')}</span>`;
 }
 
 function heldExclusionText(){
@@ -263,7 +272,7 @@ export function renderDecision(){
   const x=selection.scored;
   const w=opportunityWeights();
   const automatic=selection.mode==='auto';
-  $('decisionCandidate').innerHTML=`${x.name} (${x.ticker})<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} ${x.strategyScore} · OS ${x.customScore}</span>`;
+  $('decisionCandidate').innerHTML=basisBadge(x.ticker)+`${x.name} (${x.ticker})<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} ${x.strategyScore} · OS ${x.customScore}</span>`;
   $('decisionMeta').textContent=`${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)} · ${t('conviction')} ${x.conviction}`;
   $('decisionScore').textContent=x.customScore;
   $('decisionRas').textContent=x.ras;
@@ -298,14 +307,14 @@ export function renderScanner(){
   $('rankingProfile').textContent=`${t('activeStrategy')}: ${profileLabel(profileName())}`;
   const items=m.opportunities.filter(x=>(!q||[x.name,x.ticker,x.isin].some(v=>v.toLowerCase().includes(q)))&&(r==='all'||x.region===r)&&(s==='all'||x.sector===s)&&(c==='all'||x.conviction===c));
   $('resultCount').textContent=`${items.length} ${t('candidates')}`;
-  $('scannerList').innerHTML=items.map(x=>{const mv=movement(x,x.customRank);return`<div class="scanner-row ${x.ticker===state.selectedTicker?'selected':''}" data-ticker="${x.ticker}" data-rank="${x.customRank}" data-opportunity-score="${x.customScore}" data-strategy-score="${x.strategyScore}"><div class="rank">#${x.customRank}</div><div class="scanner-company"><b>${x.name}</b><span>${x.ticker} · ${x.isin}</span></div><span>${regionName(x.region)}</span><span>${sectorName(x.sector)}</span><div class="strategy-score ${scoreClass(x.strategyScore)}"><b>${x.strategyScore}</b><small>${t('strategyScore')}</small><em>OS ${x.customScore}</em></div>${sparkline(x.scoreHistory)}<span class="${mv.cls}">${mv.label}</span></div>`}).join('');
+  $('scannerList').innerHTML=items.map(x=>{const mv=movement(x,x.customRank);return`<div class="scanner-row ${x.ticker===state.selectedTicker?'selected':''}" data-ticker="${x.ticker}" data-rank="${x.customRank}" data-opportunity-score="${x.customScore}" data-strategy-score="${x.strategyScore}"><div class="rank">#${x.customRank}</div><div class="scanner-company"><b>${x.name} ${basisBadge(x.ticker)}</b><span>${x.ticker} · ${x.isin}</span></div><span>${regionName(x.region)}</span><span>${sectorName(x.sector)}</span><div class="strategy-score ${scoreClass(x.strategyScore)}"><b>${x.strategyScore}</b><small>${t('strategyScore')}</small><em>OS ${x.customScore}</em></div>${sparkline(x.scoreHistory)}<span class="${mv.cls}">${mv.label}</span></div>`}).join('');
   document.querySelectorAll('.scanner-row').forEach(row=>row.onclick=()=>{state.selectedTicker=row.dataset.ticker;renderScanner()});renderCandidateDetail();
 }
 function renderCandidateDetail(){
   const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0];
   if(!x){$('candidateDetail').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;}
   const sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>${t('relativeAttractiveness').toUpperCase()}</span><b>${x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${m.freshness.isStale?'–':wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} ${basisBadge(x.ticker)} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>${t('relativeAttractiveness').toUpperCase()}</span><b>${x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${m.freshness.isStale?'–':wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
   document.querySelectorAll('[data-open-decision]').forEach(button=>{
     button.onclick=()=>setManualDecisionTicker(button.dataset.openDecision,true);
   });
@@ -371,9 +380,20 @@ export function renderUniverse(){
 }
 
 
+function renderGovernanceBasis(){
+  const progress=legacyMigrationProgress();
+  const pct=progress.total?progress.migrated.length/progress.total*100:100;
+  const list=names=>names.map(ticker=>{
+    const item=state.data.opportunities?.find(o=>o.ticker===ticker);
+    return`<span class="governance-chip">${item?.name??ticker}</span>`;
+  }).join('');
+  $('governanceBasis').innerHTML=`<div class="governance-bar"><i style="width:${num(pct,0)}%"></i></div><div class="governance-rows"><div class="governance-row is-dossier"><b>${progress.migrated.length}/${progress.total}</b><span>${t('legacyMigrationProgress')}</span><div class="governance-chips">${progress.migrated.length?list(progress.migrated):'–'}</div></div><div class="governance-row is-legacy"><b>${progress.remaining.length}/${progress.total}</b><span>${t('legacyMigrationOpen')}</span><div class="governance-chips">${progress.remaining.length?list(progress.remaining):'–'}</div></div></div>${progress.complete?`<p class="governance-done">${t('legacyMigrationDone')}</p>`:`<p class="governance-warning">${t('legacyBasisExplain')}</p>`}`;
+}
+
 export function renderResearch(){
   const pipeline=state.data.researchPipeline;
   if(!pipeline) return;
+  renderGovernanceBasis();
   const records=pipeline.records;
   const query=$('researchSearch').value.trim().toLowerCase();
   const stage=$('researchStageFilter').value;

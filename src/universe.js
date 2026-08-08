@@ -1,5 +1,5 @@
-import {state} from './state.js?v=0.7.1';
-import {computeModel} from './strategy-ranking.js?v=0.7.1';
+import {state} from './state.js?v=0.7.2';
+import {computeModel} from './strategy-ranking.js?v=0.7.2';
 
 export function universeEntry(ticker){
   return state.data.universe.find(item=>item.ticker===ticker)||null;
