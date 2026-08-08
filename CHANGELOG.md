@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.6.7 – Operational Safety
+
+### Added
+- added a central snapshot freshness gate that fails once the snapshot exceeds `rules.maxSnapshotAgeHours`, configured at 24 hours
+- added a bilingual stale-snapshot banner and header marker stating that no action may be derived
+- made the model evaluation time overridable so freshness stays reproducible in automated runs
+
+### Changed
+- withdrew every buy verdict, briefing headline, and Decision Lab execution verdict while the snapshot is stale
+- applied the freshness gate to manually selected Decision Lab candidates as well
+
+### Tests
+- added freshness gate coverage for fresh, stale, custom-threshold, and unparseable snapshot dates
+- pinned the evaluation time in the unit suite and the Playwright run so results stay reproducible
+
 ## v0.6.6 – Portfolio Ledger
 
 ### Changed

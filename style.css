@@ -51,6 +51,8 @@ main{min-width:0;padding:0 34px 44px}.top-actions{display:flex;align-items:cente
 .avatar{width:42px;height:42px;font-weight:800}.menu{display:none;padding:9px 11px}
 .mode-banner{display:flex;align-items:center;gap:12px;margin:-4px 0 18px;padding:10px 13px;border-bottom:1px solid rgba(247,185,85,.22)}
 .mode-banner span{font-size:9px;letter-spacing:1.2px;font-weight:900;color:var(--amber)}.mode-banner p{margin:0;font-size:11px;color:var(--muted)}
+.stale-banner{margin:-10px 0 18px;padding:10px 13px;border:1px solid rgba(255,107,107,.45);border-radius:8px;background:rgba(255,107,107,.1);color:#ff9a9a;font-size:12px;font-weight:700}
+.freshness.stale{color:#ff9a9a;font-weight:700}
 .section-nav{
   display:none;
   gap:6px;
@@ -1024,3 +1026,5 @@ input[type="range"]{width:100%;min-width:0;padding:0;border:0;background:transpa
   .research-checklist{grid-template-columns:1fr}
   .research-actions{flex-direction:column}
 }
+.ladder-stale{padding:14px;border:1px solid rgba(255,107,107,.35);border-radius:10px;background:rgba(255,107,107,.08);color:#ff9a9a;font-size:11px;font-weight:700}
+.msft-progress.is-stale .distance-bar{opacity:.35}.msft-progress.is-stale .msft-line span{color:#ff9a9a;font-weight:700}

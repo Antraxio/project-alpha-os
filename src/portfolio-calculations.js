@@ -1,4 +1,4 @@
-import {state} from './state.js?v=0.6.6';
+import {state} from './state.js?v=0.6.7';
 
 export const valueOf=p=>p.cash+p.positions.reduce((s,x)=>s+x.current*x.shares,0);
 export const realisedOf=p=>p.closedTrades.reduce((s,x)=>s+x.result,0);

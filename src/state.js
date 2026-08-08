@@ -1,6 +1,7 @@
 export const storage=globalThis.localStorage??{getItem:()=>null,setItem(){},removeItem(){}};
 export const state={
   data:null,
+  referenceTime:null,
   language:storage.getItem('alphaLanguage')||'de',
   settings:null,
   view:'dashboard',

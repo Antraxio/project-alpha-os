@@ -1,10 +1,11 @@
-import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.6';
-import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.6';
-import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.6';
-import {computeModel} from '../strategy-ranking.js?v=0.6.6';
-import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.6';
-import {researchRecord} from '../research-pipeline.js?v=0.6.6';
-import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.6';
+import {$,clamp,euro,loc,locale,num,pct,state,storage} from '../state.js?v=0.6.7';
+import {movement,opportunityWeights,profileName,scoreClass} from '../scoring.js?v=0.6.7';
+import {computeSizing,realisedOf,valueOf} from '../portfolio-calculations.js?v=0.6.7';
+import {computeModel} from '../strategy-ranking.js?v=0.6.7';
+import {activeDecisionSelection,buildWatchlist,universeEntry} from '../universe.js?v=0.6.7';
+import {researchRecord} from '../research-pipeline.js?v=0.6.7';
+import {regionName,sectorName,t,wholeShareLabel} from '../translations.js?v=0.6.7';
+import {snapshotFreshness} from '../freshness.js?v=0.6.7';
 
 let navigateToView=()=>{};
 export function setViewNavigator(navigator){navigateToView=navigator;}
@@ -93,6 +94,8 @@ export function renderExecutive(){
     $('microsoftFocus').innerHTML='';renderDashboardWatchlist(m);return;
   }
   const passed=m.gates.filter(g=>g.pass).length,dist=(m.candidate.price/m.candidate.entryHigh-1)*100,targetDist=(msft.target1/msft.current-1)*100;
+  const stale=m.freshness.isStale;
+  $('decisionKicker').textContent=stale?t('staleDecisionKicker'):t('todayDecision');
   $('briefingSalutation').textContent=state.language==='de'?'Alex, heute zählt Disziplin – nicht Aktivität.':'Alex, today discipline matters more than activity.';
   $('briefingHeadline').textContent=m.allPassed?t('buyReview'):t('noNewPosition');
   $('briefingSummary').textContent=state.language==='de'
@@ -101,12 +104,16 @@ export function renderExecutive(){
   const points=[
     state.language==='de'?`Aktives Profil: ${profileLabel(profileName())}.`:`Active profile: ${profileLabel(profileName())}.`,
     state.language==='de'?`Cash-Vorsprung des Kandidaten: ${m.cashAdv>=0?'+':''}${m.cashAdv} Punkte.`:`Candidate advantage over cash: ${m.cashAdv>=0?'+':''}${m.cashAdv} points.`,
-    state.language==='de'?`Vorgeschlagene Größe: ${wholeShareLabel(m.sizing.shares)}, ${num(m.sizing.allocationPct,1)} % des Depotwerts.`:`Suggested size: ${wholeShareLabel(m.sizing.shares)}, ${num(m.sizing.allocationPct,1)}% of portfolio value.`
+    stale
+      ?t('staleNoSizing')
+      :state.language==='de'?`Vorgeschlagene Größe: ${wholeShareLabel(m.sizing.shares)}, ${num(m.sizing.allocationPct,1)} % des Depotwerts.`:`Suggested size: ${wholeShareLabel(m.sizing.shares)}, ${num(m.sizing.allocationPct,1)}% of portfolio value.`
   ];
   $('briefingPoints').innerHTML=points.map(x=>`<div class="briefing-point">${x}</div>`).join('');
-  $('briefingTrigger').textContent=state.language==='de'
-    ?`${m.candidate.name} in Preiszone, relative Attraktivität höher und alle Gates erfüllt – oder Microsoft erreicht ${euro(msft.target1)}.`
-    :`${m.candidate.name} enters the price zone, relative attractiveness improves and all gates pass — or Microsoft reaches ${euro(msft.target1)}.`;
+  $('briefingTrigger').textContent=stale
+    ?t('staleNoTrigger')
+    :state.language==='de'
+      ?`${m.candidate.name} in Preiszone, relative Attraktivität höher und alle Gates erfüllt – oder Microsoft erreicht ${euro(msft.target1)}.`
+      :`${m.candidate.name} enters the price zone, relative attractiveness improves and all gates pass — or Microsoft reaches ${euro(msft.target1)}.`;
   $('executiveMetrics').innerHTML=[
     [t('portfolioValue'),euro(cv),pct((cv/c.startCapital-1)*100)],
     [t('activeCash'),euro(c.cash),`${num(c.cash/cv*100,1)} % ${t('cashQuote')}`],
@@ -117,13 +124,17 @@ export function renderExecutive(){
   $('execVerdict').textContent=m.allPassed?t('reviewBuy'):t('wait');$('execOS').textContent=m.candidate.customScore;$('execRAS').textContent=m.ras;$('execGates').textContent=`${passed}/${m.gates.length}`;
   $('triggerZone').textContent=`${t('entryZone')} ${euro(m.candidate.entryLow)}–${euro(m.candidate.entryHigh)}`;
   const zoneLabel=m.inZone?t('insideZone'):m.candidate.price>m.candidate.entryHigh?`${num(dist,2)} % ${t('aboveZone')}`:`${num(Math.abs(dist),2)} % ${t('belowZone')}`;
-  $('triggerDistance').textContent=zoneLabel;$('priceZoneProgress').style.width=`${m.inZone?100:clamp(100-Math.abs(dist)*8,10,96)}%`;
+  $('triggerDistance').textContent=stale?t('staleZoneHidden'):zoneLabel;
+  $('priceZoneProgress').style.width=stale?'0%':`${m.inZone?100:clamp(100-Math.abs(dist)*8,10,96)}%`;
   const why=m.gates.filter(g=>!g.pass).map(g=>`${t(g.key)}: ${g.detail}`);
   $('execWhy').innerHTML=(why.length?why:[state.language==='de'?'Alle Gates erfüllt; finalen Broker-Check durchführen.':'All gates passed; perform the final broker check.']).map(w=>`<div class="why-item"><i>${why.length?'×':'✓'}</i><span>${w}</span></div>`).join('');
   $('regimeLabel').textContent=loc(d.marketRegime.label);$('regimeScore').textContent=d.marketRegime.score;$('regimeRing').style.setProperty('--score',d.marketRegime.score);
   $('regimeExplanation').textContent=loc(d.marketRegime.explanation);$('regimeTrend').textContent=loc(d.marketRegime.trend);$('regimeBreadth').textContent=loc(d.marketRegime.breadth);$('regimeStance').textContent=loc(d.marketRegime.stance);
   const progress=clamp((msft.current-msft.entry)/(msft.target1-msft.entry)*100,0,100);
-  $('microsoftFocus').innerHTML=`<div class="msft-progress"><div class="msft-line"><strong>${euro(msft.current)}</strong><span>${num(targetDist,2)} % ${state.language==='de'?'bis Ziel 1':'to target 1'}</span></div><div class="distance-bar"><i style="width:${progress}%"></i></div><div class="msft-labels"><span>${t('entry')} ${euro(msft.entry)}</span><span>${t('target')} 1 ${euro(msft.target1)}</span></div></div>`;
+  const focusDistance=stale
+    ?`${t('staleZoneHidden')} · ${t('staleHistoric')}`
+    :`${num(targetDist,2)} % ${state.language==='de'?'bis Ziel 1':'to target 1'}`;
+  $('microsoftFocus').innerHTML=`<div class="msft-progress${stale?' is-stale':''}"><div class="msft-line"><strong>${euro(msft.current)}</strong><span>${focusDistance}</span></div><div class="distance-bar"><i style="width:${stale?0:progress}%"></i></div><div class="msft-labels"><span>${t('entry')} ${euro(msft.entry)}</span><span>${t('target')} 1 ${euro(msft.target1)}</span></div></div>`;
   renderDashboardWatchlist(m);
 }
 
@@ -223,6 +234,7 @@ export function renderDecision(){
   $('decisionStrategyFit').innerHTML=strategyFitPanel(x);
 
   const gates=automatic?m.gates:[
+    {key:'freshnessGate',pass:!m.freshness.isStale,detail:m.freshness.dateKnown?`${num(m.freshness.ageHours,1)} h / ${num(m.freshness.maxAgeHours,0)} h`:'–'},
     {key:'scoreGate',pass:x.customScore>=state.settings.opportunityThreshold,detail:`${x.customScore} ≥ ${state.settings.opportunityThreshold}`},
     {key:'priceGate',pass:x.inZone,detail:`${euro(x.entryLow)}–${euro(x.entryHigh)}`},
     {key:'crvGate',pass:x.entryCrv>=state.settings.minCrv,detail:`${num(x.entryCrv,2)} / ${num(state.settings.minCrv,1)}`},
@@ -233,11 +245,13 @@ export function renderDecision(){
   $('decisionVerdict').textContent=allPassed
     ?(state.language==='de'?'Alle relevanten Modellgates sind erfüllt. Brokerhandelbarkeit und Kosten final prüfen.':'All relevant model gates pass. Perform the final broker and cost check.')
     :(state.language==='de'?'Mindestens ein Gate ist offen. Der Titel bleibt Beobachtungs- oder Research-Kandidat.':'At least one gate remains open. The security stays in monitoring or research status.');
-  $('actionLadder').innerHTML=[
-    [state.language==='de'?'1 · Beobachten':'1 · Monitor',t('monitorNow'),state.language==='de'?'Score, Preiszone und Portfolio-Fit überwachen.':'Monitor score, price zone and portfolio fit.','active'],
-    [state.language==='de'?'2 · Vorbereiten':'2 · Prepare',`${t('prepareAt')} ≤ ${euro(x.entryHigh)}`,state.language==='de'?'Limit, Stop und Stückzahl plausibilisieren.':'Validate limit, stop and share count.',''],
-    [state.language==='de'?'3 · Ausführen':'3 · Execute',`${t('executeOnly')} ${t('allGates')}`,state.language==='de'?'Broker-App und Kosten final prüfen.':'Perform final broker-app and cost check.','']
-  ].map(a=>`<div class="ladder-step ${a[3]}"><span>${a[0]}</span><b>${a[1]}</b><small>${a[2]}</small></div>`).join('');
+  $('actionLadder').innerHTML=m.freshness.isStale
+    ?`<div class="ladder-stale">${t('staleNoLadder')}</div>`
+    :[
+      [state.language==='de'?'1 · Beobachten':'1 · Monitor',t('monitorNow'),state.language==='de'?'Score, Preiszone und Portfolio-Fit überwachen.':'Monitor score, price zone and portfolio fit.','active'],
+      [state.language==='de'?'2 · Vorbereiten':'2 · Prepare',`${t('prepareAt')} ≤ ${euro(x.entryHigh)}`,state.language==='de'?'Limit, Stop und Stückzahl plausibilisieren.':'Validate limit, stop and share count.',''],
+      [state.language==='de'?'3 · Ausführen':'3 · Execute',`${t('executeOnly')} ${t('allGates')}`,state.language==='de'?'Broker-App und Kosten final prüfen.':'Perform final broker-app and cost check.','']
+    ].map(a=>`<div class="ladder-step ${a[3]}"><span>${a[0]}</span><b>${a[1]}</b><small>${a[2]}</small></div>`).join('');
   $('evidenceGrid').innerHTML=Object.entries(x.componentReasons).map(([key,value])=>`<div class="evidence-card"><header><span>${t(key)}</span><b>${x.components[key]}</b></header><p>${loc(value)}</p></div>`).join('');
 }
 
@@ -253,7 +267,7 @@ function renderCandidateDetail(){
   const m=computeModel(),x=m.opportunities.find(o=>o.ticker===state.selectedTicker)||m.opportunities[0];
   if(!x){$('candidateDetail').innerHTML=`<div class="pending-score"><div><strong>${t('noEligibleCandidate')}</strong><span>${t('noEligibleCandidateText')}</span></div></div>`;return;}
   const sizing=computeSizing(x);
-  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>${t('relativeAttractiveness').toUpperCase()}</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
+  $('candidateDetail').innerHTML=`<div class="candidate-detail-grid"><div><div class="candidate-title"><h2>${x.name} · ${x.strategyScore}<span class="calculated-score-label">${t('activeStrategy')}: ${profileLabel(profileName())} · ${t('strategyScore')} · OS ${x.customScore}</span></h2><p>${x.ticker} · ${x.isin} · ${regionName(x.region)} · ${sectorName(x.sector)}</p></div><div class="level-grid"><div><span>${t('current').toUpperCase()}</span><b>${euro(x.price)}</b></div><div><span>${t('relativeAttractiveness').toUpperCase()}</span><b>${x.ticker===m.candidate?.ticker?m.ras:x.ras}</b></div><div><span>${t('entry').toUpperCase()}</span><b>${euro(x.entryLow)}–${euro(x.entryHigh)}</b></div><div><span>${t('stop').toUpperCase()}</span><b>${euro(x.stop)}</b></div><div><span>${t('target').toUpperCase()}</span><b>${euro(x.target)}</b></div><div><span>${t('suggestedShares').toUpperCase()}</span><b>${m.freshness.isStale?'–':wholeShareLabel(sizing.shares)}</b></div></div></div><div class="candidate-radar">${radarSvg(x,true)}</div><div class="candidate-rationale"><div class="strategy-fit-summary"><div><span>${t('strategyScore')}</span><b>${x.strategyScore}</b></div><div><span>${t('intrinsicOS')}</span><b>${x.customScore}</b></div><div><span>${t('fitAdjustment')}</span><b class="${x.fitAdjustment>=0?'fit-positive':'fit-negative'}">${signedFit(x.fitAdjustment)}</b></div><div><span>${t('crv')}</span><b>${num(x.entryCrv,2)}</b></div></div><div class="fit-reasons">${fitReasonRows(x)}</div><div class="rationale-block"><span>${t('catalyst').toUpperCase()}</span><p>${loc(x.catalystText)}</p></div><div class="rationale-block"><span>${t('risk').toUpperCase()}</span><p>${loc(x.riskText)}</p></div><div class="rationale-block"><span>${t('decision').toUpperCase()}</span><p>${x.ticker===m.candidate?.ticker&&m.allPassed?t('executeReview'):t('observe')}</p><button class="open-decision-button" data-open-decision="${x.ticker}">${t('openInDecisionLab')}</button></div></div></div>`;
   document.querySelectorAll('[data-open-decision]').forEach(button=>{
     button.onclick=()=>setManualDecisionTicker(button.dataset.openDecision,true);
   });
