@@ -1,10 +1,10 @@
-import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.7.0';
-import {profileName} from './src/scoring.js?v=0.7.0';
-import {computeModel} from './src/strategy-ranking.js?v=0.7.0';
-import {regionName,sectorName,t} from './src/translations.js?v=0.7.0';
-import {loadAlphaData} from './src/data-loader.js?v=0.7.0';
-import {snapshotFreshness} from './src/freshness.js?v=0.7.0';
-import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.7.0';
+import {$,clone,dateFmt,loc,num,state,storage} from './src/state.js?v=0.7.1';
+import {profileName} from './src/scoring.js?v=0.7.1';
+import {computeModel} from './src/strategy-ranking.js?v=0.7.1';
+import {regionName,sectorName,t} from './src/translations.js?v=0.7.1';
+import {loadAlphaData} from './src/data-loader.js?v=0.7.1';
+import {snapshotFreshness} from './src/freshness.js?v=0.7.1';
+import {applyStaticTranslations,populateUniverseFilters,profileLabel,renderDecision,renderExecutive,renderJournal,renderMethod,renderModelHistory,renderPortfolio,renderResearch,renderScanner,renderTimeline,renderUniverse,setDecisionMode,setManualDecisionTicker,setViewNavigator,showToast} from './src/ui/views.js?v=0.7.1';
 
 const controlDefs={
   weights:[

@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.7.1 – Model correctness
+
+### Fixed
+- regional exposure compared a holding country against a candidate region, so every non-US region reported zero exposure; the mapping is now derived from the data itself
+- the switch gate blocked the first purchase of an empty portfolio against a margin over nothing; with no incumbent it now passes
+- relative attractiveness was recalculated for the top candidate but read from stored data everywhere else, so a detail view could contradict the ranking; it is now recalculated for every ranked security
+- the ranking tie-break no longer falls back to the stored relative attractiveness
+
+### Tests
+- added coverage for the country-to-region mapping, the empty-portfolio switch gate and the recalculated relative attractiveness
+- the v0.7.0 reference now records relative attractiveness per security
+
 ## v0.7.0 – One portfolio
 
 ### Changed

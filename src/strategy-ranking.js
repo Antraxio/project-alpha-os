@@ -1,9 +1,9 @@
-import {clamp,euro,num,state} from './state.js?v=0.7.0';
-import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.0';
-import {computeSizing,valueOf} from './portfolio-calculations.js?v=0.7.0';
-import {isRankingEligible} from './research-pipeline.js?v=0.7.0';
-import {snapshotFreshness} from './freshness.js?v=0.7.0';
-import {wholeShareLabel} from './translations.js?v=0.7.0';
+import {clamp,euro,num,state} from './state.js?v=0.7.1';
+import {opportunityScore,strategyComponentScore} from './scoring.js?v=0.7.1';
+import {computeSizing,regionOf,valueOf} from './portfolio-calculations.js?v=0.7.1';
+import {isRankingEligible} from './research-pipeline.js?v=0.7.1';
+import {snapshotFreshness} from './freshness.js?v=0.7.1';
+import {t,wholeShareLabel} from './translations.js?v=0.7.1';
 
 export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
   const p=state.data.portfolio;
@@ -27,7 +27,7 @@ export function strategyFitFor(o,intrinsicScore,activeComponentScore,held){
       ?p.positions.filter(x=>x.sector===position.sector).reduce((s,x)=>s+x.current*x.shares,0)/investedValue*100
       :0;
     regionPct=investedValue
-      ?p.positions.filter(x=>x.country===position.country).reduce((s,x)=>s+x.current*x.shares,0)/investedValue*100
+      ?p.positions.filter(x=>regionOf(x.country)===regionOf(position.country)).reduce((s,x)=>s+x.current*x.shares,0)/investedValue*100
       :0;
     affordable=true;
     sizing={...sizing,shares:position.shares,amount:positionValue,allocationPct,sectorPct,regionPct};
@@ -101,9 +101,33 @@ export function computeModel(){
   }).sort((a,b)=>
     b.strategyScore-a.strategyScore ||
     b.strategyComponentScore-a.strategyComponentScore ||
-    b.ras-a.ras ||
-    b.customScore-a.customScore
+    b.customScore-a.customScore ||
+    a.ticker.localeCompare(b.ticker)
   ).map((o,index)=>({...o,customRank:index+1}));
+
+  // Relative attractiveness is recalculated for every ranked security from the active
+  // settings, so a detail view can never show a stored value that contradicts the ranking.
+  // The comparison set is the best alternative that is not the security itself.
+  const bestOther=(list,self)=>list.filter(o=>o.ticker!==self.ticker).reduce((best,o)=>o.strategyScore>(best?.strategyScore??-Infinity)?o:best,null);
+  const heldRanked=opportunities.filter(o=>held.has(o.ticker));
+  const scored=opportunities.map(o=>{
+    const alternative=bestOther(opportunities.filter(item=>!held.has(item.ticker)),o);
+    const incumbent=bestOther(heldRanked,o);
+    return{
+      ...o,
+      ras:clamp(Math.round(
+        50+
+        (o.strategyComponentScore-state.settings.cashHurdle)*3+
+        (o.strategyScore-(alternative?.strategyScore??o.strategyScore))*2+
+        (o.strategyScore-(incumbent?.strategyScore??o.strategyScore))+
+        (o.inZone?4:-5)-
+        (o.sizing.concentrationWarning?4:0)-
+        (o.sizing.sectorWarning?3:0)-
+        (o.sizing.regionWarning?3:0)
+      ),0,100)
+    };
+  });
+  opportunities.splice(0,opportunities.length,...scored);
 
   const newCandidates=opportunities.filter(o=>!held.has(o.ticker));
   const candidate=newCandidates[0];
@@ -129,21 +153,7 @@ export function computeModel(){
   const heldGap=
     candidate.strategyScore-(heldBest?.strategyScore??candidate.strategyScore);
   const inZone=candidate.inZone;
-
-  const ras=clamp(
-    Math.round(
-      50+
-      cashAdv*3+
-      secondGap*2+
-      heldGap+
-      (inZone?4:-5)-
-      (sizing.concentrationWarning?4:0)-
-      (sizing.sectorWarning?3:0)-
-      (sizing.regionWarning?3:0)
-    ),
-    0,
-    100
-  );
+  const ras=candidate.ras;
 
   const gates=[
     {
@@ -164,9 +174,13 @@ export function computeModel(){
       detail:`${cashAdv>=0?'+':''}${cashAdv} / +${state.settings.cashSafetyMargin}`
     },
     {
+      // With no holding there is no incumbent to beat, so the gate passes instead of
+      // blocking the first purchase against a margin over nothing.
       key:'switchGate',
-      pass:heldGap>=state.settings.switchMargin,
-      detail:`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`
+      pass:!heldBest||heldGap>=state.settings.switchMargin,
+      detail:heldBest
+        ?`${heldGap>=0?'+':''}${heldGap} / +${state.settings.switchMargin}`
+        :t('noIncumbent')
     },
     {
       key:'priceGate',
